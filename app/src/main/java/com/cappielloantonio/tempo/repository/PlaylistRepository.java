@@ -1,10 +1,13 @@
 package com.cappielloantonio.tempo.repository;
 
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.cappielloantonio.tempo.App;
+import com.cappielloantonio.tempo.R;
 import com.cappielloantonio.tempo.database.AppDatabase;
 import com.cappielloantonio.tempo.database.dao.PlaylistDao;
 import com.cappielloantonio.tempo.subsonic.base.ApiResponse;
@@ -80,12 +83,12 @@ public class PlaylistRepository {
                 .enqueue(new Callback<ApiResponse>() {
                     @Override
                     public void onResponse(@NonNull Call<ApiResponse> call, @NonNull Response<ApiResponse> response) {
-
+                        Toast.makeText(App.getContext(), getString(R.string.playlist_chooser_dialog_toast_add_success), Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<ApiResponse> call, @NonNull Throwable t) {
-
+                        Toast.makeText(App.getContext(), getString(R.string.playlist_chooser_dialog_toast_add_failure), Toast.LENGTH_SHORT).show();
                     }
                 });
     }

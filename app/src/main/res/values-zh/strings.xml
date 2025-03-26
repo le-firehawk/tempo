@@ -165,6 +165,8 @@
     <string name="playlist_chooser_dialog_negative_button">取消</string>
     <string name="playlist_chooser_dialog_neutral_button">新建</string>
     <string name="playlist_chooser_dialog_title">添加到播放列表</string>
+    <string name="playlist_chooser_dialog_toast_add_success">将歌曲添加到播放列表</string>
+    <string name="playlist_chooser_dialog_toast_add_failure">未能将歌曲添加到播放列表</string>
     <string name="playlist_counted_tracks">%1$d 首曲目 • %2$s</string>
     <string name="playlist_duration">持续时间 • %1$s</string>
     <string name="playlist_editor_dialog_hint_name">播放列表名称</string>
