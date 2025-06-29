@@ -40,6 +40,20 @@ import com.cappielloantonio.tempo.util.MusicUtil;
 import com.cappielloantonio.tempo.viewmodel.PlaylistPageViewModel;
 import com.google.common.util.concurrent.ListenableFuture;
 
+// Core Android
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.app.Activity;
+import android.net.Uri;
+import android.widget.Toast;
+
+// Media3
+import androidx.media3.common.MediaItem;
+
+// Your utility class
+import com.cappielloantonio.tempo.util.ExternalAudioWriter;
+
 import java.util.Collections;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -137,6 +151,10 @@ public class PlaylistPageFragment extends Fragment implements ClickCallback {
                                 return toDownload;
                             }).collect(Collectors.toList())
                     );
+                    MappingUtil.mapMediaItems(songs).forEach(media -> {
+                        String title = media.mediaMetadata.title != null ? media.mediaMetadata.title.toString() : media.mediaId;
+                        ExternalAudioWriter.downloadToUserDirectory(requireContext(), media, title);
+                    });
                 }
             });
             return true;

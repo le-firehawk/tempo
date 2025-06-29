@@ -62,6 +62,20 @@ import com.cappielloantonio.tempo.viewmodel.HomeViewModel;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.common.util.concurrent.ListenableFuture;
 
+// Core Android
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.app.Activity;
+import android.net.Uri;
+import android.widget.Toast;
+
+// Media3
+import androidx.media3.common.MediaItem;
+
+// Your utility class
+import com.cappielloantonio.tempo.util.ExternalAudioWriter;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -274,6 +288,10 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
                         for (Child song : songs) {
                             if (!manager.isDownloaded(song.getId())) {
                                 toSync.add(song.getTitle());
+
+                                MediaItem item = MappingUtil.mapMediaItem(song);
+                                String title = item.mediaMetadata.title != null ? item.mediaMetadata.title.toString() : item.mediaId;
+                                ExternalAudioWriter.downloadToUserDirectory(requireContext(), item, title);
                             }
                         }
 
@@ -302,6 +320,10 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
                             for (Child song : songs) {
                                 if (!manager.isDownloaded(song.getId())) {
                                     manager.download(MappingUtil.mapDownload(song), new Download(song));
+
+                                    MediaItem item = MappingUtil.mapMediaItem(song);
+                                    String title = item.mediaMetadata.title != null ? item.mediaMetadata.title.toString() : item.mediaId;
+                                    ExternalAudioWriter.downloadToUserDirectory(requireContext(), item, title);
                                 }
                             }
                         }
