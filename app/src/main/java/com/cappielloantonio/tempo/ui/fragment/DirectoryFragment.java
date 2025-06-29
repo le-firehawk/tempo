@@ -37,6 +37,20 @@ import com.cappielloantonio.tempo.util.MappingUtil;
 import com.cappielloantonio.tempo.viewmodel.DirectoryViewModel;
 import com.google.common.util.concurrent.ListenableFuture;
 
+// Core Android
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.app.Activity;
+import android.net.Uri;
+import android.widget.Toast;
+
+// Media3
+import androidx.media3.common.MediaItem;
+
+// Your utility class
+import com.cappielloantonio.tempo.util.ExternalAudioWriter;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -71,6 +85,9 @@ public class DirectoryFragment extends Fragment implements ClickCallback {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         activity = (MainActivity) getActivity();
+
+        SharedPreferences prefs = requireContext().getSharedPreferences("tempo_prefs", Context.MODE_PRIVATE);
+        String uriString = prefs.getString("download_directory_uri", null);
 
         bind = FragmentDirectoryBinding.inflate(inflater, container, false);
         View view = bind.getRoot();
