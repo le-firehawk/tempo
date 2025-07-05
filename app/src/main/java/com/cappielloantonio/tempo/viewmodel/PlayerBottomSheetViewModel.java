@@ -54,7 +54,11 @@ public class PlayerBottomSheetViewModel extends AndroidViewModel {
     private final MutableLiveData<AlbumID3> liveAlbum = new MutableLiveData<>(null);
     private final MutableLiveData<ArtistID3> liveArtist = new MutableLiveData<>(null);
     private final MutableLiveData<List<Child>> instantMix = new MutableLiveData<>(null);
-    private boolean lyricsSyncState = true;
+    public static final int LYRICS_SYNC_OFF = 0;
+    public static final int LYRICS_SYNC_TOP = 1;
+    public static final int LYRICS_SYNC_BOTTOM = 2;
+
+    private int lyricsSyncState = LYRICS_SYNC_TOP;
 
 
     public PlayerBottomSheetViewModel(@NonNull Application application) {
@@ -235,10 +239,21 @@ public class PlayerBottomSheetViewModel extends AndroidViewModel {
     }
 
     public void changeSyncLyricsState() {
-        lyricsSyncState = !lyricsSyncState;
+        switch (lyricsSyncState) {
+            case LYRICS_SYNC_OFF:
+                lyricsSyncState = LYRICS_SYNC_TOP;
+                break;
+            case LYRICS_SYNC_TOP:
+                lyricsSyncState = LYRICS_SYNC_BOTTOM;
+                break;
+            case LYRICS_SYNC_BOTTOM:
+            default:
+                lyricsSyncState = LYRICS_SYNC_OFF;
+                break;
+        }
     }
 
-    public boolean getSyncLyricsState() {
+    public int getSyncLyricsState() {
         return lyricsSyncState;
     }
 }

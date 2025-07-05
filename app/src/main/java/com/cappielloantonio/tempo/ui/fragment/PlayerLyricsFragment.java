@@ -99,7 +99,21 @@ public class PlayerLyricsFragment extends Fragment {
     private void initOverlay() {
         bind.syncLyricsTapButton.setOnClickListener(view -> {
             playerBottomSheetViewModel.changeSyncLyricsState();
+            updateSyncLyricsButtonIcon();
         });
+
+        updateSyncLyricsButtonIcon();
+    }
+
+    private void updateSyncLyricsButtonIcon() {
+        int state = playerBottomSheetViewModel.getSyncLyricsState();
+        if (state == PlayerBottomSheetViewModel.LYRICS_SYNC_TOP) {
+            bind.syncLyricsTapButton.setIconResource(R.drawable.ic_arrow_up);
+        } else if (state == PlayerBottomSheetViewModel.LYRICS_SYNC_BOTTOM) {
+            bind.syncLyricsTapButton.setIconResource(R.drawable.ic_arrow_down);
+        } else {
+            bind.syncLyricsTapButton.setIconResource(R.drawable.ic_lyrics);
+        }
     }
 
     private void initializeBrowser() {
@@ -244,9 +258,11 @@ public class PlayerLyricsFragment extends Fragment {
 
                 bind.nowPlayingSongLyricsTextView.setText(spannableString);
 
-                if (playerBottomSheetViewModel.getSyncLyricsState()) {
-                    bind.nowPlayingSongLyricsSrollView.smoothScrollTo(0, getScroll(lines, toHighlight));
-                }
+                int state = playerBottomSheetViewModel.getSyncLyricsState();
+                if (state == PlayerBottomSheetViewModel.LYRICS_SYNC_TOP) {
+                    bind.nowPlayingSongLyricsSrollView.smoothScrollTo(0, getScrollTop(lines, toHighlight));
+                } else if (state == PlayerBottomSheetViewModel.LYRICS_SYNC_BOTTOM) {
+                    bind.nowPlayingSongLyricsSrollView.smoothScrollTo(0, getScrollBottom(lines, toHighlight));
             }
         }
     }
@@ -280,11 +296,17 @@ public class PlayerLyricsFragment extends Fragment {
         return start;
     }
 
-    private int getScroll(List<Line> lines, Line toHighlight) {
+    private int getScrollTop(List<Line> lines, Line toHighlight) {
+        int lineHeight = bind.nowPlayingSongLyricsTextView.getLineHeight();
+        int lineCount = getLineCount(lines, toHighlight);
+        return lineHeight * lineCount;
+    }
+
+    private int getScrollBottom(List<Line> lines, Line toHighlight) {
         int lineHeight = bind.nowPlayingSongLyricsTextView.getLineHeight();
         int lineCount = getLineCount(lines, toHighlight);
         int scrollViewHeight = bind.nowPlayingSongLyricsSrollView.getHeight();
-
-        return lineHeight * lineCount < scrollViewHeight / 2 ? 0 : lineHeight * lineCount - scrollViewHeight / 2 + lineHeight;
+        int scroll = lineHeight * lineCount - scrollViewHeight + lineHeight;
+        return Math.max(scroll, 0);
     }
 }

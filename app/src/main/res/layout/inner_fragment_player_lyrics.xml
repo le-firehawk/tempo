@@ -64,7 +64,7 @@
         app:cornerRadius="64dp"
         android:alpha="0.7"
         android:visibility="visible"
-        app:icon="@drawable/ic_lyrics_sync_lock"
+        app:icon="@drawable/ic_arrow_up"
         app:layout_constraintEnd_toEndOf="@+id/now_playing_song_lyrics_sroll_view"
         app:layout_constraintBottom_toBottomOf="@+id/now_playing_song_lyrics_sroll_view" />
 
