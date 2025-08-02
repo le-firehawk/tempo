@@ -159,6 +159,8 @@
     <string name="playlist_chooser_dialog_negative_button">Annuler</string>
     <string name="playlist_chooser_dialog_neutral_button">Créer</string>
     <string name="playlist_chooser_dialog_title">Ajouter à une playlist</string>
+    <string name="playlist_chooser_dialog_toast_add_success">Ajout d'une chanson à la playlist</string>
+    <string name="playlist_chooser_dialog_toast_add_failure">Échec de l'ajout d'une chanson à la playlist</string>
     <string name="playlist_counted_tracks">%1$d titres •  %2$s</string>
     <string name="playlist_duration">Durée  •  %1$s</string>
     <string name="playlist_editor_dialog_hint_name">Nom de la playlist</string>
