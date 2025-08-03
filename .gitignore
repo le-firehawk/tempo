@@ -14,3 +14,4 @@
 .cxx
 /.idea/
 .env
+.vscode/settings.json
