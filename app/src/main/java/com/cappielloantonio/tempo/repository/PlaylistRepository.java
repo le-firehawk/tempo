@@ -1,5 +1,8 @@
 package com.cappielloantonio.tempo.repository;
 
+import static android.provider.Settings.System.getString;
+
+import android.provider.Settings;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,6 +26,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class PlaylistRepository {
+    @androidx.media3.common.util.UnstableApi
     private final PlaylistDao playlistDao = AppDatabase.getInstance().playlistDao();
     public MutableLiveData<List<Playlist>> getPlaylists(boolean random, int size) {
         MutableLiveData<List<Playlist>> listLivePlaylists = new MutableLiveData<>(new ArrayList<>());
@@ -83,12 +87,12 @@ public class PlaylistRepository {
                 .enqueue(new Callback<ApiResponse>() {
                     @Override
                     public void onResponse(@NonNull Call<ApiResponse> call, @NonNull Response<ApiResponse> response) {
-                        Toast.makeText(App.getContext(), getString(R.string.playlist_chooser_dialog_toast_add_success), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(App.getContext(), App.getContext().getString(R.string.playlist_chooser_dialog_toast_add_success), Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<ApiResponse> call, @NonNull Throwable t) {
-                        Toast.makeText(App.getContext(), getString(R.string.playlist_chooser_dialog_toast_add_failure), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(App.getContext(), App.getContext().getString(R.string.playlist_chooser_dialog_toast_add_failure), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -160,17 +164,19 @@ public class PlaylistRepository {
                     }
                 });
     }
-
+    @androidx.media3.common.util.UnstableApi
     public LiveData<List<Playlist>> getPinnedPlaylists() {
         return playlistDao.getAll();
     }
 
+    @androidx.media3.common.util.UnstableApi
     public void insert(Playlist playlist) {
         InsertThreadSafe insert = new InsertThreadSafe(playlistDao, playlist);
         Thread thread = new Thread(insert);
         thread.start();
     }
 
+    @androidx.media3.common.util.UnstableApi
     public void delete(Playlist playlist) {
         DeleteThreadSafe delete = new DeleteThreadSafe(playlistDao, playlist);
         Thread thread = new Thread(delete);
