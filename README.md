@@ -26,7 +26,7 @@ Tempo does not rely on magic algorithms to decide what you should listen to. Ins
 
 This fork is my attempt to keep development moving forward and merge in PR's that have been sitting for a while in the main repo. Thankful to @CappielloAntonio for the amazing app and hopefully we can continue to build on top of it. I will only be releasing on github and if I am not able to merge back to the main repo, I plan to rename the app to be able to publish it to fdroid and possibly google play? We will see.
 
-v3.10.0 applies the following PR's (fix/feat/chore):  
+[v3.10.0](https://github.com/eddyizm/tempo/releases/tag/v3.10.0) applies the following PR's (fix/feat/chore):  
 fix: [379](https://github.com/CappielloAntonio/tempo/pull/379) -Fix: redirection to artist fragment on artist label click  
 fix: [385](https://github.com/CappielloAntonio/tempo/pull/385) -Player queue lag, limits  
 fix: [389](https://github.com/CappielloAntonio/tempo/pull/389) -Fix crash when sorting albums with a null artist  
