@@ -57,7 +57,7 @@ chore: [378](https://github.com/CappielloAntonio/tempo/pull/378) Polish translat
     <img src="mockup/feat/4_screenshot.png" width=200>
     <img src="mockup/feat/5_screenshot.png" width=200>
     <img src="mockup/feat/6_screenshot.png" width=200>
-    <img src="mockup/feat/7_scregetRecentSearchSuggestionenshot.png" width=200>
+    <img src="mockup/feat/7_screenshot.png" width=200>
     <img src="mockup/feat/8_screenshot.png" width=200>
 </p>
 
