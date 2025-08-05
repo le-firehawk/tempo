@@ -140,6 +140,8 @@ public class PlayerControllerFragment extends Fragment {
                 MediaBrowser mediaBrowser = mediaBrowserListenableFuture.get();
 
                 bind.nowPlayingMediaControllerView.setPlayer(mediaBrowser);
+                mediaBrowser.setShuffleModeEnabled(Preferences.isShuffleModeEnabled());
+                mediaBrowser.setRepeatMode(Preferences.getRepeatMode());
 
                 setMediaControllerListener(mediaBrowser);
             } catch (Exception e) {
@@ -159,6 +161,16 @@ public class PlayerControllerFragment extends Fragment {
                 setMediaControllerUI(mediaBrowser);
                 setMetadata(mediaMetadata);
                 setMediaInfo(mediaMetadata);
+            }
+
+            @Override
+            public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
+                Preferences.setShuffleModeEnabled(shuffleModeEnabled);
+            }
+
+            @Override
+            public void onRepeatModeChanged(int repeatMode) {
+                Preferences.setRepeatMode(repeatMode);
             }
         });
     }
