@@ -149,13 +149,16 @@ public class AlbumPageFragment extends Fragment implements ClickCallback {
                 bind.albumGenresTextview.setText(album.getGenre());
 
                 if (album.getReleaseDate() != null && album.getOriginalReleaseDate() != null) {
-                    bind.albumReleaseYearsTextview.setVisibility(View.VISIBLE);
+                    if (album.getReleaseDate().getFormattedDate() != null || album.getOriginalReleaseDate().getFormattedDate() != null)
+                        bind.albumReleaseYearsTextview.setVisibility(View.VISIBLE);
+                    else
+                        bind.albumReleaseYearsTextview.setVisibility(View.GONE);
 
-                    if (album.getReleaseDate() == null || album.getOriginalReleaseDate() == null) {
+                    if (album.getReleaseDate().getFormattedDate() == null || album.getOriginalReleaseDate().getFormattedDate() == null) {
                         bind.albumReleaseYearsTextview.setText(getString(R.string.album_page_release_date_label, album.getReleaseDate() != null ? album.getReleaseDate().getFormattedDate() : album.getOriginalReleaseDate().getFormattedDate()));
                     }
 
-                    if (album.getReleaseDate() != null && album.getOriginalReleaseDate() != null) {
+                    if (album.getReleaseDate().getFormattedDate() != null && album.getOriginalReleaseDate().getFormattedDate() != null) {
                         if (Objects.equals(album.getReleaseDate().getYear(), album.getOriginalReleaseDate().getYear()) && Objects.equals(album.getReleaseDate().getMonth(), album.getOriginalReleaseDate().getMonth()) && Objects.equals(album.getReleaseDate().getDay(), album.getOriginalReleaseDate().getDay())) {
                             bind.albumReleaseYearsTextview.setText(getString(R.string.album_page_release_date_label, album.getReleaseDate().getFormattedDate()));
                         } else {
