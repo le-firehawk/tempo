@@ -151,6 +151,9 @@ public class AlbumPageFragment extends Fragment implements ClickCallback {
                     bind.albumGenresTextview.setText(album.getGenre());
                     bind.albumGenresTextview.setVisibility(View.VISIBLE);
                 }
+                else{
+                    bind.albumGenresTextview.setVisibility(View.GONE);
+                }
 
                 if (album.getReleaseDate() != null && album.getOriginalReleaseDate() != null) {
                     if (album.getReleaseDate().getFormattedDate() != null || album.getOriginalReleaseDate().getFormattedDate() != null)
