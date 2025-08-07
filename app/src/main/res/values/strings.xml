@@ -395,6 +395,7 @@
     <string name="support_url">https://buymeacoffee.com/a.cappiello</string>
     <string name="track_info_album">Album</string>
     <string name="track_info_artist">Artist</string>
+    <string name="track_info_bit_depth">Bit depth</string>
     <string name="track_info_bitrate">Bitrate</string>
     <string name="track_info_content_type">Content Type</string>
     <string name="track_info_dialog_positive_button">OK</string>
@@ -403,6 +404,7 @@
     <string name="track_info_duration">Duration</string>
     <string name="track_info_genre">Genre</string>
     <string name="track_info_path">Path</string>
+    <string name="track_info_sampling_rate">Sampling rate</string>
     <string name="track_info_size">Size</string>
     <string name="track_info_suffix">Suffix</string>
     <string name="track_info_summary_downloaded_file">The file has been downloaded using the Subsonic APIs. The codec and bitrate of the file remain unchanged from the source file.</string>
