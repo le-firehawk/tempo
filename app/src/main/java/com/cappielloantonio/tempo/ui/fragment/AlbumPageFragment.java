@@ -144,6 +144,7 @@ public class AlbumPageFragment extends Fragment implements ClickCallback {
 
                 bind.albumNameLabel.setText(album.getName());
                 bind.albumArtistLabel.setText(album.getArtist());
+                bind.albumReleaseYearLabel.setText(album.getYear() != 0 ? String.valueOf(album.getYear()) : "");
                 bind.albumReleaseYearLabel.setVisibility(album.getYear() != 0 ? View.VISIBLE : View.GONE);
                 bind.albumSongCountDurationTextview.setText(getString(R.string.album_page_tracks_count_and_duration, album.getSongCount(), album.getDuration() != null ? album.getDuration() / 60 : 0));
                 if (album.getGenre() != null && !album.getGenre().isEmpty()) {
