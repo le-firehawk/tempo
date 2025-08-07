@@ -27,7 +27,7 @@ open class ItemDate : Parcelable {
             SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault())
         }
 
-        calendar.set(year ?: 0, month ?: 1, day ?: 1) // Default to 1 if day is null
+        calendar.set(year ?: 0, month ?: 1, day ?: 1)
 
         return dateFormat.format(calendar.time)
     }
