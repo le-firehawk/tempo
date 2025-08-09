@@ -205,7 +205,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         if ("default".equals(value)) {
             localePref.setSummary(requireContext().getString(R.string.settings_system_language));
         } else {
-            localePref.setSummary(Locale.forLanguageTag(value).getDisplayLanguage());
+            localePref.setSummary(Locale.forLanguageTag(value).getDisplayName());
         }
 
         localePref.setOnPreferenceChangeListener((preference, newValue) -> {
@@ -215,7 +215,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             } else {
                 LocaleListCompat appLocale = LocaleListCompat.forLanguageTags((String) newValue);
                 AppCompatDelegate.setApplicationLocales(appLocale);
-                preference.setSummary(Locale.forLanguageTag((String) newValue).getDisplayLanguage());
+                preference.setSummary(Locale.forLanguageTag((String) newValue).getDisplayName());
             }
             return true;
         });
