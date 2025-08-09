@@ -26,16 +26,7 @@ Tempo does not rely on magic algorithms to decide what you should listen to. Ins
 
 This fork is my attempt to keep development moving forward and merge in PR's that have been sitting for a while in the main repo. Thankful to @CappielloAntonio for the amazing app and hopefully we can continue to build on top of it. I will only be releasing on github and if I am not able to merge back to the main repo, I plan to rename the app to be able to publish it to fdroid and possibly google play? We will see.
 
-[v3.10.0](https://github.com/eddyizm/tempo/releases/tag/v3.10.0) applies the following PR's (fix/feat/chore):  
-fix: [379](https://github.com/CappielloAntonio/tempo/pull/379) -Fix: redirection to artist fragment on artist label click  
-fix: [385](https://github.com/CappielloAntonio/tempo/pull/385) -Player queue lag, limits  
-fix: [389](https://github.com/CappielloAntonio/tempo/pull/389) -Fix crash when sorting albums with a null artist  
-feat: [371](https://github.com/CappielloAntonio/tempo/pull/371) -Display toast message after adding a song to a playlist  
-feat: [367](https://github.com/CappielloAntonio/tempo/pull/367) -Album add to playlist context menu item  
-chore: [374](https://github.com/CappielloAntonio/tempo/pull/374) -Spanish translation  
-feat: [397](https://github.com/CappielloAntonio/tempo/pull/397) -Store and retrieve replay and shuffle states in preferences  
-feat:[400](https://github.com/CappielloAntonio/tempo/pull/400) - enhance Android media player notification window  
-chore: [378](https://github.com/CappielloAntonio/tempo/pull/378) Polish translation  
+Moved details to [CHANGELOG.md](https://github.com/eddyizm/tempo/blob/main/CHANGELOG.md)
 
 ## Features
 - **Subsonic Integration**: Tempo seamlessly integrates with your Subsonic server, providing you with easy access to your entire music collection on the go.

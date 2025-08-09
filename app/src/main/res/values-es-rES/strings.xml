@@ -104,6 +104,9 @@
     <string name="home_rearrangement_dialog_positive_button">Guardar</string>
     <string name="home_rearrangement_dialog_title">Reorganizar la página de inicio</string>
     <string name="home_rearrangement_dialog_subtitle">Tenga en cuenta que para que los cambios surtan efecto, hay que reiniciar la aplicación.</string>
+    <string name="home_section_music">Música</string>
+    <string name="home_section_podcast">Pódcasts</string>
+    <string name="home_section_radio">Radio</string>
     <string name="home_subtitle_best_of">Mejores pistas de tus artistas favoritos</string>
     <string name="home_subtitle_made_for_you">Iniciar mix desde una cación que te gustó</string>
     <string name="home_subtitle_new_internet_radio_station">Añadir una nueva emisora de radio</string>
@@ -164,6 +167,7 @@
     <string name="menu_group_by_artist">Artista</string>
     <string name="settings_image_size">Resolución de la imagen</string>
     <string name="settings_language">Idioma</string>
+    <string name="settings_system_language">Idioma del sistema</string>
     <string name="settings_logout_title">Cerrar sesión</string>
     <string name="settings_github_link">https://github.com/eddyizm/tempo</string>
     <string name="settings_github_summary">Siga el desarrollo</string>
@@ -312,7 +316,9 @@
     <string name="streaming_cache_storage_internal_dialog_negative_button">Interno</string>
     <string name="track_info_album">Álbum</string>
     <string name="track_info_artist">Artista</string>
+    <string name="track_info_bit_depth">Profundidad de bits</string>
     <string name="track_info_bitrate">Tasa de bits</string>
+    <string name="track_info_sampling_rate">Tasa de muestreo</string>
     <string name="track_info_content_type">Tipo de contenido</string>
     <string name="track_info_dialog_positive_button">Aceptar</string>
     <string name="track_info_transcoded_content_type">Tipo de contenido en la transcodificación</string>

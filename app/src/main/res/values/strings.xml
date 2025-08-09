@@ -105,6 +105,9 @@
     <string name="home_rearrangement_dialog_positive_button">Save</string>
     <string name="home_rearrangement_dialog_title">Rearrange home</string>
     <string name="home_rearrangement_dialog_subtitle">Please note that in order for the changes made to take effect, it is necessary to restart the application.</string>
+    <string name="home_section_music">Music</string>
+    <string name="home_section_podcast">Podcast</string>
+    <string name="home_section_radio">Radio</string>
     <string name="home_subtitle_best_of">Top songs of your favorite artists</string>
     <string name="home_subtitle_made_for_you">Start mix from a song you liked</string>
     <string name="home_subtitle_new_internet_radio_station">Add a new radio</string>
@@ -319,6 +322,7 @@
     <string name="settings_rounded_corner_summary">If enabled, sets a curvature angle for all rendered covers. The changes will take effect on restart.</string>
     <string name="settings_scan_title">Scan library</string>
     <string name="settings_scrobble_title">Enable music scrobbling</string>
+    <string name="settings_system_language">System language</string>
     <string name="settings_share_title">Enable music sharing</string>
     <string name="settings_streaming_cache_size">Size of streaming cache</string>
     <string name="settings_streaming_cache_storage_title">Streaming cache storage</string>
@@ -395,6 +399,7 @@
     <string name="support_url">https://buymeacoffee.com/a.cappiello</string>
     <string name="track_info_album">Album</string>
     <string name="track_info_artist">Artist</string>
+    <string name="track_info_bit_depth">Bit depth</string>
     <string name="track_info_bitrate">Bitrate</string>
     <string name="track_info_content_type">Content Type</string>
     <string name="track_info_dialog_positive_button">OK</string>
@@ -403,6 +408,7 @@
     <string name="track_info_duration">Duration</string>
     <string name="track_info_genre">Genre</string>
     <string name="track_info_path">Path</string>
+    <string name="track_info_sampling_rate">Sampling rate</string>
     <string name="track_info_size">Size</string>
     <string name="track_info_suffix">Suffix</string>
     <string name="track_info_summary_downloaded_file">The file has been downloaded using the Subsonic APIs. The codec and bitrate of the file remain unchanged from the source file.</string>

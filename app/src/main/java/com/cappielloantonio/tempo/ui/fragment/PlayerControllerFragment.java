@@ -2,6 +2,7 @@ package com.cappielloantonio.tempo.ui.fragment;
 
 import android.content.ComponentName;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +41,9 @@ import com.google.android.material.elevation.SurfaceColors;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @UnstableApi
@@ -190,14 +194,23 @@ public class PlayerControllerFragment extends Fragment {
         if (mediaMetadata.extras != null) {
             String extension = mediaMetadata.extras.getString("suffix", "Unknown format");
             String bitrate = mediaMetadata.extras.getInt("bitrate", 0) != 0 ? mediaMetadata.extras.getInt("bitrate", 0) + "kbps" : "Original";
+            String samplingRate = mediaMetadata.extras.getInt("samplingRate", 0) != 0 ? new DecimalFormat("0.#").format(mediaMetadata.extras.getInt("samplingRate", 0) / 1000.0) + "kHz" : "";
+            String bitDepth = mediaMetadata.extras.getInt("bitDepth", 0) != 0 ? mediaMetadata.extras.getInt("bitDepth", 0) + "b" : "";
 
             playerMediaExtension.setText(extension);
 
             if (bitrate.equals("Original")) {
                 playerMediaBitrate.setVisibility(View.GONE);
             } else {
+                List<String> mediaQualityItems = new ArrayList<>();
+
+                if (!bitrate.trim().isEmpty()) mediaQualityItems.add(bitrate);
+                if (!bitDepth.trim().isEmpty()) mediaQualityItems.add(bitDepth);
+                if (!samplingRate.trim().isEmpty()) mediaQualityItems.add(samplingRate);
+
+                String mediaQuality = TextUtils.join(" • ", mediaQualityItems);
                 playerMediaBitrate.setVisibility(View.VISIBLE);
-                playerMediaBitrate.setText(bitrate);
+                playerMediaBitrate.setText(mediaQuality);
             }
         }
 

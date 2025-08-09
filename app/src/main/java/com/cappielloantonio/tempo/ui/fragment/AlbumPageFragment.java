@@ -145,17 +145,27 @@ public class AlbumPageFragment extends Fragment implements ClickCallback {
                 bind.albumNameLabel.setText(album.getName());
                 bind.albumArtistLabel.setText(album.getArtist());
                 bind.albumReleaseYearLabel.setText(album.getYear() != 0 ? String.valueOf(album.getYear()) : "");
+                bind.albumReleaseYearLabel.setVisibility(album.getYear() != 0 ? View.VISIBLE : View.GONE);
                 bind.albumSongCountDurationTextview.setText(getString(R.string.album_page_tracks_count_and_duration, album.getSongCount(), album.getDuration() != null ? album.getDuration() / 60 : 0));
-                bind.albumGenresTextview.setText(album.getGenre());
+                if (album.getGenre() != null && !album.getGenre().isEmpty()) {
+                    bind.albumGenresTextview.setText(album.getGenre());
+                    bind.albumGenresTextview.setVisibility(View.VISIBLE);
+                }
+                else{
+                    bind.albumGenresTextview.setVisibility(View.GONE);
+                }
 
                 if (album.getReleaseDate() != null && album.getOriginalReleaseDate() != null) {
-                    bind.albumReleaseYearsTextview.setVisibility(View.VISIBLE);
+                    if (album.getReleaseDate().getFormattedDate() != null || album.getOriginalReleaseDate().getFormattedDate() != null)
+                        bind.albumReleaseYearsTextview.setVisibility(View.VISIBLE);
+                    else
+                        bind.albumReleaseYearsTextview.setVisibility(View.GONE);
 
-                    if (album.getReleaseDate() == null || album.getOriginalReleaseDate() == null) {
+                    if (album.getReleaseDate().getFormattedDate() == null || album.getOriginalReleaseDate().getFormattedDate() == null) {
                         bind.albumReleaseYearsTextview.setText(getString(R.string.album_page_release_date_label, album.getReleaseDate() != null ? album.getReleaseDate().getFormattedDate() : album.getOriginalReleaseDate().getFormattedDate()));
                     }
 
-                    if (album.getReleaseDate() != null && album.getOriginalReleaseDate() != null) {
+                    if (album.getReleaseDate().getFormattedDate() != null && album.getOriginalReleaseDate().getFormattedDate() != null) {
                         if (Objects.equals(album.getReleaseDate().getYear(), album.getOriginalReleaseDate().getYear()) && Objects.equals(album.getReleaseDate().getMonth(), album.getOriginalReleaseDate().getMonth()) && Objects.equals(album.getReleaseDate().getDay(), album.getOriginalReleaseDate().getDay())) {
                             bind.albumReleaseYearsTextview.setText(getString(R.string.album_page_release_date_label, album.getReleaseDate().getFormattedDate()));
                         } else {
