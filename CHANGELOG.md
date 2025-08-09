@@ -2,10 +2,10 @@
 
 ***This log is for this fork to detail updates since 3.9.0 from the main repo.***
 
-## [3.11.1](https://github.com/eddyizm/tempo/releases/tag/v3.11.1) (2025-08-09)
+## [3.11.2](https://github.com/eddyizm/tempo/releases/tag/v3.11.2) (2025-08-09)
 
 
-([Full Changelog](https://github.com/eddyizm/tempo/compare/v3.10.0...eddyizm:tempo:v3.11.1?expand=1))
+([Full Changelog](https://github.com/eddyizm/tempo/compare/v3.10.0...eddyizm:tempo:v3.11.2?expand=1))
 
 **Housekeeping:**
 
