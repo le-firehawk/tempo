@@ -104,6 +104,9 @@
     <string name="home_rearrangement_dialog_positive_button">Guardar</string>
     <string name="home_rearrangement_dialog_title">Reorganizar la página de inicio</string>
     <string name="home_rearrangement_dialog_subtitle">Tenga en cuenta que para que los cambios surtan efecto, hay que reiniciar la aplicación.</string>
+    <string name="home_section_music">Música</string>
+    <string name="home_section_podcast">Pódcasts</string>
+    <string name="home_section_radio">Radio</string>
     <string name="home_subtitle_best_of">Mejores pistas de tus artistas favoritos</string>
     <string name="home_subtitle_made_for_you">Iniciar mix desde una cación que te gustó</string>
     <string name="home_subtitle_new_internet_radio_station">Añadir una nueva emisora de radio</string>
