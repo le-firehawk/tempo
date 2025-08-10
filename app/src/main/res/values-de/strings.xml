@@ -103,6 +103,9 @@
     <string name="home_rearrangement_dialog_positive_button">Sichern</string>
     <string name="home_rearrangement_dialog_title">Startseite anpassen</string>
     <string name="home_rearrangement_dialog_subtitle">Die Anwendung muss neu gestartet werden, um die Änderungen auszuführen.</string>
+    <string name="home_section_music">Musik</string>
+    <string name="home_section_podcast">Podcast</string>
+    <string name="home_section_radio">Radio</string>
     <string name="home_subtitle_best_of">Top Tracks Deiner Lieblingskünstler</string>
     <string name="home_subtitle_made_for_you">Ein Mix von einem deiner Lieblingslieder erstellen</string>
     <string name="home_subtitle_new_internet_radio_station">Radio hinzufügen</string>
@@ -286,6 +289,7 @@
     <string name="settings_github_title">Github</string>
     <string name="settings_image_size">Bilder Auflösung anpassen</string>
     <string name="settings_language">Sprache</string>
+    <string name="settings_system_language">Systemsprache</string>
     <string name="settings_logout_title">Abmelden</string>
     <string name="settings_max_bitrate_download">Bitrate für Downloads</string>
     <string name="settings_max_bitrate_mobile">Bitrate bei mobiler Nutzung</string>
@@ -392,6 +396,7 @@
     <string name="track_info_title">Titel</string>
     <string name="track_info_album">Album</string>
     <string name="track_info_artist">Künstler</string>
+    <string name="track_info_bit_depth">Bit-Tiefe</string>
     <string name="track_info_track_number">Track Nummer</string>
     <string name="track_info_year">Jahr</string>
     <string name="track_info_genre">Genre</string>
@@ -402,6 +407,7 @@
     <string name="track_info_transcoded_suffix">Transkodiertes Suffix</string>
     <string name="track_info_duration">Länge</string>
     <string name="track_info_bitrate">Bitrate</string>
+    <string name="track_info_sampling_rate">Abtastrate</string>
     <string name="track_info_path">Pfad</string>
     <string name="track_info_disc_number">Disk Nummer</string>
     <string name="track_info_summary_downloaded_file">Diese Datei wurde mit den Subsonic APIs heruntergeladen. Der Codec und die Bitrate sind unverändert zur original Datei.</string>
