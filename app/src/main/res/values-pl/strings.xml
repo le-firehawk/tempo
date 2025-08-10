@@ -103,7 +103,13 @@
     <string name="home_rearrangement_dialog_neutral_button">Reset</string>
     <string name="home_rearrangement_dialog_positive_button">Zapisz</string>
     <string name="home_rearrangement_dialog_title">Zmień układ strony głównej</string>
-    <string name="home_rearrangement_dialog_subtitle">Weź pod uwagę to że, żeby zmiany nastąpiły, musisz zrestartować aplikację.</string>
+    <string name="home_rearrangement_dialog_subtitle">Weź pod uwagę to że, żeby zmiany nastąpiły, musisz zrestartować aplikację.</string> 
+    <string name="home_section_music">Muzyka</string>
+    <string name="home_section_podcast">Podcasty</string>
+    <string name="home_section_radio">Radio</string>
+    <string name="track_info_bit_depth">Głębia bitowa</string>
+    <string name="track_info_sampling_rate">Częstotliwość próbkowania</string>
+    <string name="settings_system_language">Język systemu</string>
     <string name="home_subtitle_best_of">Top piosenki od twoich ulubionych wykonawców</string>
     <string name="home_subtitle_made_for_you">Stwórz miks z piosenki którą lubisz</string>
     <string name="home_subtitle_new_internet_radio_station">Dodaj nowe radio</string>
