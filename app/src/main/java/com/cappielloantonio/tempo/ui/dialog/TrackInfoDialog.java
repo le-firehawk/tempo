@@ -62,8 +62,8 @@ public class TrackInfoDialog extends DialogFragment {
             bind.titleValueSector.setText(mediaMetadata.extras.getString("title", getString(R.string.label_placeholder)));
             bind.albumValueSector.setText(mediaMetadata.extras.getString("album", getString(R.string.label_placeholder)));
             bind.artistValueSector.setText(mediaMetadata.extras.getString("artist", getString(R.string.label_placeholder)));
-            bind.trackNumberValueSector.setText(String.valueOf(mediaMetadata.extras.getInt("track", 0)));
-            bind.yearValueSector.setText(String.valueOf(mediaMetadata.extras.getInt("year", 0)));
+            bind.trackNumberValueSector.setText(mediaMetadata.extras.getInt("track", 0) != 0 ? String.valueOf(mediaMetadata.extras.getInt("track", 0)) : getString(R.string.label_placeholder));
+            bind.yearValueSector.setText(mediaMetadata.extras.getInt("year", 0) != 0 ? String.valueOf(mediaMetadata.extras.getInt("year", 0)) : getString(R.string.label_placeholder));
             bind.genreValueSector.setText(mediaMetadata.extras.getString("genre", getString(R.string.label_placeholder)));
             bind.sizeValueSector.setText(MusicUtil.getReadableByteCount(mediaMetadata.extras.getLong("size", 0)));
             bind.contentTypeValueSector.setText(mediaMetadata.extras.getString("contentType", getString(R.string.label_placeholder)));
@@ -71,11 +71,11 @@ public class TrackInfoDialog extends DialogFragment {
             bind.transcodedContentTypeValueSector.setText(mediaMetadata.extras.getString("transcodedContentType", getString(R.string.label_placeholder)));
             bind.transcodedSuffixValueSector.setText(mediaMetadata.extras.getString("transcodedSuffix", getString(R.string.label_placeholder)));
             bind.durationValueSector.setText(MusicUtil.getReadableDurationString(mediaMetadata.extras.getInt("duration", 0), false));
-            bind.bitrateValueSector.setText(mediaMetadata.extras.getInt("bitrate", 0) + " kbps");
+            bind.bitrateValueSector.setText(mediaMetadata.extras.getInt("bitrate", 0) != 0 ? mediaMetadata.extras.getInt("bitrate", 0) + " kbps" : getString(R.string.label_placeholder));
             bind.samplingRateValueSector.setText(mediaMetadata.extras.getInt("samplingRate", 0) != 0 ? mediaMetadata.extras.getInt("samplingRate", 0) + " Hz" : getString(R.string.label_placeholder));
             bind.bitDepthValueSector.setText(mediaMetadata.extras.getInt("bitDepth", 0) != 0 ? mediaMetadata.extras.getInt("bitDepth", 0) + " bits" : getString(R.string.label_placeholder));
             bind.pathValueSector.setText(mediaMetadata.extras.getString("path", getString(R.string.label_placeholder)));
-            bind.discNumberValueSector.setText(String.valueOf(mediaMetadata.extras.getInt("discNumber", 0)));
+            bind.discNumberValueSector.setText(mediaMetadata.extras.getInt("discNumber", 0) != 0 ? String.valueOf(mediaMetadata.extras.getInt("discNumber", 0)) : getString(R.string.label_placeholder));
         }
     }
 
