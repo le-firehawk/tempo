@@ -15,6 +15,8 @@ import com.cappielloantonio.tempo.util.MusicUtil;
 import com.cappielloantonio.tempo.util.Preferences;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import java.util.Objects;
+
 public class TrackInfoDialog extends DialogFragment {
     private DialogTrackInfoBinding bind;
 
@@ -51,7 +53,12 @@ public class TrackInfoDialog extends DialogFragment {
 
     private void setTrackInfo() {
         bind.trakTitleInfoTextView.setText(mediaMetadata.title);
-        bind.trakArtistInfoTextView.setText(mediaMetadata.artist);
+        bind.trakArtistInfoTextView.setText(
+                mediaMetadata.artist != null
+                        ? mediaMetadata.artist
+                        : mediaMetadata.extras != null && Objects.equals(mediaMetadata.extras.getString("type"), Constants.MEDIA_TYPE_RADIO)
+                        ? mediaMetadata.extras.getString("uri", getString(R.string.label_placeholder))
+                        : "");
 
         if (mediaMetadata.extras != null) {
             CustomGlideRequest.Builder

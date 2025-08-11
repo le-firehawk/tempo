@@ -146,7 +146,6 @@ public class PlayerControllerFragment extends Fragment {
                 bind.nowPlayingMediaControllerView.setPlayer(mediaBrowser);
                 mediaBrowser.setShuffleModeEnabled(Preferences.isShuffleModeEnabled());
                 mediaBrowser.setRepeatMode(Preferences.getRepeatMode());
-
                 setMediaControllerListener(mediaBrowser);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -181,13 +180,22 @@ public class PlayerControllerFragment extends Fragment {
 
     private void setMetadata(MediaMetadata mediaMetadata) {
         playerMediaTitleLabel.setText(String.valueOf(mediaMetadata.title));
-        playerArtistNameLabel.setText(String.valueOf(mediaMetadata.artist));
+        playerArtistNameLabel.setText(
+                mediaMetadata.artist != null
+                        ? String.valueOf(mediaMetadata.artist)
+                        : mediaMetadata.extras != null && Objects.equals(mediaMetadata.extras.getString("type"), Constants.MEDIA_TYPE_RADIO)
+                        ? mediaMetadata.extras.getString("uri", getString(R.string.label_placeholder))
+                        : "");
 
         playerMediaTitleLabel.setSelected(true);
         playerArtistNameLabel.setSelected(true);
 
         playerMediaTitleLabel.setVisibility(mediaMetadata.title != null && !Objects.equals(mediaMetadata.title, "") ? View.VISIBLE : View.GONE);
-        playerArtistNameLabel.setVisibility(mediaMetadata.artist != null && !Objects.equals(mediaMetadata.artist, "") ? View.VISIBLE : View.GONE);
+        playerArtistNameLabel.setVisibility(
+                (mediaMetadata.artist != null && !Objects.equals(mediaMetadata.artist, ""))
+                        || mediaMetadata.extras != null && Objects.equals(mediaMetadata.extras.getString("type"), Constants.MEDIA_TYPE_RADIO) && mediaMetadata.extras.getString("uri") != null
+                        ? View.VISIBLE
+                        : View.GONE);
     }
 
     private void setMediaInfo(MediaMetadata mediaMetadata) {
