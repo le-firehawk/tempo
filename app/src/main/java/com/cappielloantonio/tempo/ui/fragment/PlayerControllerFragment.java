@@ -200,7 +200,7 @@ public class PlayerControllerFragment extends Fragment {
 
     private void setMediaInfo(MediaMetadata mediaMetadata) {
         if (mediaMetadata.extras != null) {
-            String extension = mediaMetadata.extras.getString("suffix", "Unknown format");
+            String extension = mediaMetadata.extras.getString("suffix", getString(R.string.player_unknown_format));
             String bitrate = mediaMetadata.extras.getInt("bitrate", 0) != 0 ? mediaMetadata.extras.getInt("bitrate", 0) + "kbps" : "Original";
             String samplingRate = mediaMetadata.extras.getInt("samplingRate", 0) != 0 ? new DecimalFormat("0.#").format(mediaMetadata.extras.getInt("samplingRate", 0) / 1000.0) + "kHz" : "";
             String bitDepth = mediaMetadata.extras.getInt("bitDepth", 0) != 0 ? mediaMetadata.extras.getInt("bitDepth", 0) + "b" : "";
@@ -226,8 +226,8 @@ public class PlayerControllerFragment extends Fragment {
         boolean isTranscodingBitrate = !MusicUtil.getBitratePreference().equals("0");
 
         if (isTranscodingExtension || isTranscodingBitrate) {
-            playerMediaExtension.setText("Transcoding");
-            playerMediaBitrate.setText("requested");
+            playerMediaExtension.setText(MusicUtil.getTranscodingFormatPreference() + " (" + getString(R.string.player_transcoding) + ")");
+            playerMediaBitrate.setText(!MusicUtil.getBitratePreference().equals("0") ? MusicUtil.getBitratePreference() + "kbps" : getString(R.string.player_transcoding_requested));
         }
 
         playerTrackInfo.setOnClickListener(view -> {

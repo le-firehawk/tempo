@@ -196,6 +196,9 @@
     <string name="player_playback_speed">%1$.2fx</string>
     <string name="player_queue_clean_all_button">Limpiar la cola de reproducción</string>
     <string name="player_server_priority">Prioridad del servidor</string>
+    <string name="player_unknown_format">Formato desconocido</string>
+    <string name="player_transcoding">Transcodificando</string>
+    <string name="player_transcoding_requested">solicitado</string>
     <string name="playlist_catalogue_title">Catálogo de listas de reproducción</string>
     <string name="playlist_catalogue_title_expanded">Explorar listas de reproducción</string>
     <string name="playlist_chooser_dialog_empty">No hay listas de reproducción</string>
