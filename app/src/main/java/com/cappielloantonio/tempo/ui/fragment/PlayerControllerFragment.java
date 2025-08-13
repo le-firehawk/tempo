@@ -146,7 +146,6 @@ public class PlayerControllerFragment extends Fragment {
                 bind.nowPlayingMediaControllerView.setPlayer(mediaBrowser);
                 mediaBrowser.setShuffleModeEnabled(Preferences.isShuffleModeEnabled());
                 mediaBrowser.setRepeatMode(Preferences.getRepeatMode());
-
                 setMediaControllerListener(mediaBrowser);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -181,18 +180,27 @@ public class PlayerControllerFragment extends Fragment {
 
     private void setMetadata(MediaMetadata mediaMetadata) {
         playerMediaTitleLabel.setText(String.valueOf(mediaMetadata.title));
-        playerArtistNameLabel.setText(String.valueOf(mediaMetadata.artist));
+        playerArtistNameLabel.setText(
+                mediaMetadata.artist != null
+                        ? String.valueOf(mediaMetadata.artist)
+                        : mediaMetadata.extras != null && Objects.equals(mediaMetadata.extras.getString("type"), Constants.MEDIA_TYPE_RADIO)
+                        ? mediaMetadata.extras.getString("uri", getString(R.string.label_placeholder))
+                        : "");
 
         playerMediaTitleLabel.setSelected(true);
         playerArtistNameLabel.setSelected(true);
 
         playerMediaTitleLabel.setVisibility(mediaMetadata.title != null && !Objects.equals(mediaMetadata.title, "") ? View.VISIBLE : View.GONE);
-        playerArtistNameLabel.setVisibility(mediaMetadata.artist != null && !Objects.equals(mediaMetadata.artist, "") ? View.VISIBLE : View.GONE);
+        playerArtistNameLabel.setVisibility(
+                (mediaMetadata.artist != null && !Objects.equals(mediaMetadata.artist, ""))
+                        || mediaMetadata.extras != null && Objects.equals(mediaMetadata.extras.getString("type"), Constants.MEDIA_TYPE_RADIO) && mediaMetadata.extras.getString("uri") != null
+                        ? View.VISIBLE
+                        : View.GONE);
     }
 
     private void setMediaInfo(MediaMetadata mediaMetadata) {
         if (mediaMetadata.extras != null) {
-            String extension = mediaMetadata.extras.getString("suffix", "Unknown format");
+            String extension = mediaMetadata.extras.getString("suffix", getString(R.string.player_unknown_format));
             String bitrate = mediaMetadata.extras.getInt("bitrate", 0) != 0 ? mediaMetadata.extras.getInt("bitrate", 0) + "kbps" : "Original";
             String samplingRate = mediaMetadata.extras.getInt("samplingRate", 0) != 0 ? new DecimalFormat("0.#").format(mediaMetadata.extras.getInt("samplingRate", 0) / 1000.0) + "kHz" : "";
             String bitDepth = mediaMetadata.extras.getInt("bitDepth", 0) != 0 ? mediaMetadata.extras.getInt("bitDepth", 0) + "b" : "";
@@ -218,8 +226,8 @@ public class PlayerControllerFragment extends Fragment {
         boolean isTranscodingBitrate = !MusicUtil.getBitratePreference().equals("0");
 
         if (isTranscodingExtension || isTranscodingBitrate) {
-            playerMediaExtension.setText("Transcoding");
-            playerMediaBitrate.setText("requested");
+            playerMediaExtension.setText(MusicUtil.getTranscodingFormatPreference() + " (" + getString(R.string.player_transcoding) + ")");
+            playerMediaBitrate.setText(!MusicUtil.getBitratePreference().equals("0") ? MusicUtil.getBitratePreference() + "kbps" : getString(R.string.player_transcoding_requested));
         }
 
         playerTrackInfo.setOnClickListener(view -> {

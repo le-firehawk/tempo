@@ -138,10 +138,19 @@ class MediaService : MediaLibraryService() {
             controller: ControllerInfo,
             mediaItems: List<MediaItem>
         ): ListenableFuture<List<MediaItem>> {
-            val updatedMediaItems = mediaItems.map {
-                it.buildUpon()
-                    .setUri(it.requestMetadata.mediaUri)
-                    .setMediaMetadata(it.mediaMetadata)
+            val updatedMediaItems = mediaItems.map { mediaItem ->
+                val mediaMetadata = mediaItem.mediaMetadata
+
+                val newMetadata = mediaMetadata.buildUpon()
+                    .setArtist(
+                        if (mediaMetadata.artist != null) mediaMetadata.artist
+                        else mediaMetadata.extras?.getString("uri") ?: ""
+                    )
+                    .build()
+
+                mediaItem.buildUpon()
+                    .setUri(mediaItem.requestMetadata.mediaUri)
+                    .setMediaMetadata(newMetadata)
                     .setMimeType(MimeTypes.BASE_TYPE_AUDIO)
                     .build()
             }
