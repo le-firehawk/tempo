@@ -174,7 +174,12 @@ public class PlayerBottomSheetFragment extends Fragment {
             playerBottomSheetViewModel.setLiveDescription(mediaMetadata.extras.getString("description", null));
 
             bind.playerHeaderLayout.playerHeaderMediaTitleLabel.setText(mediaMetadata.extras.getString("title"));
-            bind.playerHeaderLayout.playerHeaderMediaArtistLabel.setText(mediaMetadata.extras.getString("artist"));
+            bind.playerHeaderLayout.playerHeaderMediaArtistLabel.setText(
+                    mediaMetadata.artist != null
+                            ? mediaMetadata.artist
+                            : Objects.equals(mediaMetadata.extras.getString("type"), Constants.MEDIA_TYPE_RADIO)
+                            ? mediaMetadata.extras.getString("uri", getString(R.string.label_placeholder))
+                            : "");
 
             CustomGlideRequest.Builder
                     .from(requireContext(), mediaMetadata.extras.getString("coverArtId"), CustomGlideRequest.ResourceType.Song)
@@ -182,7 +187,11 @@ public class PlayerBottomSheetFragment extends Fragment {
                     .into(bind.playerHeaderLayout.playerHeaderMediaCoverImage);
 
             bind.playerHeaderLayout.playerHeaderMediaTitleLabel.setVisibility(mediaMetadata.extras.getString("title") != null && !Objects.equals(mediaMetadata.extras.getString("title"), "") ? View.VISIBLE : View.GONE);
-            bind.playerHeaderLayout.playerHeaderMediaArtistLabel.setVisibility(mediaMetadata.extras.getString("artist") != null && !Objects.equals(mediaMetadata.extras.getString("artist"), "") ? View.VISIBLE : View.GONE);
+            bind.playerHeaderLayout.playerHeaderMediaArtistLabel.setVisibility(
+                    (mediaMetadata.extras.getString("artist") != null && !Objects.equals(mediaMetadata.extras.getString("artist"), ""))
+                            || (Objects.equals(mediaMetadata.extras.getString("type"), Constants.MEDIA_TYPE_RADIO) && mediaMetadata.extras.getString("uri") != null)
+                            ? View.VISIBLE
+                            : View.GONE);
         }
     }
 
