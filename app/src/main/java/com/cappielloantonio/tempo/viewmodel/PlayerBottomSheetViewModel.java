@@ -2,7 +2,6 @@ package com.cappielloantonio.tempo.viewmodel;
 
 import android.app.Application;
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
@@ -32,8 +31,6 @@ import com.cappielloantonio.tempo.util.MappingUtil;
 import com.cappielloantonio.tempo.util.NetworkUtil;
 import com.cappielloantonio.tempo.util.OpenSubsonicExtensionsUtil;
 import com.cappielloantonio.tempo.util.Preferences;
-
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.Date;

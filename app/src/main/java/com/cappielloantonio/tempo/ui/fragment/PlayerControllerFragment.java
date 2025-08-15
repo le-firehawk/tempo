@@ -11,7 +11,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 import android.widget.RatingBar;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
