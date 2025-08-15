@@ -387,7 +387,7 @@
     <string name="starred_sync_dialog_neutral_button">Continuer</string>
     <string name="starred_sync_dialog_positive_button">Continuer et télécharger</string>
     <string name="starred_sync_dialog_summary">Le téléchargement des titres favoris pourrer utiliser beaucoup de données.</string>
-    <string name="starred_sync_dialog_title">Synchroniser les titres favoris</string>Sync starred tracks</string>
+    <string name="starred_sync_dialog_title">Synchroniser les titres favoris</string>
     <string name="streaming_cache_storage_dialog_sub_summary">Veuillez redémarrer l\'app pour appliquer les changements.</string>
     <string name="streaming_cache_storage_dialog_summary">Modifier le chemin de stockage des fichiers mis en cache pourrait provoquer de tous les fichiers mis en cache précédemment.</string>
     <string name="streaming_cache_storage_dialog_title">Sélectionner une option de stockage</string>

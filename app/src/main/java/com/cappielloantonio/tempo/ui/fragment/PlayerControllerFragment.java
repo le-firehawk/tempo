@@ -10,6 +10,8 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.ToggleButton;
+import android.widget.RatingBar;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -36,6 +38,7 @@ import com.cappielloantonio.tempo.util.Constants;
 import com.cappielloantonio.tempo.util.MusicUtil;
 import com.cappielloantonio.tempo.util.Preferences;
 import com.cappielloantonio.tempo.viewmodel.PlayerBottomSheetViewModel;
+import com.cappielloantonio.tempo.viewmodel.RatingViewModel;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.elevation.SurfaceColors;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -53,6 +56,8 @@ public class PlayerControllerFragment extends Fragment {
     private InnerFragmentPlayerControllerBinding bind;
     private ViewPager2 playerMediaCoverViewPager;
     private ToggleButton buttonFavorite;
+    private RatingViewModel ratingViewModel;
+    private RatingBar songRatingBar;
     private TextView playerMediaTitleLabel;
     private TextView playerArtistNameLabel;
     private Button playbackSpeedButton;
@@ -75,6 +80,7 @@ public class PlayerControllerFragment extends Fragment {
         View view = bind.getRoot();
 
         playerBottomSheetViewModel = new ViewModelProvider(requireActivity()).get(PlayerBottomSheetViewModel.class);
+        ratingViewModel = new ViewModelProvider(requireActivity()).get(RatingViewModel.class);
 
         init();
         initQuickActionView();
@@ -117,6 +123,7 @@ public class PlayerControllerFragment extends Fragment {
         playerQuickActionView = bind.getRoot().findViewById(R.id.player_quick_action_view);
         playerOpenQueueButton = bind.getRoot().findViewById(R.id.player_open_queue_button);
         playerTrackInfo = bind.getRoot().findViewById(R.id.player_info_track);
+        songRatingBar =  bind.getRoot().findViewById(R.id.song_rating_bar);
     }
 
     private void initQuickActionView() {
@@ -313,6 +320,7 @@ public class PlayerControllerFragment extends Fragment {
     private void initMediaListenable() {
         playerBottomSheetViewModel.getLiveMedia().observe(getViewLifecycleOwner(), media -> {
             if (media != null) {
+                ratingViewModel.setSong(media);
                 buttonFavorite.setChecked(media.getStarred() != null);
                 buttonFavorite.setOnClickListener(v -> playerBottomSheetViewModel.setFavorite(requireContext(), media));
                 buttonFavorite.setOnLongClickListener(v -> {
@@ -323,8 +331,28 @@ public class PlayerControllerFragment extends Fragment {
                     dialog.setArguments(bundle);
                     dialog.show(requireActivity().getSupportFragmentManager(), null);
 
+
                     return true;
                 });
+
+                Integer currentRating = media.getUserRating();
+
+                if (currentRating != null) {
+                    songRatingBar.setRating(currentRating);
+                } else {
+                    songRatingBar.setRating(0);
+                }
+
+                songRatingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+                    @Override
+                    public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                        if (fromUser) {
+                            ratingViewModel.rate((int) rating);
+                            media.setUserRating((int) rating);
+                        }
+                    }
+                });
+
 
                 if (getActivity() != null) {
                     playerBottomSheetViewModel.refreshMediaInfo(requireActivity(), media);
