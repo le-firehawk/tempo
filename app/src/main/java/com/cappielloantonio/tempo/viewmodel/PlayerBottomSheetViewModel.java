@@ -103,7 +103,6 @@ public class PlayerBottomSheetViewModel extends AndroidViewModel {
                 favoriteRepository.starLater(media.getId(), null, null, false);
             }
         });
-
         media.setStarred(null);
     }
 
@@ -131,7 +130,7 @@ public class PlayerBottomSheetViewModel extends AndroidViewModel {
         }
     }
 
-    public LiveData<String> getLiveLyrics() {
+     public LiveData<String> getLiveLyrics() {
         return lyricsLiveData;
     }
 

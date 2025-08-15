@@ -28,6 +28,8 @@ This fork is my attempt to keep development moving forward and merge in PR's tha
 
 Moved details to [CHANGELOG.md](https://github.com/eddyizm/tempo/blob/main/CHANGELOG.md)
 
+Fork [**sponsorship here**](https://ko-fi.com/eddyizm). 
+
 ## Features
 - **Subsonic Integration**: Tempo seamlessly integrates with your Subsonic server, providing you with easy access to your entire music collection on the go.
 - **Sleek and Intuitive UI**: Enjoy a clean and user-friendly interface designed to enhance your music listening experience, tailored to your preferences and listening history.
@@ -41,21 +43,11 @@ Moved details to [CHANGELOG.md](https://github.com/eddyizm/tempo/blob/main/CHANG
 - **Transcoding Support**: Activate transcoding of tracks on your Subsonic server, allowing you to set a transcoding profile for optimized streaming directly from the app. This feature requires support from your Subsonic server.
 - **Android Auto Support**: Enjoy your favorite music on the go with full Android Auto integration, allowing you to seamlessly control and listen to your tracks directly from your mobile device while driving.
 
-<p align="center">
-    <img src="mockup/feat/1_screenshot.png" width=200>
-    <img src="mockup/feat/2_screenshot.png" width=200>
-    <img src="mockup/feat/3_screenshot.png" width=200>
-    <img src="mockup/feat/4_screenshot.png" width=200>
-    <img src="mockup/feat/5_screenshot.png" width=200>
-    <img src="mockup/feat/6_screenshot.png" width=200>
-    <img src="mockup/feat/7_screenshot.png" width=200>
-    <img src="mockup/feat/8_screenshot.png" width=200>
-</p>
-
 ## Sponsors
+Thanks to the original repo/creator [CappielloAntonio](https://github.com/CappielloAntonio) (3.9.0)
+
 Tempo is an open-source project developed and maintained solely by me. I would like to express my heartfelt thanks to all the users who have shown their love and support for Tempo. Your contributions and encouragement mean a lot to me, and they help drive the development and improvement of the app.
 
-If you would like to sponsor the project and show your support, you can make a donation or contribution by visiting the [**sponsorship page**](https://www.buymeacoffee.com/a.cappiello). Your generosity will help cover the costs of development and further enhancements.
 
 ## Screenshot
 

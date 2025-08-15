@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.ToggleButton;
+import android.widget.RatingBar;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -36,6 +37,7 @@ import com.cappielloantonio.tempo.util.Constants;
 import com.cappielloantonio.tempo.util.MusicUtil;
 import com.cappielloantonio.tempo.util.Preferences;
 import com.cappielloantonio.tempo.viewmodel.PlayerBottomSheetViewModel;
+import com.cappielloantonio.tempo.viewmodel.RatingViewModel;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.elevation.SurfaceColors;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -53,6 +55,8 @@ public class PlayerControllerFragment extends Fragment {
     private InnerFragmentPlayerControllerBinding bind;
     private ViewPager2 playerMediaCoverViewPager;
     private ToggleButton buttonFavorite;
+    private RatingViewModel ratingViewModel;
+    private RatingBar songRatingBar;
     private TextView playerMediaTitleLabel;
     private TextView playerArtistNameLabel;
     private Button playbackSpeedButton;
@@ -75,6 +79,7 @@ public class PlayerControllerFragment extends Fragment {
         View view = bind.getRoot();
 
         playerBottomSheetViewModel = new ViewModelProvider(requireActivity()).get(PlayerBottomSheetViewModel.class);
+        ratingViewModel = new ViewModelProvider(requireActivity()).get(RatingViewModel.class);
 
         init();
         initQuickActionView();
@@ -117,6 +122,7 @@ public class PlayerControllerFragment extends Fragment {
         playerQuickActionView = bind.getRoot().findViewById(R.id.player_quick_action_view);
         playerOpenQueueButton = bind.getRoot().findViewById(R.id.player_open_queue_button);
         playerTrackInfo = bind.getRoot().findViewById(R.id.player_info_track);
+        songRatingBar =  bind.getRoot().findViewById(R.id.song_rating_bar);
     }
 
     private void initQuickActionView() {
@@ -146,7 +152,6 @@ public class PlayerControllerFragment extends Fragment {
                 bind.nowPlayingMediaControllerView.setPlayer(mediaBrowser);
                 mediaBrowser.setShuffleModeEnabled(Preferences.isShuffleModeEnabled());
                 mediaBrowser.setRepeatMode(Preferences.getRepeatMode());
-
                 setMediaControllerListener(mediaBrowser);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -181,18 +186,27 @@ public class PlayerControllerFragment extends Fragment {
 
     private void setMetadata(MediaMetadata mediaMetadata) {
         playerMediaTitleLabel.setText(String.valueOf(mediaMetadata.title));
-        playerArtistNameLabel.setText(String.valueOf(mediaMetadata.artist));
+        playerArtistNameLabel.setText(
+                mediaMetadata.artist != null
+                        ? String.valueOf(mediaMetadata.artist)
+                        : mediaMetadata.extras != null && Objects.equals(mediaMetadata.extras.getString("type"), Constants.MEDIA_TYPE_RADIO)
+                        ? mediaMetadata.extras.getString("uri", getString(R.string.label_placeholder))
+                        : "");
 
         playerMediaTitleLabel.setSelected(true);
         playerArtistNameLabel.setSelected(true);
 
         playerMediaTitleLabel.setVisibility(mediaMetadata.title != null && !Objects.equals(mediaMetadata.title, "") ? View.VISIBLE : View.GONE);
-        playerArtistNameLabel.setVisibility(mediaMetadata.artist != null && !Objects.equals(mediaMetadata.artist, "") ? View.VISIBLE : View.GONE);
+        playerArtistNameLabel.setVisibility(
+                (mediaMetadata.artist != null && !Objects.equals(mediaMetadata.artist, ""))
+                        || mediaMetadata.extras != null && Objects.equals(mediaMetadata.extras.getString("type"), Constants.MEDIA_TYPE_RADIO) && mediaMetadata.extras.getString("uri") != null
+                        ? View.VISIBLE
+                        : View.GONE);
     }
 
     private void setMediaInfo(MediaMetadata mediaMetadata) {
         if (mediaMetadata.extras != null) {
-            String extension = mediaMetadata.extras.getString("suffix", "Unknown format");
+            String extension = mediaMetadata.extras.getString("suffix", getString(R.string.player_unknown_format));
             String bitrate = mediaMetadata.extras.getInt("bitrate", 0) != 0 ? mediaMetadata.extras.getInt("bitrate", 0) + "kbps" : "Original";
             String samplingRate = mediaMetadata.extras.getInt("samplingRate", 0) != 0 ? new DecimalFormat("0.#").format(mediaMetadata.extras.getInt("samplingRate", 0) / 1000.0) + "kHz" : "";
             String bitDepth = mediaMetadata.extras.getInt("bitDepth", 0) != 0 ? mediaMetadata.extras.getInt("bitDepth", 0) + "b" : "";
@@ -218,8 +232,8 @@ public class PlayerControllerFragment extends Fragment {
         boolean isTranscodingBitrate = !MusicUtil.getBitratePreference().equals("0");
 
         if (isTranscodingExtension || isTranscodingBitrate) {
-            playerMediaExtension.setText("Transcoding");
-            playerMediaBitrate.setText("requested");
+            playerMediaExtension.setText(MusicUtil.getTranscodingFormatPreference() + " (" + getString(R.string.player_transcoding) + ")");
+            playerMediaBitrate.setText(!MusicUtil.getBitratePreference().equals("0") ? MusicUtil.getBitratePreference() + "kbps" : getString(R.string.player_transcoding_requested));
         }
 
         playerTrackInfo.setOnClickListener(view -> {
@@ -305,6 +319,7 @@ public class PlayerControllerFragment extends Fragment {
     private void initMediaListenable() {
         playerBottomSheetViewModel.getLiveMedia().observe(getViewLifecycleOwner(), media -> {
             if (media != null) {
+                ratingViewModel.setSong(media);
                 buttonFavorite.setChecked(media.getStarred() != null);
                 buttonFavorite.setOnClickListener(v -> playerBottomSheetViewModel.setFavorite(requireContext(), media));
                 buttonFavorite.setOnLongClickListener(v -> {
@@ -315,8 +330,28 @@ public class PlayerControllerFragment extends Fragment {
                     dialog.setArguments(bundle);
                     dialog.show(requireActivity().getSupportFragmentManager(), null);
 
+
                     return true;
                 });
+
+                Integer currentRating = media.getUserRating();
+
+                if (currentRating != null) {
+                    songRatingBar.setRating(currentRating);
+                } else {
+                    songRatingBar.setRating(0);
+                }
+
+                songRatingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+                    @Override
+                    public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                        if (fromUser) {
+                            ratingViewModel.rate((int) rating);
+                            media.setUserRating((int) rating);
+                        }
+                    }
+                });
+
 
                 if (getActivity() != null) {
                     playerBottomSheetViewModel.refreshMediaInfo(requireActivity(), media);
