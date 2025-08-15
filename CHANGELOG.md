@@ -2,6 +2,24 @@
 
 ***This log is for this fork to detail updates since 3.9.0 from the main repo.***
 
+## [3.12.0](https://github.com/eddyizm/tempo/releases/tag/v3.12.0) (2025-08-15)
+### What's Changed
+* [chore]: add German translations for track info and home section strings (#29) by @BreadWare92 in https://github.com/eddyizm/tempo/pull/31
+* [chore]: increased "Offline mode" text size, changed its color in dark theme by @jaime-grj in https://github.com/eddyizm/tempo/pull/33
+* [chore]: Translations for sections by @skajmer in https://github.com/eddyizm/tempo/pull/30
+* [chore]: Update French localization by @benoit-smith in https://github.com/eddyizm/tempo/pull/36
+* [fix]: Show placeholder string in TrackInfoDialog fields when there is no data by @jaime-grj in https://github.com/eddyizm/tempo/pull/37
+* [feat]: added transcoding codec and bitrate info to PlayerControllerFragment, replace hardcoded strings by @jaime-grj in https://github.com/eddyizm/tempo/pull/38
+* [chore]: Update French localization by @benoit-smith in https://github.com/eddyizm/tempo/pull/39
+* [feat]: show rating on song view by @eddyizm in https://github.com/eddyizm/tempo/pull/40
+
+### New Contributors
+* @BreadWare92 made their first contribution in https://github.com/eddyizm/tempo/pull/31
+* @skajmer made their first contribution in https://github.com/eddyizm/tempo/pull/30
+* @benoit-smith made their first contribution in https://github.com/eddyizm/tempo/pull/36
+
+**Full Changelog**: https://github.com/eddyizm/tempo/compare/v3.11.2...v3.12.0
+
 ## [3.11.2](https://github.com/eddyizm/tempo/releases/tag/v3.11.2) (2025-08-09)
 
 
