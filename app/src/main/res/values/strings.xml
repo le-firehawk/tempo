@@ -192,6 +192,7 @@
     <string name="menu_sort_year">Year</string>
     <string name="player_playback_speed">%1$.2fx</string>
     <string name="player_queue_clean_all_button">Clean play queue</string>
+    <string name="player_queue_save_queue_success">Saved play queue</string>
     <string name="player_server_priority">Server Priority</string>
     <string name="player_unknown_format">Unknown format</string>
     <string name="player_transcoding">Transcoding</string>

@@ -183,6 +183,7 @@
 	<string name="menu_sort_year">Anno</string>
 	<string name="player_playback_speed">%1$.2fx</string>
 	<string name="player_queue_clean_all_button">Svuota coda di riproduzione</string>
+    <string name="player_queue_save_queue_success">Salvato</string>
 	<string name="player_server_priority">Priorità server</string>
 	<string name="playlist_catalogue_title">Catalogo playlist</string>
 	<string name="playlist_catalogue_title_expanded">Sfoglia le playlist</string>

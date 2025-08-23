@@ -19,6 +19,7 @@ import androidx.media3.common.util.UnstableApi;
 import androidx.media3.session.MediaBrowser;
 import androidx.media3.session.SessionToken;
 
+import com.cappielloantonio.tempo.R;
 import com.cappielloantonio.tempo.databinding.InnerFragmentPlayerCoverBinding;
 import com.cappielloantonio.tempo.glide.CustomGlideRequest;
 import com.cappielloantonio.tempo.model.Download;
@@ -136,7 +137,7 @@ public class PlayerCoverFragment extends Fragment {
 
                 bind.innerButtonBottomRight.setOnClickListener(view -> {
                     if (playerBottomSheetViewModel.savePlayQueue()) {
-                        Snackbar.make(requireView(), "Salvato", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(requireView(), R.string.player_queue_save_queue_success, Snackbar.LENGTH_LONG).show();
                     }
                 });
 
