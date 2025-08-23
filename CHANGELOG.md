@@ -2,6 +2,19 @@
 
 ***This log is for this fork to detail updates since 3.9.0 from the main repo.***
 
+## [3.13.0](https://github.com/eddyizm/tempo/releases/tag/v3.13.0) (2025-08-23)
+## What's Changed
+* style: Change position and size of rating container by @jaime-grj in https://github.com/eddyizm/tempo/pull/44
+* feat: Add Turkish localization (values-tr) by @mucahit-kaya in https://github.com/eddyizm/tempo/pull/50
+* chore: adding a note/not fully baked label to the sync user play queue setting by @eddyizm in https://github.com/eddyizm/tempo/commit/8ed0a4642bd0cd637c65e3115142596331fa7ef7
+* fix: moved hardcoded italian save text to string template, updated with english and italian language xmls by @eddyizm in https://github.com/eddyizm/tempo/commit/26a5fb029a07752c9c0db0d08a89afd638772579
+
+
+## New Contributors
+* @mucahit-kaya made their first contribution in https://github.com/eddyizm/tempo/pull/50
+
+**Full Changelog**: https://github.com/eddyizm/tempo/compare/v3.12.0...v3.13.0
+
 ## [3.12.0](https://github.com/eddyizm/tempo/releases/tag/v3.12.0) (2025-08-15)
 ### What's Changed
 * [chore]: add German translations for track info and home section strings (#29) by @BreadWare92 in https://github.com/eddyizm/tempo/pull/31
