@@ -164,6 +164,7 @@
     <string name="menu_add_button">Add</string>
     <string name="menu_add_to_playlist_button">Add to playlist</string>
     <string name="menu_download_all_button">Download all</string>
+    <string name="menu_rate_album">Rate album</string>
     <string name="menu_download_label">Download</string>
     <string name="menu_filter_all">All</string>
     <string name="menu_filter_download">Downloaded</string>
