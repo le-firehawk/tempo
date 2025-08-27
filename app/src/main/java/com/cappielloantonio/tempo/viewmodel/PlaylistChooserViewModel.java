@@ -21,7 +21,7 @@ public class PlaylistChooserViewModel extends AndroidViewModel {
     private final PlaylistRepository playlistRepository;
 
     private final MutableLiveData<List<Playlist>> playlists = new MutableLiveData<>(null);
-    private ArrayList<Child> toAdd;
+    private ArrayList<Child> toAdd = new ArrayList<>();
 
     public PlaylistChooserViewModel(@NonNull Application application) {
         super(application);
