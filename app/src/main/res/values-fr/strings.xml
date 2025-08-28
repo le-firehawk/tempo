@@ -191,6 +191,9 @@
     <string name="player_playback_speed">%1$.2fx</string>
     <string name="player_queue_clean_all_button">Vider la file d\'attente</string>
     <string name="player_server_priority">Priorité serveur</string>
+    <string name="player_unknown_format">Format inconnu</string>
+    <string name="player_transcoding">Transcodage</string>
+    <string name="player_transcoding_requested">demandé</string>
     <string name="playlist_catalogue_title">Catalogue des Playlists</string>
     <string name="playlist_catalogue_title_expanded">Parcourir les playlists</string>
     <string name="playlist_chooser_dialog_empty">Pas de playlist</string>
