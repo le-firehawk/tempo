@@ -13,6 +13,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.PopupMenu;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,6 +25,8 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
+
 import com.cappielloantonio.tempo.R;
 import com.cappielloantonio.tempo.databinding.FragmentArtistCatalogueBinding;
 import com.cappielloantonio.tempo.helper.recyclerview.GridItemDecoration;
@@ -32,6 +35,10 @@ import com.cappielloantonio.tempo.ui.activity.MainActivity;
 import com.cappielloantonio.tempo.ui.adapter.ArtistCatalogueAdapter;
 import com.cappielloantonio.tempo.util.Constants;
 import com.cappielloantonio.tempo.viewmodel.ArtistCatalogueViewModel;
+import com.cappielloantonio.tempo.subsonic.models.ArtistID3;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @UnstableApi
 public class ArtistCatalogueFragment extends Fragment implements ClickCallback {
@@ -125,21 +132,48 @@ public class ArtistCatalogueFragment extends Fragment implements ClickCallback {
 
         SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+
+        searchView.setQueryHint(getString(R.string.filter_artist));
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                searchView.clearFocus();
-                return false;
+                // this toast may be overkill...
+                Toast.makeText(requireContext(), "Search: " + query, Toast.LENGTH_SHORT).show();
+                filterArtists(query);
+                return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                artistAdapter.getFilter().filter(newText);
-                return false;
+                filterArtists(newText);
+                return true;
             }
         });
 
         searchView.setPadding(-32, 0, 0, 0);
+    }
+
+    private void filterArtists(String query) {
+        List<ArtistID3> allArtists = artistCatalogueViewModel.getArtistList().getValue();
+        
+        if (allArtists == null || allArtists.isEmpty()) {
+            return;
+        }
+        
+        if (query == null || query.trim().isEmpty()) {
+            artistAdapter.setItems(allArtists);
+        } else {
+            String searchQuery = query.toLowerCase().trim();
+            List<ArtistID3> filteredArtists = new ArrayList<>();
+            
+            for (ArtistID3 artist : allArtists) {
+                if (artist.getName() != null && 
+                    artist.getName().toLowerCase().contains(searchQuery)) {
+                    filteredArtists.add(artist);
+                }
+            }
+            artistAdapter.setItems(filteredArtists);
+        }
     }
 
     private void hideKeyboard(View view) {
