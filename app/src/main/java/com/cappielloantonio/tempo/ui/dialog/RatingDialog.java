@@ -63,7 +63,11 @@ public class RatingDialog extends DialogFragment {
                 bind.ratingBar.setRating(song.getUserRating() != null ? song.getUserRating() : 0);
             });
         } else if (ratingViewModel.getAlbum() != null) {
-            ratingViewModel.getLiveAlbum().observe(this, album -> bind.ratingBar.setRating(/*album.getRating()*/ 0));
+            ratingViewModel.getLiveAlbum().observe(this, album -> {
+                    if (album != null) {
+                    bind.ratingBar.setRating(album.getUserRating() != null ? album.getUserRating() : 0);
+                }
+            });
         } else if (ratingViewModel.getArtist() != null) {
             ratingViewModel.getLiveArtist().observe(this, artist -> bind.ratingBar.setRating(/*artist.getRating()*/ 0));
         }

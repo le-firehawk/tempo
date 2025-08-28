@@ -10,4 +10,5 @@
     <locale android:name="ru-RU"/>         <!-- Russian -->
     <locale android:name="es-ES"/>         <!-- Spanish (Spain) -->
     <locale android:name="pl-PL"/>         <!-- Polish -->
+    <locale android:name="tr-TR"/>         <!-- Turkish -->
 </locale-config>

@@ -9,6 +9,7 @@ import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -19,6 +20,7 @@ import androidx.media3.common.util.UnstableApi;
 import androidx.media3.session.MediaBrowser;
 import androidx.media3.session.SessionToken;
 
+import com.cappielloantonio.tempo.R;
 import com.cappielloantonio.tempo.databinding.InnerFragmentPlayerCoverBinding;
 import com.cappielloantonio.tempo.glide.CustomGlideRequest;
 import com.cappielloantonio.tempo.model.Download;
@@ -30,6 +32,7 @@ import com.cappielloantonio.tempo.util.DownloadUtil;
 import com.cappielloantonio.tempo.util.MappingUtil;
 import com.cappielloantonio.tempo.util.Preferences;
 import com.cappielloantonio.tempo.viewmodel.PlayerBottomSheetViewModel;
+import com.cappielloantonio.tempo.subsonic.models.Child;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -119,8 +122,10 @@ public class PlayerCoverFragment extends Fragment {
                 });
 
                 bind.innerButtonTopRight.setOnClickListener(view -> {
+                            ArrayList<Child> tracks = new ArrayList<>();
+                            tracks.add(song);
                             Bundle bundle = new Bundle();
-                            bundle.putParcelable(Constants.TRACK_OBJECT, song);
+                            bundle.putParcelableArrayList(Constants.TRACKS_OBJECT, tracks);
 
                             PlaylistChooserDialog dialog = new PlaylistChooserDialog();
                             dialog.setArguments(bundle);
@@ -136,7 +141,7 @@ public class PlayerCoverFragment extends Fragment {
 
                 bind.innerButtonBottomRight.setOnClickListener(view -> {
                     if (playerBottomSheetViewModel.savePlayQueue()) {
-                        Snackbar.make(requireView(), "Salvato", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(requireView(), R.string.player_queue_save_queue_success, Snackbar.LENGTH_LONG).show();
                     }
                 });
 
