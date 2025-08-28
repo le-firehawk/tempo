@@ -90,6 +90,7 @@
     <string name="exo_download_notification_channel_name">Téléchargements</string>
     <string name="filter_info_selection">Sélectionnez deux filtres ou plus</string>
     <string name="filter_title">Filtrer</string>
+    <string name="filter_artist">Filtrer par artiste</string>
     <string name="filter_title_expanded">Filtrer par genre</string>
     <string name="generic_list_page_count">(%1$d)</string>
     <string name="generic_list_page_count_unknown">(+%1$d)</string>
@@ -162,6 +163,7 @@
     <string name="menu_add_button">Ajouter</string>
     <string name="menu_add_to_playlist_button">Ajouter à une playlist</string>
     <string name="menu_download_all_button">Télécharger tout</string>
+    <string name="menu_rate_album">Noter l\'album</string>
     <string name="menu_download_label">Téléchargé</string>
     <string name="menu_filter_all">Tout</string>
     <string name="menu_filter_download">Téléchargé</string>
@@ -190,6 +192,7 @@
     <string name="menu_sort_year">Année</string>
     <string name="player_playback_speed">%1$.2fx</string>
     <string name="player_queue_clean_all_button">Vider la file d\'attente</string>
+    <string name="player_queue_save_queue_success">File d\'attente sauvegardée</string>
     <string name="player_server_priority">Priorité serveur</string>
     <string name="player_unknown_format">Format inconnu</string>
     <string name="player_transcoding">Transcodage</string>
@@ -302,13 +305,15 @@
     <string name="settings_max_bitrate_download">Débit binaire pour les téléchargements</string>
     <string name="settings_max_bitrate_mobile">Débit binaire en données mobile</string>
     <string name="settings_max_bitrate_wifi">Débit binaire en Wi-Fi</string>
-    <string name="settings_media_cache">Taille du cache des fichiers audios</string>
+    <string name="settings_media_cache">Taille du cache des fichiers audio</string>
     <string name="settings_music_directory">Afficher les dossiers</string>
     <string name="settings_music_directory_summary">Si activé, rend possible la navigation dans les répertoires. À noter que pour que la navigation dans les dossiers fonctionne correctement, le serveur doit supporter cette fonctionnalité.</string>
     <string name="settings_podcast">Voir les podcasts</string>
-    <string name="settings_podcast_summary">Si activé, rend visible la section Podcast</string>
+    <string name="settings_podcast_summary">Si activé, rend visible la section Podcast. Redémarrez l\'application pour appliquer ce paramètre.</string>
     <string name="settings_audio_quality">Afficher la qualité audio</string>
     <string name="settings_audio_quality_summary">Le débit binaire et le format audio seront affichés pour chaque piste.</string>
+    <string name="settings_song_rating">Afficher la note de la piste</string>
+    <string name="settings_song_rating_summary">Si activé, rend visible la note de la piste sur sa page\n\n*Nécessite le redémarrage de l\'application</string>
     <string name="settings_item_rating">Afficher la note</string>
     <string name="settings_item_rating_summary">Si activé, la note et le statut de mise en favori de l\'élément seront affichés.</string>
     <string name="settings_queue_syncing_countdown">Minuteur de synchronisation</string>
