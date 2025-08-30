@@ -3,6 +3,7 @@ package com.cappielloantonio.tempo.ui.dialog;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
@@ -97,8 +98,12 @@ public class PlaylistChooserDialog extends DialogFragment implements ClickCallba
 
     @Override
     public void onPlaylistClick(Bundle bundle) {
-        Playlist playlist = bundle.getParcelable(Constants.PLAYLIST_OBJECT);
-        playlistChooserViewModel.addSongsToPlaylist(playlist.getId());
-        dismiss();
+        if (playlistChooserViewModel.getSongsToAdd() != null && !playlistChooserViewModel.getSongsToAdd().isEmpty()) {
+            Playlist playlist = bundle.getParcelable(Constants.PLAYLIST_OBJECT);
+            playlistChooserViewModel.addSongsToPlaylist(playlist.getId());
+            dismiss();
+        } else {
+            Toast.makeText(requireContext(), R.string.playlist_chooser_dialog_toast_add_failure, Toast.LENGTH_SHORT).show();
+        }
     }
 }

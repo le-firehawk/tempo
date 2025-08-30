@@ -37,6 +37,7 @@ object Preferences {
     private const val WIFI_ONLY = "wifi_only"
     private const val DATA_SAVING_MODE = "data_saving_mode"
     private const val SERVER_UNREACHABLE = "server_unreachable"
+    private const val SYNC_STARRED_ALBUMS_FOR_OFFLINE_USE = "sync_starred_albums_for_offline_use"
     private const val SYNC_STARRED_TRACKS_FOR_OFFLINE_USE = "sync_starred_tracks_for_offline_use"
     private const val QUEUE_SYNCING = "queue_syncing"
     private const val QUEUE_SYNCING_COUNTDOWN = "queue_syncing_countdown"
@@ -63,6 +64,7 @@ object Preferences {
     private const val ALWAYS_ON_DISPLAY = "always_on_display"
     private const val AUDIO_QUALITY_PER_ITEM = "audio_quality_per_item"
     private const val HOME_SECTOR_LIST = "home_sector_list"
+    private const val SONG_RATING_PER_ITEM = "song_rating_per_item"
     private const val RATING_PER_ITEM = "rating_per_item"
     private const val NEXT_UPDATE_CHECK = "next_update_check"
     private const val CONTINUOUS_PLAY = "continuous_play"
@@ -301,6 +303,18 @@ object Preferences {
     }
 
     @JvmStatic
+    fun isStarredAlbumsSyncEnabled(): Boolean {
+        return App.getInstance().preferences.getBoolean(SYNC_STARRED_ALBUMS_FOR_OFFLINE_USE, false)
+    }
+
+    @JvmStatic
+    fun setStarredAlbumsSyncEnabled(isStarredSyncEnabled: Boolean) {
+        App.getInstance().preferences.edit().putBoolean(
+                SYNC_STARRED_ALBUMS_FOR_OFFLINE_USE, isStarredSyncEnabled
+        ).apply()
+    }
+
+    @JvmStatic
     fun isStarredSyncEnabled(): Boolean {
         return App.getInstance().preferences.getBoolean(SYNC_STARRED_TRACKS_FOR_OFFLINE_USE, false)
     }
@@ -484,6 +498,11 @@ object Preferences {
     @JvmStatic
     fun setHomeSectorList(extension: List<HomeSector>?) {
         App.getInstance().preferences.edit().putString(HOME_SECTOR_LIST, Gson().toJson(extension)).apply()
+    }
+
+    @JvmStatic
+    fun showItemStarRating(): Boolean {
+        return App.getInstance().preferences.getBoolean(SONG_RATING_PER_ITEM, false)
     }
 
     @JvmStatic

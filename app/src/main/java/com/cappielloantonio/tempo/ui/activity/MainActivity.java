@@ -316,6 +316,7 @@ public class MainActivity extends BaseActivity {
         Preferences.setSkipSilenceMode(false);
         Preferences.setDataSavingMode(false);
         Preferences.setStarredSyncEnabled(false);
+        Preferences.setStarredAlbumsSyncEnabled(false);
     }
 
     private void resetMusicSession() {

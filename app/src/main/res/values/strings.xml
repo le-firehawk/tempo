@@ -90,6 +90,7 @@
     <string name="exo_download_notification_channel_name">Downloads</string>
     <string name="filter_info_selection">Select two or more filters</string>
     <string name="filter_title">Filter</string>
+    <string name="filter_artist">Filter artists</string>
     <string name="filter_title_expanded">Filter Genres</string>
     <string name="generic_list_page_count">(%1$d)</string>
     <string name="generic_list_page_count_unknown">(+%1$d)</string>
@@ -116,6 +117,8 @@
     <string name="home_sync_starred_download">Download</string>
     <string name="home_sync_starred_subtitle">Downloading these tracks may involve significant data usage</string>
     <string name="home_sync_starred_title">Looks like there are some starred tracks to sync</string>
+    <string name="home_sync_starred_albums_title">Sync Starred Albums</string>
+    <string name="home_sync_starred_albums_subtitle">Albums marked with a star will be available offline</string>
     <string name="home_title_best_of">Best of</string>
     <string name="home_title_discovery">Discovery</string>
     <string name="home_title_discovery_shuffle_all_button">Shuffle all</string>
@@ -164,6 +167,7 @@
     <string name="menu_add_button">Add</string>
     <string name="menu_add_to_playlist_button">Add to playlist</string>
     <string name="menu_download_all_button">Download all</string>
+    <string name="menu_rate_album">Rate album</string>
     <string name="menu_download_label">Download</string>
     <string name="menu_filter_all">All</string>
     <string name="menu_filter_download">Downloaded</string>
@@ -312,6 +316,8 @@
     <string name="settings_podcast_summary">If enabled, show the podcast section. Restart the app for it to take full effect.</string>
     <string name="settings_audio_quality">Show audio quality</string>
     <string name="settings_audio_quality_summary">The bitrate and audio format will be shown for each audio track.</string>
+    <string name="settings_song_rating">Show song star rating</string>
+    <string name="settings_song_rating_summary">If enabled, hides 5 star rating for track on song page\n\n*Requires App restart</string>
     <string name="settings_item_rating">Show item rating</string>
     <string name="settings_item_rating_summary">If enabled, the item\'s rating and whether it is marked as a favorite will be displayed.</string>
     <string name="settings_queue_syncing_countdown">Sync timer</string>
@@ -340,6 +346,8 @@
     <string name="settings_summary_transcoding">Priority given to the transcoding mode. If set to \"Direct play\" the bitrate of the file will not be changed.</string>
     <string name="settings_summary_transcoding_download">Download transcoded media. If enabled, the download endpoint will not be used, but the following settings. \n\n If \"Transcode format for donwloads\" is set to \"Direct download\" the bitrate of the file will not be changed.</string>
     <string name="settings_summary_transcoding_estimate_content_length">When the file is transcoded on the fly, the client usually does not show the track length. It is possible to request the servers that support the functionality to estimate the duration of the track being played, but the response times may take longer.</string>
+    <string name="settings_sync_starred_albums_for_offline_use_summary">If enabled, starred albums will be downloaded for offline use.</string>
+    <string name="settings_sync_starred_albums_for_offline_use_title">Sync starred albums for offline use</string>
     <string name="settings_sync_starred_tracks_for_offline_use_summary">If enabled, starred tracks will be downloaded for offline use.</string>
     <string name="settings_sync_starred_tracks_for_offline_use_title">Sync starred tracks for offline use</string>
     <string name="settings_theme">Theme</string>
@@ -393,8 +401,10 @@
     <string name="starred_sync_dialog_negative_button">Cancel</string>
     <string name="starred_sync_dialog_neutral_button">Continue</string>
     <string name="starred_sync_dialog_positive_button">Continue and download</string>
-    <string name="starred_sync_dialog_summary">Downloading starry tracks may require a large amount of data.</string>
+    <string name="starred_sync_dialog_summary">Downloading starred tracks may require a large amount of data.</string>
     <string name="starred_sync_dialog_title">Sync starred tracks</string>
+    <string name="starred_album_sync_dialog_summary">Downloading starred albums may require a large amount of data.</string>
+    <string name="starred_album_sync_dialog_title">Sync starred albums</string>
     <string name="streaming_cache_storage_dialog_sub_summary">For the changes to take effect, restart the app.</string>
     <string name="streaming_cache_storage_dialog_summary">Changing the destination of cached files from one storage to another may result in the deletion of any previously cached files in the other storage.</string>
     <string name="streaming_cache_storage_dialog_title">Select storage option</string>
@@ -429,4 +439,8 @@
     <string name="undraw_page">unDraw</string>
     <string name="undraw_thanks">A special thanks goes to unDraw without whose illustrations we could not have made this application more beautiful.</string>
     <string name="undraw_url">https://undraw.co/</string>
+    <plurals name="home_sync_starred_albums_count">
+        <item quantity="one">%d album to sync</item>
+        <item quantity="other">%d albums to sync</item>
+    </plurals>
 </resources>

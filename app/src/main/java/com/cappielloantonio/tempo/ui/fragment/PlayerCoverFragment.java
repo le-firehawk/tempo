@@ -9,6 +9,7 @@ import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -31,6 +32,7 @@ import com.cappielloantonio.tempo.util.DownloadUtil;
 import com.cappielloantonio.tempo.util.MappingUtil;
 import com.cappielloantonio.tempo.util.Preferences;
 import com.cappielloantonio.tempo.viewmodel.PlayerBottomSheetViewModel;
+import com.cappielloantonio.tempo.subsonic.models.Child;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -120,8 +122,10 @@ public class PlayerCoverFragment extends Fragment {
                 });
 
                 bind.innerButtonTopRight.setOnClickListener(view -> {
+                            ArrayList<Child> tracks = new ArrayList<>();
+                            tracks.add(song);
                             Bundle bundle = new Bundle();
-                            bundle.putParcelable(Constants.TRACK_OBJECT, song);
+                            bundle.putParcelableArrayList(Constants.TRACKS_OBJECT, tracks);
 
                             PlaylistChooserDialog dialog = new PlaylistChooserDialog();
                             dialog.setArguments(bundle);
