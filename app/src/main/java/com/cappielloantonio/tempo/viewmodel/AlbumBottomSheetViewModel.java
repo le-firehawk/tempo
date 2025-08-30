@@ -1,12 +1,15 @@
 package com.cappielloantonio.tempo.viewmodel;
 
 import android.app.Application;
+import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
+import com.cappielloantonio.tempo.model.Download;
 import com.cappielloantonio.tempo.interfaces.StarCallback;
 import com.cappielloantonio.tempo.repository.AlbumRepository;
 import com.cappielloantonio.tempo.repository.ArtistRepository;
@@ -16,10 +19,14 @@ import com.cappielloantonio.tempo.subsonic.models.AlbumID3;
 import com.cappielloantonio.tempo.subsonic.models.ArtistID3;
 import com.cappielloantonio.tempo.subsonic.models.Child;
 import com.cappielloantonio.tempo.subsonic.models.Share;
+import com.cappielloantonio.tempo.util.DownloadUtil;
+import com.cappielloantonio.tempo.util.MappingUtil;
 import com.cappielloantonio.tempo.util.NetworkUtil;
+import com.cappielloantonio.tempo.util.Preferences;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class AlbumBottomSheetViewModel extends AndroidViewModel {
     private final AlbumRepository albumRepository;
@@ -54,7 +61,7 @@ public class AlbumBottomSheetViewModel extends AndroidViewModel {
         return albumRepository.getAlbumTracks(album.getId());
     }
 
-    public void setFavorite() {
+    public void setFavorite(Context context) {
         if (album.getStarred() != null) {
             if (NetworkUtil.isOffline()) {
                 removeFavoriteOffline();
@@ -65,7 +72,7 @@ public class AlbumBottomSheetViewModel extends AndroidViewModel {
             if (NetworkUtil.isOffline()) {
                 setFavoriteOffline();
             } else {
-                setFavoriteOnline();
+                setFavoriteOnline(context);
             }
         }
     }
@@ -83,7 +90,6 @@ public class AlbumBottomSheetViewModel extends AndroidViewModel {
         favoriteRepository.unstar(null, album.getId(), null, new StarCallback() {
             @Override
             public void onError() {
-                // album.setStarred(new Date());
                 favoriteRepository.starLater(null, album.getId(), null, false);
             }
         });
@@ -96,15 +102,31 @@ public class AlbumBottomSheetViewModel extends AndroidViewModel {
         album.setStarred(new Date());
     }
 
-    private void setFavoriteOnline() {
+    private void setFavoriteOnline(Context context) {
         favoriteRepository.star(null, album.getId(), null, new StarCallback() {
             @Override
             public void onError() {
-                // album.setStarred(null);
                 favoriteRepository.starLater(null, album.getId(), null, true);
             }
         });
 
         album.setStarred(new Date());
+        if (Preferences.isStarredAlbumsSyncEnabled()) {
+                AlbumRepository albumRepository = new AlbumRepository();
+                MutableLiveData<List<Child>> tracksLiveData = albumRepository.getAlbumTracks(album.getId());
+                
+                tracksLiveData.observeForever(new Observer<List<Child>>() {
+                    @Override
+                    public void onChanged(List<Child> songs) {
+                        if (songs != null && !songs.isEmpty()) {
+                            DownloadUtil.getDownloadTracker(context).download(
+                                    MappingUtil.mapDownloads(songs),
+                                    songs.stream().map(Download::new).collect(Collectors.toList())
+                            );
+                        }
+                        tracksLiveData.removeObserver(this);
+                    }
+                });
+            }
     }
 }

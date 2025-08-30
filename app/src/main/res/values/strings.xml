@@ -344,6 +344,8 @@
     <string name="settings_summary_transcoding">Priority given to the transcoding mode. If set to \"Direct play\" the bitrate of the file will not be changed.</string>
     <string name="settings_summary_transcoding_download">Download transcoded media. If enabled, the download endpoint will not be used, but the following settings. \n\n If \"Transcode format for donwloads\" is set to \"Direct download\" the bitrate of the file will not be changed.</string>
     <string name="settings_summary_transcoding_estimate_content_length">When the file is transcoded on the fly, the client usually does not show the track length. It is possible to request the servers that support the functionality to estimate the duration of the track being played, but the response times may take longer.</string>
+    <string name="settings_sync_starred_albums_for_offline_use_summary">If enabled, starred albums will be downloaded for offline use.</string>
+    <string name="settings_sync_starred_albums_for_offline_use_title">Sync starred albums for offline use</string>
     <string name="settings_sync_starred_tracks_for_offline_use_summary">If enabled, starred tracks will be downloaded for offline use.</string>
     <string name="settings_sync_starred_tracks_for_offline_use_title">Sync starred tracks for offline use</string>
     <string name="settings_theme">Theme</string>
@@ -397,8 +399,10 @@
     <string name="starred_sync_dialog_negative_button">Cancel</string>
     <string name="starred_sync_dialog_neutral_button">Continue</string>
     <string name="starred_sync_dialog_positive_button">Continue and download</string>
-    <string name="starred_sync_dialog_summary">Downloading starry tracks may require a large amount of data.</string>
+    <string name="starred_sync_dialog_summary">Downloading starred tracks may require a large amount of data.</string>
     <string name="starred_sync_dialog_title">Sync starred tracks</string>
+    <string name="starred_album_sync_dialog_summary">Downloading starred albums may require a large amount of data.</string>
+    <string name="starred_album_sync_dialog_title">Sync starred albums</string>
     <string name="streaming_cache_storage_dialog_sub_summary">For the changes to take effect, restart the app.</string>
     <string name="streaming_cache_storage_dialog_summary">Changing the destination of cached files from one storage to another may result in the deletion of any previously cached files in the other storage.</string>
     <string name="streaming_cache_storage_dialog_title">Select storage option</string>
