@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.MutableLiveData;
 
 import com.cappielloantonio.tempo.repository.AlbumRepository;
@@ -49,19 +50,22 @@ public class StarredAlbumsSyncViewModel extends AndroidViewModel {
         CountDownLatch latch = new CountDownLatch(albums.size());
         
         for (AlbumID3 album : albums) {
-            albumRepository.getAlbumTracks(album.getId()).observeForever(songs -> {
-                if (songs != null) {
-                    allSongs.addAll(songs);
-                }
-                latch.countDown();
-                
-                if (latch.getCount() == 0) {
-                    callback.onSongsCollected(allSongs);
+            LiveData<List<Child>> albumTracks = albumRepository.getAlbumTracks(album.getId());
+            albumTracks.observeForever(new Observer<List<Child>>() {
+                @Override
+                public void onChanged(List<Child> songs) {
+                    if (songs != null) {
+                        allSongs.addAll(songs);
+                    }
+                    latch.countDown();
+                    
+                    if (latch.getCount() == 0) {
+                        callback.onSongsCollected(allSongs);
+                        albumTracks.removeObserver(this);
+                    }
                 }
             });
         }
-
-        albumRepository.removeObserver(this);
     }
 
     private interface AlbumSongsCallback {
