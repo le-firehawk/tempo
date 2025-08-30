@@ -37,6 +37,7 @@ object Preferences {
     private const val WIFI_ONLY = "wifi_only"
     private const val DATA_SAVING_MODE = "data_saving_mode"
     private const val SERVER_UNREACHABLE = "server_unreachable"
+    private const val SYNC_STARRED_ALBUMS_FOR_OFFLINE_USE = "sync_starred_albums_for_offline_use"
     private const val SYNC_STARRED_TRACKS_FOR_OFFLINE_USE = "sync_starred_tracks_for_offline_use"
     private const val QUEUE_SYNCING = "queue_syncing"
     private const val QUEUE_SYNCING_COUNTDOWN = "queue_syncing_countdown"
@@ -299,6 +300,18 @@ object Preferences {
     fun setDataSavingMode(isDataSavingModeEnabled: Boolean) {
         App.getInstance().preferences.edit().putBoolean(DATA_SAVING_MODE, isDataSavingModeEnabled)
                 .apply()
+    }
+
+    @JvmStatic
+    fun isStarredAlbumsSyncEnabled(): Boolean {
+        return App.getInstance().preferences.getBoolean(SYNC_STARRED_ALBUMS_FOR_OFFLINE_USE, false)
+    }
+
+    @JvmStatic
+    fun setStarredAlbumsSyncEnabled(isStarredSyncEnabled: Boolean) {
+        App.getInstance().preferences.edit().putBoolean(
+                SYNC_STARRED_ALBUMS_FOR_OFFLINE_USE, isStarredSyncEnabled
+        ).apply()
     }
 
     @JvmStatic

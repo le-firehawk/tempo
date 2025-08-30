@@ -102,7 +102,7 @@ public class AlbumBottomSheetDialog extends BottomSheetDialogFragment implements
         ToggleButton favoriteToggle = view.findViewById(R.id.button_favorite);
         favoriteToggle.setChecked(albumBottomSheetViewModel.getAlbum().getStarred() != null);
         favoriteToggle.setOnClickListener(v -> {
-            albumBottomSheetViewModel.setFavorite();
+            albumBottomSheetViewModel.setFavorite(requireContext());
         });
 
         TextView playRadio = view.findViewById(R.id.play_radio_text_view);
