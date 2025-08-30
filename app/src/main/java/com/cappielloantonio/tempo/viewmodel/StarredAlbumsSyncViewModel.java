@@ -34,6 +34,22 @@ public class StarredAlbumsSyncViewModel extends AndroidViewModel {
         return starredAlbums;
     }
 
+    public LiveData<List<Child>> getAllStarredAlbumSongs() {
+        albumRepository.getStarredAlbums(false, -1).observeForever(new Observer<List<AlbumID3>>() {
+            @Override
+            public void onChanged(List<AlbumID3> albums) {
+                if (albums != null && !albums.isEmpty()) {
+                    collectAllAlbumSongs(albums, starredAlbumSongs::postValue);
+                } else {
+                    starredAlbumSongs.postValue(new ArrayList<>());
+                }
+                albumRepository.getStarredAlbums(false, -1).removeObserver(this);
+            }
+        });
+        
+        return starredAlbumSongs;
+    }
+
     public LiveData<List<Child>> getStarredAlbumSongs(Activity activity) {
         albumRepository.getStarredAlbums(false, -1).observe((LifecycleOwner) activity, albums -> {
             if (albums != null && !albums.isEmpty()) {

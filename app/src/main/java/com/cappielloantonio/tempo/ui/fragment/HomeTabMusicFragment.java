@@ -39,6 +39,7 @@ import com.cappielloantonio.tempo.service.MediaManager;
 import com.cappielloantonio.tempo.service.MediaService;
 import com.cappielloantonio.tempo.subsonic.models.Child;
 import com.cappielloantonio.tempo.subsonic.models.Share;
+import com.cappielloantonio.tempo.subsonic.models.AlbumID3;
 import com.cappielloantonio.tempo.ui.activity.MainActivity;
 import com.cappielloantonio.tempo.ui.adapter.AlbumAdapter;
 import com.cappielloantonio.tempo.ui.adapter.AlbumHorizontalAdapter;
@@ -111,6 +112,7 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
         super.onViewCreated(view, savedInstanceState);
 
         initSyncStarredView();
+        initSyncStarredAlbumsView();
         initDiscoverSongSlideView();
         initSimilarSongView();
         initArtistRadio();
@@ -311,6 +313,63 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
                     }
                 });
             }
+        });
+    }
+
+    private void initSyncStarredAlbumsView() {
+        if (Preferences.isStarredAlbumsSyncEnabled()) {
+            homeViewModel.getStarredAlbums(getViewLifecycleOwner()).observeForever(new Observer<List<AlbumID3>>() {
+                @Override
+                public void onChanged(List<AlbumID3> albums) {
+                    if (albums != null) {
+                        DownloaderManager manager = DownloadUtil.getDownloadTracker(requireContext());
+                        List<String> albumsToSync = new ArrayList<>();
+                        int albumCount = 0;
+
+                        for (AlbumID3 album : albums) {
+                            boolean needsSync = false;
+                            albumCount++;
+                            albumsToSync.add(album.getName());
+                        }
+
+                        if (albumCount > 0) {
+                            bind.homeSyncStarredAlbumsCard.setVisibility(View.VISIBLE);
+                            String message = getResources().getQuantityString(
+                                R.plurals.home_sync_starred_albums_count, 
+                                albumCount, 
+                                albumCount
+                            );
+                            bind.homeSyncStarredAlbumsToSync.setText(message);
+                        }
+                    }
+
+                    homeViewModel.getStarredAlbums(getViewLifecycleOwner()).removeObserver(this);
+                }
+            });
+        }
+
+        bind.homeSyncStarredAlbumsCancel.setOnClickListener(v -> {
+            bind.homeSyncStarredAlbumsCard.setVisibility(View.GONE);
+        });
+
+        bind.homeSyncStarredAlbumsDownload.setOnClickListener(v -> {
+            homeViewModel.getAllStarredAlbumSongs().observeForever(new Observer<List<Child>>() {
+                @Override
+                public void onChanged(List<Child> allSongs) {
+                    if (allSongs != null) {
+                        DownloaderManager manager = DownloadUtil.getDownloadTracker(requireContext());
+
+                        for (Child song : allSongs) {
+                            if (!manager.isDownloaded(song.getId())) {
+                                manager.download(MappingUtil.mapDownload(song), new Download(song));
+                            }
+                        }
+                    }
+
+                    homeViewModel.getAllStarredAlbumSongs().removeObserver(this);
+                    bind.homeSyncStarredAlbumsCard.setVisibility(View.GONE);
+                }
+            });
         });
     }
 
