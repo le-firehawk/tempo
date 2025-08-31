@@ -1,4 +1,4 @@
-# App Name Usage Guide 
+# Tempo Usage Guide 
 [<- back home](README.md)
 
 ## Table of Contents
