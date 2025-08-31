@@ -6,6 +6,7 @@
     <string name="activity_battery_optimizations_summary">Por favor, desactive las optimizaciones de batería para continuar la reproducción multimedia mientras la pantalla está apagada.</string>
     <string name="activity_battery_optimizations_title">Optimizaciones de batería</string>
     <string name="activity_info_offline_mode">Modo sin conexión</string>
+    <string name="album_bottom_sheet_add_to_playlist">Añadir a la lista de reproducción</string>
     <string name="album_bottom_sheet_add_to_queue">Añadir a la cola</string>
     <string name="album_bottom_sheet_download_all">Descargar todo</string>
     <string name="album_bottom_sheet_go_to_artist">Ir al artista</string>
@@ -68,7 +69,7 @@
     <string name="download_directory_dialog_positive_button">Descargar</string>
     <string name="download_directory_dialog_summary">Se descargarán todas las pistas de esta carpeta. Las pistas en las subcarpetas no se descargarán.</string>
     <string name="download_directory_dialog_title">Descargar las pistas</string>
-    <string name="download_info_empty_subtitle">Una vez que descargues un tema, lo encontrarás aquí</string>
+    <string name="download_info_empty_subtitle">Una vez que descargues una pista, la encontrarás aquí</string>
     <string name="download_info_empty_title">No hay descargas</string>
     <string name="download_item_multiple_subtitle_formatter">%1$s  •  %2$s elementos</string>
     <string name="download_item_single_subtitle_formatter">%1$s elementos</string>
@@ -89,6 +90,7 @@
     <string name="exo_download_notification_channel_name">Descargas</string>
     <string name="filter_info_selection">Selecciona dos o más filtros</string>
     <string name="filter_title">Filtrar</string>
+    <string name="filter_artist">Filtrar artistas</string>
     <string name="filter_title_expanded">Filtrar géneros</string>
     <string name="generic_list_page_count">(%1$d)</string>
     <string name="generic_list_page_count_unknown">(+%1$d)</string>
@@ -115,6 +117,7 @@
     <string name="home_sync_starred_download">Descargar</string>
     <string name="home_sync_starred_subtitle">Descargar estas pistas usará una gran cantidad de datos</string>
     <string name="home_sync_starred_title">Parece que hay algunas pistas destacadas para sincronizar</string>
+    <string name="home_sync_starred_albums_subtitle">Los álbumes marcados como favoritos estarán disponibles en el modo sin conexión.</string>
     <string name="home_title_best_of">Lo mejor de</string>
     <string name="home_title_discovery">Descubrir</string>
     <string name="home_title_discovery_shuffle_all_button">Todo en aleatorio</string>
@@ -159,7 +162,9 @@
     <string name="login_title_expanded">Servidores de Subsonic</string>
     <string name="media_route_menu_title">Emitir</string>
     <string name="menu_add_button">Añadir</string>
+    <string name="menu_add_to_playlist_button">Añadir a la lista de reproducción</string>
     <string name="menu_download_all_button">Descargar todo</string>
+    <string name="menu_rate_album">Valorar álbum</string>
     <string name="menu_download_label">Descargas</string>
     <string name="menu_filter_all">Todo</string>
     <string name="menu_filter_download">Descargado</string>
@@ -195,6 +200,7 @@
     <string name="menu_sort_year">Año</string>
     <string name="player_playback_speed">%1$.2fx</string>
     <string name="player_queue_clean_all_button">Limpiar la cola de reproducción</string>
+    <string name="player_queue_save_queue_success">Cola de reproducción guardada</string>
     <string name="player_server_priority">Prioridad del servidor</string>
     <string name="player_unknown_format">Formato desconocido</string>
     <string name="player_transcoding">Transcodificando</string>
@@ -205,6 +211,7 @@
     <string name="playlist_chooser_dialog_negative_button">Cancelar</string>
     <string name="playlist_chooser_dialog_neutral_button">Crear</string>
     <string name="playlist_chooser_dialog_title">Añadir a una lista de reproducción</string>
+    <string name="playlist_chooser_dialog_toast_add_failure">Error al añadir a la lista</string>
     <string name="playlist_counted_tracks">%1$d pistas •  %2$s</string>
     <string name="playlist_duration">Duración  •  %1$s</string>
     <string name="playlist_editor_dialog_action_delete_toast">Pulsación larga para eliminar</string>
@@ -247,7 +254,7 @@
     <string name="rating_dialog_negative_button">Cancelar</string>
     <string name="rating_dialog_positive_button">Guardar</string>
     <string name="rating_dialog_title">Valorar</string>
-    <string name="search_hint">Buscar tema, artistas o álbumes</string>
+    <string name="search_hint">Buscar pista, artistas o álbumes</string>
     <string name="search_info_minimum_characters">Introduzca al menos tres caracteres</string>
     <string name="search_title_album">Álbumes</string>
     <string name="settings_equalizer_summary">Ajustes de audio</string>
@@ -306,6 +313,7 @@
     <string name="settings_podcast_summary">Si está habilitada, se mostrará la sección de pódcasts. Reinicia la aplicación para que los cambios surtan efecto.</string>
     <string name="settings_audio_quality">Mostrar calidad de audio</string>
     <string name="settings_audio_quality_summary">La tasa de bits y el formato de audio se mostrarán para cada pista de audio.</string>
+    <string name="settings_song_rating_summary">Si está habilitada, muestra la valoración de la pista como barra de 5 estrellas en la página del control de reproducción.\n\n*Requiere reiniciar la aplicación</string>
     <string name="settings_item_rating">Mostrar valoración de los elementos</string>
     <string name="settings_queue_syncing_title">Sincronizar cola de reproducción para este usuario</string>
     <string name="settings_radio">Mostrar emisoras de radio</string>
@@ -314,6 +322,7 @@
     <string name="settings_rounded_corner_size">Tamaño de las esquinas</string>
     <string name="settings_rounded_corner_summary">Si está habilitada, establece un ángulo de curvatura para todas las portadas de álbumes. Los cambios se aplicarán después de reiniciar la app.</string>
     <string name="settings_scan_title">Escanear biblioteca</string>
+    <string name="streaming_cache_storage_dialog_summary">Cambiar la ubicación de los archivos en caché a otro almacenamiento puede causar el borrado de todos los archivos en caché en el anterior almacenamiento.</string>
     <string name="streaming_cache_storage_dialog_title">Seleccióna un tipo de almacenamiento</string>
     <string name="streaming_cache_storage_external_dialog_positive_button">Externo</string>
     <string name="streaming_cache_storage_internal_dialog_negative_button">Interno</string>
@@ -410,13 +419,20 @@
     <string name="settings_summary_transcoding">La prioridad que se aplica al modo de transcodificación. Si se selecciona \"Reproducción directa\", la tasa de bits del archivo no cambiará.</string>
     <string name="starred_sync_dialog_summary">Descargar las pistas destacadas podría consumir una gran cantidad de datos</string>
     <string name="starred_sync_dialog_title">Sincronizar las pistas destacadas</string>
+    <string name="starred_album_sync_dialog_title">Sincronizar álbumes favoritos</string>
     <string name="streaming_cache_storage_dialog_sub_summary">Para que los cambios tengan efecto, reinicia la app.</string>
     <string name="settings_summary_transcoding_download">Descarga los archivos multimedia transcodificados. Si esta opción está habilitada, no se usará el endpoint de descarga, sino las siguientes opciones.\n\nSi el formato de transcodificación para las descargas se establece en \"Descarga directa\", no se modificará la tasa de bits del archivo.</string>
     <string name="settings_summary_transcoding_estimate_content_length">Cuando el archivo se transcodifica en tiempo real, el cliente normalmente no muestra la duración de la pista. Es posible solicitar a los servidores que soporten esta característica, que calculen la duración de la pista que se está reproduciendo, pero los tiempos de respuesta podrían aumentar.</string>
+    <string name="settings_sync_starred_albums_for_offline_use_title">Sincronizar álbumes favoritos para uso sin conexión</string>
     <string name="settings_sync_starred_tracks_for_offline_use_summary">Si está habilitada, las pistas destacadas se descargarán para uso sin conexión.</string>
     <string name="track_info_summary_downloaded_file">El archivo se ha descargado usando las APIs de Subsonic. El códec y la tasa de bits del archivo se mantienen sin cambios respecto al archivo de origen.</string>
     <string name="track_info_summary_full_transcode">La aplicación pedirá al servidor transcodificar el archivo y modificar su tasa de bits. El códec pedido por el usuario es %1$s, con una tasa de bits de %2$s. Cualquier cambio en el códec y tasa de bits del archivo en el formato elegido será manejado por el servidor, que puede, o no, soportar esta operación.</string>
     <string name="track_info_summary_original_file">La aplicación solo leerá el archivo original ofrecido por el servidor. La app pedirá al servidor, de forma explícita, el archivo sin transcodificar con la tasa de bits de origen.</string>
     <string name="track_info_summary_server_prioritized">La calidad del archivo a reproducir queda a decisión del servidor. La app no forzará la elección del códec y la tasa de bits para ninguna posible transcodificación.</string>
     <string name="track_info_summary_transcoding_bitrate">La aplicación pedirá al servidor modificar la tasa de bits del archivo. El usuario ha pedido una tasa de bits de %1$s, mientras que el códec del archivo origen se mantendrá sin cambios. Cualquier cambio en la tasa de bits del archivo en el formato seleccionado será realizado por el servidor, que podrá soportar, o no, la operación.</string>
+    <string name="playlist_chooser_dialog_toast_add_success">Se ha añadido a la lista</string>
+    <string name="settings_song_rating">Mostrar valoración de las pistas</string>
+    <string name="home_sync_starred_albums_title">Sincronizar álbumes favoritos</string>
+    <string name="settings_sync_starred_albums_for_offline_use_summary">Si está habilitada, los álbumes favoritos se descargarán para uso sin conexión.</string>
+    <string name="starred_album_sync_dialog_summary">Descargar los álbumes favoritos puede consumir una gran cantidad de datos.</string>
 </resources>
