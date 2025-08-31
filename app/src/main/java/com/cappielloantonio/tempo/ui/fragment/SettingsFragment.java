@@ -21,6 +21,7 @@ import androidx.media3.common.util.UnstableApi;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.SwitchPreference;
 
 import com.cappielloantonio.tempo.BuildConfig;
 import com.cappielloantonio.tempo.R;
@@ -257,9 +258,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         findPreference("sync_starred_tracks_for_offline_use").setOnPreferenceChangeListener((preference, newValue) -> {
             if (newValue instanceof Boolean) {
                 if ((Boolean) newValue) {
-                    StarredSyncDialog dialog = new StarredSyncDialog();
+                    StarredSyncDialog dialog = new StarredSyncDialog(() -> {
+                        ((SwitchPreference)preference).setChecked(false);
+                    });
                     dialog.show(activity.getSupportFragmentManager(), null);
-                }
+                    }
             }
             return true;
         });
@@ -269,7 +272,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         findPreference("sync_starred_albums_for_offline_use").setOnPreferenceChangeListener((preference, newValue) -> {
             if (newValue instanceof Boolean) {
                 if ((Boolean) newValue) {
-                    StarredAlbumSyncDialog dialog = new StarredAlbumSyncDialog();
+                    StarredAlbumSyncDialog dialog = new StarredAlbumSyncDialog(() -> {
+                        ((SwitchPreference)preference).setChecked(false);
+                    });
                     dialog.show(activity.getSupportFragmentManager(), null);
                 }
             }

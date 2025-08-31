@@ -26,6 +26,12 @@ import java.util.stream.Collectors;
 public class StarredAlbumSyncDialog extends DialogFragment {
     private StarredAlbumsSyncViewModel starredAlbumsSyncViewModel;
 
+    private Runnable onCancel;
+
+    public StarredAlbumSyncDialog(Runnable onCancel) {
+        this.onCancel = onCancel;
+    }
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -74,6 +80,7 @@ public class StarredAlbumSyncDialog extends DialogFragment {
             Button negativeButton = dialog.getButton(Dialog.BUTTON_NEGATIVE);
             negativeButton.setOnClickListener(v -> {
                 Preferences.setStarredAlbumsSyncEnabled(false);
+                if (onCancel != null) onCancel.run();
                 dialog.dismiss();
             });
         }
