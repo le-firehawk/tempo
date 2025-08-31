@@ -12,7 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.util.UnstableApi;
 
 import com.cappielloantonio.tempo.R;
-import com.cappielloantonio.tempo.databinding.DialogStarredSyncBinding;
+import com.cappielloantonio.tempo.databinding.DialogStarredAlbumSyncBinding;
 import com.cappielloantonio.tempo.model.Download;
 import com.cappielloantonio.tempo.util.DownloadUtil;
 import com.cappielloantonio.tempo.util.MappingUtil;
@@ -35,7 +35,7 @@ public class StarredAlbumSyncDialog extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        DialogStarredSyncBinding bind = DialogStarredSyncBinding.inflate(getLayoutInflater());
+        DialogStarredAlbumSyncBinding bind = DialogStarredAlbumSyncBinding.inflate(getLayoutInflater());
 
         starredAlbumsSyncViewModel = new ViewModelProvider(requireActivity()).get(StarredAlbumsSyncViewModel.class);
 
