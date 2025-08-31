@@ -26,6 +26,12 @@ import java.util.stream.Collectors;
 public class StarredSyncDialog extends DialogFragment {
     private StarredSyncViewModel starredSyncViewModel;
 
+    private Runnable onCancel;
+
+    public StarredSyncDialog(Runnable onCancel) {
+        this.onCancel = onCancel;
+    }
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -75,6 +81,7 @@ public class StarredSyncDialog extends DialogFragment {
             Button negativeButton = dialog.getButton(Dialog.BUTTON_NEGATIVE);
             negativeButton.setOnClickListener(v -> {
                 Preferences.setStarredSyncEnabled(false);
+                if (onCancel != null) onCancel.run();
                 dialog.dismiss();
             });
         }
