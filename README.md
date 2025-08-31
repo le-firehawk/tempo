@@ -30,6 +30,10 @@ Moved details to [CHANGELOG.md](https://github.com/eddyizm/tempo/blob/main/CHANG
 
 Fork [**sponsorship here**](https://ko-fi.com/eddyizm). 
 
+## Usage
+
+[Documentation](USAGE.md) (work in progress)
+
 ## Features
 - **Subsonic Integration**: Tempo seamlessly integrates with your Subsonic server, providing you with easy access to your entire music collection on the go.
 - **Sleek and Intuitive UI**: Enjoy a clean and user-friendly interface designed to enhance your music listening experience, tailored to your preferences and listening history.

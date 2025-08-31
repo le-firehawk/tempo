@@ -12,7 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.util.UnstableApi;
 
 import com.cappielloantonio.tempo.R;
-import com.cappielloantonio.tempo.databinding.DialogStarredSyncBinding;
+import com.cappielloantonio.tempo.databinding.DialogStarredAlbumSyncBinding;
 import com.cappielloantonio.tempo.model.Download;
 import com.cappielloantonio.tempo.util.DownloadUtil;
 import com.cappielloantonio.tempo.util.MappingUtil;
@@ -26,10 +26,16 @@ import java.util.stream.Collectors;
 public class StarredAlbumSyncDialog extends DialogFragment {
     private StarredAlbumsSyncViewModel starredAlbumsSyncViewModel;
 
+    private Runnable onCancel;
+
+    public StarredAlbumSyncDialog(Runnable onCancel) {
+        this.onCancel = onCancel;
+    }
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        DialogStarredSyncBinding bind = DialogStarredSyncBinding.inflate(getLayoutInflater());
+        DialogStarredAlbumSyncBinding bind = DialogStarredAlbumSyncBinding.inflate(getLayoutInflater());
 
         starredAlbumsSyncViewModel = new ViewModelProvider(requireActivity()).get(StarredAlbumsSyncViewModel.class);
 
@@ -74,6 +80,7 @@ public class StarredAlbumSyncDialog extends DialogFragment {
             Button negativeButton = dialog.getButton(Dialog.BUTTON_NEGATIVE);
             negativeButton.setOnClickListener(v -> {
                 Preferences.setStarredAlbumsSyncEnabled(false);
+                if (onCancel != null) onCancel.run();
                 dialog.dismiss();
             });
         }
