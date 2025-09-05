@@ -40,7 +40,7 @@ class DynamicMediaSourceFactory(
 
         return when {
             mediaItem.localConfiguration?.mimeType == MimeTypes.APPLICATION_M3U8 ||
-                    mediaItem.localConfiguration?.uri.toString().endsWith(".m3u8") -> {
+                    mediaItem.localConfiguration?.uri?.lastPathSegment?.endsWith(".m3u8", ignoreCase = true) == true -> {
                 HlsMediaSource.Factory(dataSourceFactory).createMediaSource(mediaItem)
             }
 
