@@ -1,7 +1,6 @@
-package com.cappielloantonio.tempo.service
+package com.cappielloantonio.tempo.util
 
 import android.content.Context
-import android.net.Uri
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MimeTypes
@@ -14,8 +13,6 @@ import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.media3.exoplayer.upstream.LoadErrorHandlingPolicy
 import androidx.media3.extractor.DefaultExtractorsFactory
 import androidx.media3.extractor.ExtractorsFactory
-import com.cappielloantonio.tempo.util.DownloadUtil
-import com.cappielloantonio.tempo.util.Preferences
 
 @UnstableApi
 class DynamicMediaSourceFactory(
@@ -23,11 +20,10 @@ class DynamicMediaSourceFactory(
 ) : MediaSource.Factory {
 
     override fun createMediaSource(mediaItem: MediaItem): MediaSource {
-        val uri: Uri = mediaItem.localConfiguration?.uri ?: mediaItem.requestMetadata.mediaUri
-        ?: throw IllegalArgumentException("MediaItem must contain a valid URI")
+        val mediaType: String? = mediaItem.mediaMetadata.extras?.getString("type", "")
 
         val streamingCacheSize = Preferences.getStreamingCacheSize()
-        val bypassCache = DownloadUtil.shouldBypassCache(uri)
+        val bypassCache = mediaType == Constants.MEDIA_TYPE_RADIO
 
         val useUpstream = when {
             streamingCacheSize.toInt() == 0 -> true
@@ -44,7 +40,7 @@ class DynamicMediaSourceFactory(
 
         return when {
             mediaItem.localConfiguration?.mimeType == MimeTypes.APPLICATION_M3U8 ||
-                    uri.toString().endsWith(".m3u8") -> {
+                    mediaItem.localConfiguration?.uri.toString().endsWith(".m3u8") -> {
                 HlsMediaSource.Factory(dataSourceFactory).createMediaSource(mediaItem)
             }
 

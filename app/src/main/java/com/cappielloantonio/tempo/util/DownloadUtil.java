@@ -2,7 +2,6 @@ package com.cappielloantonio.tempo.util;
 
 import android.app.Notification;
 import android.content.Context;
-import android.net.Uri;
 
 import androidx.core.app.NotificationCompat;
 import androidx.media3.common.util.UnstableApi;
@@ -100,13 +99,6 @@ public final class DownloadUtil {
         );
         dataSourceFactory = buildReadOnlyCacheDataSource(resolvingFactory, getDownloadCache(context));
         return dataSourceFactory;
-    }
-
-    public static boolean shouldBypassCache(Uri uri) {
-        if (uri == null) return true;
-        String url = uri.toString();
-        String mainServer = Preferences.getServer();
-        return mainServer != null && !url.startsWith(mainServer);
     }
 
     public static synchronized DownloadNotificationHelper getDownloadNotificationHelper(Context context) {

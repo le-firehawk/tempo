@@ -18,7 +18,7 @@ import com.cappielloantonio.tempo.R
 import com.cappielloantonio.tempo.ui.activity.MainActivity
 import com.cappielloantonio.tempo.util.Constants
 import com.cappielloantonio.tempo.util.DownloadUtil
-import com.cappielloantonio.tempo.service.DynamicMediaSourceFactory
+import com.cappielloantonio.tempo.util.DynamicMediaSourceFactory
 import com.cappielloantonio.tempo.util.Preferences
 import com.cappielloantonio.tempo.util.ReplayGainUtil
 import com.google.common.collect.ImmutableList
