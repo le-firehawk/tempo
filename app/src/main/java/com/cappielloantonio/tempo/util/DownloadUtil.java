@@ -2,6 +2,7 @@ package com.cappielloantonio.tempo.util;
 
 import android.app.Notification;
 import android.content.Context;
+import android.net.Uri;
 
 import androidx.core.app.NotificationCompat;
 import androidx.media3.common.util.UnstableApi;
@@ -78,33 +79,34 @@ public final class DownloadUtil {
         return httpDataSourceFactory;
     }
 
-    public static synchronized DataSource.Factory getDataSourceFactory(Context context) {
-        if (dataSourceFactory == null) {
-            context = context.getApplicationContext();
-
-            DefaultDataSource.Factory upstreamFactory = new DefaultDataSource.Factory(context, getHttpDataSourceFactory());
-
-            if (Preferences.getStreamingCacheSize() > 0) {
-                CacheDataSource.Factory streamCacheFactory = new CacheDataSource.Factory()
-                        .setCache(getStreamingCache(context))
-                        .setUpstreamDataSourceFactory(upstreamFactory);
-
-                ResolvingDataSource.Factory resolvingFactory = new ResolvingDataSource.Factory(
-                        new StreamingCacheDataSource.Factory(streamCacheFactory),
-                        dataSpec -> {
-                            DataSpec.Builder builder = dataSpec.buildUpon();
-                            builder.setFlags(dataSpec.flags & ~DataSpec.FLAG_DONT_CACHE_IF_LENGTH_UNKNOWN);
-                            return builder.build();
-                        }
-                );
-
-                dataSourceFactory = buildReadOnlyCacheDataSource(resolvingFactory, getDownloadCache(context));
-            } else {
-                dataSourceFactory = buildReadOnlyCacheDataSource(upstreamFactory, getDownloadCache(context));
-            }
-        }
-
+    public static synchronized DataSource.Factory getUpstreamDataSourceFactory(Context context) {
+        DefaultDataSource.Factory upstreamFactory = new DefaultDataSource.Factory(context, getHttpDataSourceFactory());
+        dataSourceFactory = buildReadOnlyCacheDataSource(upstreamFactory, getDownloadCache(context));
         return dataSourceFactory;
+    }
+
+    public static synchronized DataSource.Factory getCacheDataSourceFactory(Context context) {
+        CacheDataSource.Factory streamCacheFactory = new CacheDataSource.Factory()
+                .setCache(getStreamingCache(context))
+                .setUpstreamDataSourceFactory(getUpstreamDataSourceFactory(context));
+
+        ResolvingDataSource.Factory resolvingFactory = new ResolvingDataSource.Factory(
+                new StreamingCacheDataSource.Factory(streamCacheFactory),
+                dataSpec -> {
+                    DataSpec.Builder builder = dataSpec.buildUpon();
+                    builder.setFlags(dataSpec.flags & ~DataSpec.FLAG_DONT_CACHE_IF_LENGTH_UNKNOWN);
+                    return builder.build();
+                }
+        );
+        dataSourceFactory = buildReadOnlyCacheDataSource(resolvingFactory, getDownloadCache(context));
+        return dataSourceFactory;
+    }
+
+    public static boolean shouldBypassCache(Uri uri) {
+        if (uri == null) return true;
+        String url = uri.toString();
+        String mainServer = Preferences.getServer();
+        return mainServer != null && !url.startsWith(mainServer);
     }
 
     public static synchronized DownloadNotificationHelper getDownloadNotificationHelper(Context context) {
