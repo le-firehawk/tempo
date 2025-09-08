@@ -134,8 +134,9 @@ class EqualizerFragment : Fragment() {
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
                 ).apply {
-                    topMargin = 24
-                    bottomMargin = 24
+                    val topBottomMarginDp = 16
+                    topMargin = topBottomMarginDp.dpToPx(context)
+                    bottomMargin = topBottomMarginDp.dpToPx(context)
                 }
                 setPadding(0, 8, 0, 8)
             }
@@ -150,7 +151,8 @@ class EqualizerFragment : Fragment() {
                 } else {
                     "$freq Hz"
                 }
-                width = 120
+                gravity = Gravity.START
+                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 2f)
             }
             row.addView(freqLabel)
 
@@ -158,14 +160,14 @@ class EqualizerFragment : Fragment() {
             val dbLabel = TextView(requireContext(), null, 0, R.style.LabelSmall).apply {
                 text = "${(initialLevel.toInt() / 100)} dB"
                 setPadding(12, 0, 0, 0)
-                width = 120
                 gravity = Gravity.END
+                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 2f)
             }
 
             val seekBar = SeekBar(requireContext()).apply {
                 max = maxLevel - minLevel
                 progress = initialLevel.toInt() - minLevel
-                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 6f)
                 setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                     override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                         val thisLevel = (progress + minLevel).toShort()
@@ -221,3 +223,6 @@ class EqualizerFragment : Fragment() {
         }
     }
 }
+
+private fun Int.dpToPx(context: Context): Int =
+    (this * context.resources.displayMetrics.density).toInt()
