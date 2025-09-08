@@ -1,7 +1,11 @@
 package com.cappielloantonio.tempo.ui.fragment;
 
 import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +35,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.cappielloantonio.tempo.R;
 import com.cappielloantonio.tempo.databinding.InnerFragmentPlayerControllerBinding;
+import com.cappielloantonio.tempo.service.EqualizerManager;
 import com.cappielloantonio.tempo.service.MediaService;
 import com.cappielloantonio.tempo.ui.activity.MainActivity;
 import com.cappielloantonio.tempo.ui.dialog.RatingDialog;
@@ -75,6 +80,9 @@ public class PlayerControllerFragment extends Fragment {
     private MainActivity activity;
     private PlayerBottomSheetViewModel playerBottomSheetViewModel;
     private ListenableFuture<MediaBrowser> mediaBrowserListenableFuture;
+
+    private MediaService.LocalBinder mediaServiceBinder;
+    private boolean isServiceBound = false;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -477,5 +485,67 @@ public class PlayerControllerFragment extends Fragment {
     private void resetPlaybackParameters(MediaBrowser mediaBrowser) {
         mediaBrowser.setPlaybackParameters(new PlaybackParameters(Constants.MEDIA_PLAYBACK_SPEED_100));
         // TODO Resettare lo skip del silenzio
+    }
+
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mediaServiceBinder = (MediaService.LocalBinder) service;
+            isServiceBound = true;
+            checkEqualizerBands();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mediaServiceBinder = null;
+            isServiceBound = false;
+        }
+    };
+
+    private void bindMediaService() {
+        Intent intent = new Intent(requireActivity(), MediaService.class);
+        intent.setAction(MediaService.ACTION_BIND_EQUALIZER);
+        requireActivity().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        isServiceBound = true;
+    }
+
+    private void checkEqualizerBands() {
+        if (mediaServiceBinder != null) {
+            EqualizerManager eqManager = mediaServiceBinder.getEqualizerManager();
+            short numBands = eqManager.getNumberOfBands();
+
+            if (equalizerButton != null) {
+                if (numBands == 0) {
+                    equalizerButton.setVisibility(View.GONE);
+
+                    ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) playerOpenQueueButton.getLayoutParams();
+                    params.startToEnd = ConstraintLayout.LayoutParams.UNSET;
+                    params.startToStart = ConstraintLayout.LayoutParams.PARENT_ID;
+                    playerOpenQueueButton.setLayoutParams(params);
+                } else {
+                    equalizerButton.setVisibility(View.VISIBLE);
+
+                    ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) playerOpenQueueButton.getLayoutParams();
+                    params.startToStart = ConstraintLayout.LayoutParams.UNSET;
+                    params.startToEnd = R.id.player_open_equalizer_button;
+                    playerOpenQueueButton.setLayoutParams(params);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        bindMediaService();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (isServiceBound) {
+            requireActivity().unbindService(serviceConnection);
+            isServiceBound = false;
+        }
     }
 }
