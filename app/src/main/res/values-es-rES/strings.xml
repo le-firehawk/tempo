@@ -440,5 +440,5 @@
     <string name="equalizer_enable">Habilitar</string>
     <string name="equalizer_not_supported">No disponible en este dispositivo</string>
     <string name="settings_app_equalizer">Ecualizador</string>
-    <string name="settings_app_equalizer_summary">Abrir el ecualizador incorporado</string>
+    <string name="settings_app_equalizer_summary">Abrir el ecualizador integrado</string>
 </resources>
