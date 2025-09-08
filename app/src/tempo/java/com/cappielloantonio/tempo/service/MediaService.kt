@@ -106,10 +106,8 @@ class MediaService : MediaLibraryService(), SessionAvailabilityListener {
 
             val bands = equalizerManager.getNumberOfBands()
             val savedLevels = Preferences.getEqualizerBandLevels(bands)
-            if (savedLevels != null) {
-                for (i in 0 until bands) {
-                    equalizerManager.setBandLevel(i.toShort(), savedLevels[i])
-                }
+            for (i in 0 until bands) {
+                equalizerManager.setBandLevel(i.toShort(), savedLevels[i])
             }
         }
     }

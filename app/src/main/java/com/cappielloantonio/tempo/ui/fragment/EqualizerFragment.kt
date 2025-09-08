@@ -215,11 +215,9 @@ class EqualizerFragment : Fragment() {
         val bandLevelRange = manager.getBandLevelRange() ?: shortArrayOf(-1500, 1500)
         val minLevel = bandLevelRange[0].toInt()
         val savedLevels = Preferences.getEqualizerBandLevels(bands)
-        if (savedLevels != null) {
-            for (i in 0 until bands) {
-                manager.setBandLevel(i.toShort(), savedLevels[i])
-                bandSeekBars.getOrNull(i)?.progress = savedLevels[i] - minLevel
-            }
+        for (i in 0 until bands) {
+            manager.setBandLevel(i.toShort(), savedLevels[i])
+            bandSeekBars.getOrNull(i)?.progress = savedLevels[i] - minLevel
         }
     }
 }
