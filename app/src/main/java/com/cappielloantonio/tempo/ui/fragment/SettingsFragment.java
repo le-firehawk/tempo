@@ -1,9 +1,13 @@
 package com.cappielloantonio.tempo.ui.fragment;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.media.audiofx.AudioEffect;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +35,8 @@ import com.cappielloantonio.tempo.R;
 import com.cappielloantonio.tempo.helper.ThemeHelper;
 import com.cappielloantonio.tempo.interfaces.DialogClickCallback;
 import com.cappielloantonio.tempo.interfaces.ScanCallback;
+import com.cappielloantonio.tempo.service.EqualizerManager;
+import com.cappielloantonio.tempo.service.MediaService;
 import com.cappielloantonio.tempo.ui.activity.MainActivity;
 import com.cappielloantonio.tempo.ui.dialog.DeleteDownloadStorageDialog;
 import com.cappielloantonio.tempo.ui.dialog.DownloadStorageDialog;
@@ -53,6 +59,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private SettingViewModel settingViewModel;
 
     private ActivityResultLauncher<Intent> someActivityResultLauncher;
+
+    private MediaService.LocalBinder mediaServiceBinder;
+    private boolean isServiceBound = false;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -105,6 +114,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         actionChangeDownloadStorage();
         actionDeleteDownloadStorage();
         actionKeepScreenOn();
+
+        bindMediaService();
         actionAppEqualizer();
     }
 
@@ -358,6 +369,39 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
     }
 
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mediaServiceBinder = (MediaService.LocalBinder) service;
+            isServiceBound = true;
+            checkEqualizerBands();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mediaServiceBinder = null;
+            isServiceBound = false;
+        }
+    };
+
+    private void bindMediaService() {
+        Intent intent = new Intent(requireActivity(), MediaService.class);
+        intent.setAction(MediaService.ACTION_BIND_EQUALIZER);
+        requireActivity().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        isServiceBound = true;
+    }
+
+    private void checkEqualizerBands() {
+        if (mediaServiceBinder != null) {
+            EqualizerManager eqManager = mediaServiceBinder.getEqualizerManager();
+            short numBands = eqManager.getNumberOfBands();
+            Preference appEqualizer = findPreference("app_equalizer");
+            if (appEqualizer != null) {
+                appEqualizer.setVisible(numBands > 0);
+            }
+        }
+    }
+
     private void actionAppEqualizer() {
         Preference appEqualizer = findPreference("app_equalizer");
         if (appEqualizer != null) {
@@ -372,6 +416,15 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 navController.navigate(R.id.equalizerFragment, null, navOptions);
                 return true;
             });
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (isServiceBound) {
+            requireActivity().unbindService(serviceConnection);
+            isServiceBound = false;
         }
     }
 }
