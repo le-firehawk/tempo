@@ -24,6 +24,8 @@ import androidx.media3.common.util.RepeatModeUtil;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.session.MediaBrowser;
 import androidx.media3.session.SessionToken;
+import androidx.navigation.NavController;
+import androidx.navigation.NavOptions;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -68,6 +70,7 @@ public class PlayerControllerFragment extends Fragment {
     private ImageButton playerOpenQueueButton;
     private ImageButton playerTrackInfo;
     private LinearLayout ratingContainer;
+    private ImageButton equalizerButton;
 
     private MainActivity activity;
     private PlayerBottomSheetViewModel playerBottomSheetViewModel;
@@ -89,6 +92,7 @@ public class PlayerControllerFragment extends Fragment {
         initMediaListenable();
         initMediaLabelButton();
         initArtistLabelButton();
+        initEqualizerButton();
 
         return view;
     }
@@ -126,6 +130,7 @@ public class PlayerControllerFragment extends Fragment {
         playerTrackInfo = bind.getRoot().findViewById(R.id.player_info_track);
         songRatingBar =  bind.getRoot().findViewById(R.id.song_rating_bar);
         ratingContainer = bind.getRoot().findViewById(R.id.rating_container);
+        equalizerButton = bind.getRoot().findViewById(R.id.player_open_equalizer_button);
         checkAndSetRatingContainerVisibility();
     }
 
@@ -423,6 +428,18 @@ public class PlayerControllerFragment extends Fragment {
 
         skipSilenceToggleButton.setOnClickListener(view -> {
             Preferences.setSkipSilenceMode(!skipSilenceToggleButton.isChecked());
+        });
+    }
+
+    private void initEqualizerButton() {
+        equalizerButton.setOnClickListener(v -> {
+            NavController navController = NavHostFragment.findNavController(this);
+            NavOptions navOptions = new NavOptions.Builder()
+                    .setLaunchSingleTop(true)
+                    .setPopUpTo(R.id.equalizerFragment, true)
+                    .build();
+            navController.navigate(R.id.equalizerFragment, null, navOptions);
+            if (activity != null) activity.collapseBottomSheetDelayed();
         });
     }
 

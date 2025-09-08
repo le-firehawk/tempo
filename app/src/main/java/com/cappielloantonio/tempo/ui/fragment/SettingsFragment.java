@@ -18,6 +18,9 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.os.LocaleListCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.util.UnstableApi;
+import androidx.navigation.NavController;
+import androidx.navigation.NavOptions;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
@@ -86,7 +89,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     public void onResume() {
         super.onResume();
 
-        checkEqualizer();
+        checkSystemEqualizer();
         checkCacheStorage();
         checkStorage();
 
@@ -102,6 +105,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         actionChangeDownloadStorage();
         actionDeleteDownloadStorage();
         actionKeepScreenOn();
+        actionAppEqualizer();
     }
 
     @Override
@@ -124,8 +128,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         }
     }
 
-    private void checkEqualizer() {
-        Preference equalizer = findPreference("equalizer");
+    private void checkSystemEqualizer() {
+        Preference equalizer = findPreference("system_equalizer");
 
         if (equalizer == null) return;
 
@@ -352,5 +356,22 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             }
             return true;
         });
+    }
+
+    private void actionAppEqualizer() {
+        Preference appEqualizer = findPreference("app_equalizer");
+        if (appEqualizer != null) {
+            appEqualizer.setOnPreferenceClickListener(preference -> {
+                NavController navController = NavHostFragment.findNavController(this);
+                NavOptions navOptions = new NavOptions.Builder()
+                        .setLaunchSingleTop(true)
+                        .setPopUpTo(R.id.equalizerFragment, true)
+                        .build();
+                activity.setBottomNavigationBarVisibility(true);
+                activity.setBottomSheetVisibility(true);
+                navController.navigate(R.id.equalizerFragment, null, navOptions);
+                return true;
+            });
+        }
     }
 }

@@ -2,9 +2,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory app:title="@string/settings_title_general">
         <Preference
-            android:key="equalizer"
-            android:title="@string/settings_equalizer_title"
-            android:summary="@string/settings_equalizer_summary" />
+            android:key="system_equalizer"
+            android:title="@string/settings_system_equalizer_title"
+            android:summary="@string/settings_system_equalizer_summary" />
+
+        <Preference
+            android:key="app_equalizer"
+            android:title="@string/settings_app_equalizer"
+            android:summary="@string/settings_app_equalizer_summary" />
 
         <Preference
             android:key="scan_library"

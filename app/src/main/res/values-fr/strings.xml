@@ -296,8 +296,8 @@
     <string name="settings_delete_download_storage_summary">Continuer entraînera la suppression irréversible de tous les éléments sauvegardés.</string>
     <string name="settings_delete_download_storage_title">Supprimer les éléments sauvegardés</string>
     <string name="settings_download_storage_title">Stockage des téléchargements</string>
-    <string name="settings_equalizer_summary">Ajuster les paramètres audios</string>
-    <string name="settings_equalizer_title">Égaliseur</string>
+    <string name="settings_system_equalizer_summary">Ajuster les paramètres audios</string>
+    <string name="settings_system_equalizer_title">Égaliseur du système</string>
     <string name="settings_github_link">https://github.com/eddyizm/tempo</string>
     <string name="settings_github_summary">Suivre le développement</string>
     <string name="settings_github_title">Github</string>
