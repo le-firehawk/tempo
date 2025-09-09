@@ -61,13 +61,16 @@ class EqualizerFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_equalizer, container, false)
+        val root = inflater.inflate(R.layout.fragment_equalizer, container, false)
+        eqSwitch = root.findViewById(R.id.equalizer_switch)
+        eqSwitch.isChecked = Preferences.isEqualizerEnabled()
+        eqSwitch.jumpDrawablesToCurrentState()
+        return root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         eqBandsContainer = view.findViewById(R.id.eq_bands_container)
-        eqSwitch = view.findViewById(R.id.equalizer_switch)
         resetButton = view.findViewById(R.id.equalizer_reset_button)
         safeSpace = view.findViewById(R.id.equalizer_bottom_space)
     }
@@ -93,7 +96,6 @@ class EqualizerFragment : Fragment() {
         safeSpace.visibility = View.VISIBLE
 
         eqSwitch.setOnCheckedChangeListener(null)
-        eqSwitch.isChecked = Preferences.isEqualizerEnabled()
         updateUiEnabledState(eqSwitch.isChecked)
         eqSwitch.setOnCheckedChangeListener { _, isChecked ->
             manager.setEnabled(isChecked)
