@@ -116,14 +116,16 @@ class EqualizerFragment : Fragment() {
         bandSeekBars.forEach { it.isEnabled = isEnabled }
     }
 
+    private fun formatDb(value: Int): String = if (value > 0) "+$value dB" else "$value dB"
+
     private fun createBandSliders() {
         val manager = equalizerManager ?: return
         eqBandsContainer.removeAllViews()
         bandSeekBars.clear()
         val bands = manager.getNumberOfBands()
         val bandLevelRange = manager.getBandLevelRange() ?: shortArrayOf(-1500, 1500)
-        val minLevel = bandLevelRange[0].toInt()
-        val maxLevel = bandLevelRange[1].toInt()
+        val minLevelDb = bandLevelRange[0] / 100
+        val maxLevelDb = bandLevelRange[1] / 100
 
         val savedLevels = Preferences.getEqualizerBandLevels(bands)
         for (i in 0 until bands) {
@@ -158,26 +160,26 @@ class EqualizerFragment : Fragment() {
             }
             row.addView(freqLabel)
 
-            val initialLevel = savedLevels.getOrNull(i) ?: (manager.getBandLevel(band)?.toInt() ?: 0)
+            val initialLevelDb = (savedLevels.getOrNull(i) ?: (manager.getBandLevel(band) ?: 0)) / 100
             val dbLabel = TextView(requireContext(), null, 0, R.style.LabelSmall).apply {
-                text = "${(initialLevel.toInt() / 100)} dB"
+                text = formatDb(initialLevelDb)
                 setPadding(12, 0, 0, 0)
                 gravity = Gravity.END
                 layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 2f)
             }
 
             val seekBar = SeekBar(requireContext()).apply {
-                max = maxLevel - minLevel
-                progress = initialLevel.toInt() - minLevel
+                max = maxLevelDb - minLevelDb
+                progress = initialLevelDb - minLevelDb
                 layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 6f)
                 setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                     override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                        val thisLevel = (progress + minLevel).toShort()
+                        val thisLevelDb = progress + minLevelDb
                         if (fromUser) {
-                            manager.setBandLevel(band, thisLevel)
+                            manager.setBandLevel(band, (thisLevelDb * 100).toShort())
                             saveBandLevelsToPreferences()
                         }
-                        dbLabel.text = "${((progress + minLevel) / 100)} dB"
+                        dbLabel.text = formatDb(thisLevelDb)
                     }
 
                     override fun onStartTrackingTouch(seekBar: SeekBar) {}
@@ -195,11 +197,12 @@ class EqualizerFragment : Fragment() {
         val manager = equalizerManager ?: return
         val bands = manager.getNumberOfBands()
         val bandLevelRange = manager.getBandLevelRange() ?: shortArrayOf(-1500, 1500)
-        val minLevel = bandLevelRange[0].toInt()
-        val midLevel = 0
+        val minLevelDb = bandLevelRange[0] / 100
+        val midLevelDb = 0
+
         for (i in 0 until bands) {
-            manager.setBandLevel(i.toShort(), midLevel.toShort())
-            bandSeekBars.getOrNull(i)?.progress = midLevel - minLevel
+            manager.setBandLevel(i.toShort(), (0).toShort())
+            bandSeekBars.getOrNull(i)?.progress = midLevelDb - minLevelDb
         }
         Preferences.setEqualizerBandLevels(ShortArray(bands.toInt()))
     }
@@ -215,15 +218,19 @@ class EqualizerFragment : Fragment() {
         val manager = equalizerManager ?: return
         eqSwitch.isChecked = Preferences.isEqualizerEnabled()
         updateUiEnabledState(eqSwitch.isChecked)
+
         val bands = manager.getNumberOfBands()
         val bandLevelRange = manager.getBandLevelRange() ?: shortArrayOf(-1500, 1500)
-        val minLevel = bandLevelRange[0].toInt()
+        val minLevelDb = bandLevelRange[0] / 100
+
         val savedLevels = Preferences.getEqualizerBandLevels(bands)
         for (i in 0 until bands) {
-            manager.setBandLevel(i.toShort(), savedLevels[i])
-            bandSeekBars.getOrNull(i)?.progress = savedLevels[i] - minLevel
+            val savedDb = savedLevels[i] / 100
+            manager.setBandLevel(i.toShort(), (savedDb * 100).toShort())
+            bandSeekBars.getOrNull(i)?.progress = savedDb - minLevelDb
         }
     }
+
 }
 
 private fun Int.dpToPx(context: Context): Int =
