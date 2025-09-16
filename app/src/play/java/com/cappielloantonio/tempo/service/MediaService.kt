@@ -25,6 +25,7 @@ import com.cappielloantonio.tempo.util.DownloadUtil
 import com.cappielloantonio.tempo.util.DynamicMediaSourceFactory
 import com.cappielloantonio.tempo.util.Preferences
 import com.cappielloantonio.tempo.util.ReplayGainUtil
+import com.cappielloantonio.tempo.widget.WidgetUpdateManager
 import com.google.android.gms.cast.framework.CastContext
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -161,6 +162,7 @@ class MediaService : MediaLibraryService(), SessionAvailabilityListener {
                 if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_SEEK || reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO) {
                     MediaManager.setLastPlayedTimestamp(mediaItem)
                 }
+                updateWidget()
             }
 
             override fun onTracksChanged(tracks: Tracks) {
@@ -183,6 +185,7 @@ class MediaService : MediaLibraryService(), SessionAvailabilityListener {
                 } else {
                     MediaManager.scrobble(player.currentMediaItem, false)
                 }
+                updateWidget()
             }
 
             override fun onPlaybackStateChanged(playbackState: Int) {
@@ -195,6 +198,7 @@ class MediaService : MediaLibraryService(), SessionAvailabilityListener {
                     MediaManager.scrobble(player.currentMediaItem, true)
                     MediaManager.saveChronology(player.currentMediaItem)
                 }
+                updateWidget()
             }
 
             override fun onPositionDiscontinuity(
@@ -230,6 +234,25 @@ class MediaService : MediaLibraryService(), SessionAvailabilityListener {
                 )
             }
         })
+    }
+
+    private fun updateWidget() {
+        val mi = player.currentMediaItem
+        val title = mi?.mediaMetadata?.title?.toString()
+            ?: mi?.mediaMetadata?.extras?.getString("title")
+        val artist = mi?.mediaMetadata?.artist?.toString()
+            ?: mi?.mediaMetadata?.extras?.getString("artist")
+        val coverId = mi?.mediaMetadata?.extras?.getString("coverArtId")
+
+        WidgetUpdateManager.updateFromState(
+            this,
+            title ?: "",
+            artist ?: "",
+            coverId,
+            player.isPlaying,
+            player.currentPosition,
+            player.duration
+        )
     }
 
     private fun initializeLoadControl(): DefaultLoadControl {
