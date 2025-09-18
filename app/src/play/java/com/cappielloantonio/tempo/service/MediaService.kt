@@ -4,6 +4,8 @@ import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.app.TaskStackBuilder
 import android.content.Intent
+import android.os.Handler
+import android.os.Looper
 import androidx.media3.cast.CastPlayer
 import androidx.media3.cast.SessionAvailabilityListener
 import androidx.media3.common.AudioAttributes
@@ -37,6 +39,18 @@ class MediaService : MediaLibraryService(), SessionAvailabilityListener {
     private lateinit var castPlayer: CastPlayer
     private lateinit var mediaLibrarySession: MediaLibrarySession
     private lateinit var librarySessionCallback: MediaLibrarySessionCallback
+    private val widgetUpdateHandler = Handler(Looper.getMainLooper())
+    private var widgetUpdateScheduled = false
+    private val widgetUpdateRunnable = object : Runnable {
+        override fun run() {
+            if (!player.isPlaying) {
+                widgetUpdateScheduled = false
+                return
+            }
+            updateWidget()
+            widgetUpdateHandler.postDelayed(this, WIDGET_UPDATE_INTERVAL_MS)
+        }
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -67,6 +81,7 @@ class MediaService : MediaLibraryService(), SessionAvailabilityListener {
     }
 
     override fun onDestroy() {
+        stopWidgetUpdates()
         releasePlayer()
         super.onDestroy()
     }
@@ -171,6 +186,11 @@ class MediaService : MediaLibraryService(), SessionAvailabilityListener {
                 } else {
                     MediaManager.scrobble(player.currentMediaItem, false)
                 }
+                if (isPlaying) {
+                    scheduleWidgetUpdates()
+                } else {
+                    stopWidgetUpdates()
+                }
                 updateWidget()
             }
 
@@ -220,6 +240,9 @@ class MediaService : MediaLibraryService(), SessionAvailabilityListener {
                 )
             }
         })
+        if (player.isPlaying) {
+            scheduleWidgetUpdates()
+        }
     }
 
     private fun updateWidget() {
@@ -241,6 +264,18 @@ class MediaService : MediaLibraryService(), SessionAvailabilityListener {
             position,
             duration
         )
+    }
+
+    private fun scheduleWidgetUpdates() {
+        if (widgetUpdateScheduled) return
+        widgetUpdateHandler.postDelayed(widgetUpdateRunnable, WIDGET_UPDATE_INTERVAL_MS)
+        widgetUpdateScheduled = true
+    }
+
+    private fun stopWidgetUpdates() {
+        if (!widgetUpdateScheduled) return
+        widgetUpdateHandler.removeCallbacks(widgetUpdateRunnable)
+        widgetUpdateScheduled = false
     }
 
     private fun initializeLoadControl(): DefaultLoadControl {
@@ -282,3 +317,5 @@ class MediaService : MediaLibraryService(), SessionAvailabilityListener {
         setPlayer(castPlayer, player)
     }
 }
+
+private const val WIDGET_UPDATE_INTERVAL_MS = 1000L
