@@ -6,6 +6,7 @@ import android.app.TaskStackBuilder
 import android.content.Intent
 import android.os.Handler
 import android.os.Looper
+import androidx.core.content.ContextCompat
 import androidx.media3.cast.CastPlayer
 import androidx.media3.cast.SessionAvailabilityListener
 import androidx.media3.common.AudioAttributes
@@ -57,10 +58,10 @@ class MediaService : MediaLibraryService(), SessionAvailabilityListener {
 
         initializeRepository()
         initializePlayer()
-        initializeCastPlayer()
         initializeMediaLibrarySession()
         restorePlayerFromQueue()
         initializePlayerListener()
+        initializeCastPlayer()
 
         setPlayer(
                 null,
@@ -108,8 +109,15 @@ class MediaService : MediaLibraryService(), SessionAvailabilityListener {
         if (GoogleApiAvailability.getInstance()
                         .isGooglePlayServicesAvailable(this) == ConnectionResult.SUCCESS
         ) {
-            castPlayer = CastPlayer(CastContext.getSharedInstance(this))
-            castPlayer.setSessionAvailabilityListener(this)
+            CastContext.getSharedInstance(this, ContextCompat.getMainExecutor(this))
+                    .addOnSuccessListener { castContext ->
+                        castPlayer = CastPlayer(castContext)
+                        castPlayer.setSessionAvailabilityListener(this@MediaService)
+
+                        if (castPlayer.isCastSessionAvailable && this::mediaLibrarySession.isInitialized) {
+                            setPlayer(player, castPlayer)
+                        }
+                    }
         }
     }
 
