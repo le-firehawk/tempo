@@ -244,14 +244,16 @@ class MediaService : MediaLibraryService(), SessionAvailabilityListener {
             ?: mi?.mediaMetadata?.extras?.getString("artist")
         val coverId = mi?.mediaMetadata?.extras?.getString("coverArtId")
 
+        val position = player.currentPosition.takeIf { it != C.TIME_UNSET } ?: 0L
+        val duration = player.duration.takeIf { it != C.TIME_UNSET } ?: 0L
         WidgetUpdateManager.updateFromState(
             this,
             title ?: "",
             artist ?: "",
             coverId,
             player.isPlaying,
-            player.currentPosition,
-            player.duration
+            position,
+            duration
         )
     }
 
