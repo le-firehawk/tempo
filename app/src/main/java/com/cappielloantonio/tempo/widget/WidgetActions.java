@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.media3.common.Player;
 import androidx.media3.session.MediaController;
 import androidx.media3.session.SessionToken;
 
@@ -34,7 +35,23 @@ public final class WidgetActions {
           case WidgetProvider.ACT_PREV:
             c.seekToPrevious();
             break;
+          case WidgetProvider.ACT_TOGGLE_SHUFFLE:
+            c.setShuffleModeEnabled(!c.getShuffleModeEnabled());
+            break;
+          case WidgetProvider.ACT_CYCLE_REPEAT:
+            int repeatMode = c.getRepeatMode();
+            int nextMode;
+            if (repeatMode == Player.REPEAT_MODE_OFF) {
+              nextMode = Player.REPEAT_MODE_ALL;
+            } else if (repeatMode == Player.REPEAT_MODE_ALL) {
+              nextMode = Player.REPEAT_MODE_ONE;
+            } else {
+              nextMode = Player.REPEAT_MODE_OFF;
+            }
+            c.setRepeatMode(nextMode);
+            break;
         }
+        WidgetUpdateManager.refreshFromController(ctx);
         c.release();
       } catch (ExecutionException | InterruptedException e) {
         Log.e("TempoWidget", "dispatch failed", e);
