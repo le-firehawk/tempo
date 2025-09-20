@@ -12,6 +12,9 @@ import android.widget.RemoteViews;
 import com.cappielloantonio.tempo.R;
 import com.cappielloantonio.tempo.ui.activity.MainActivity;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 public class WidgetProvider extends AppWidgetProvider {
     private static final String TAG = "TempoWidget";
     public static final String ACT_PLAY_PAUSE = "tempo.widget.PLAY_PAUSE";
@@ -21,6 +24,9 @@ public class WidgetProvider extends AppWidgetProvider {
     public static final String ACT_CYCLE_REPEAT = "tempo.widget.REPEAT";
     public static final String ACT_SEEK_TO = "tempo.widget.SEEK_TO";
     public static final String EXTRA_PROGRESS_VIEW_TYPE = "tempo.widget.EXTRA_PROGRESS_VIEW_TYPE";
+    // Resolve the seek bar response setter reflectively so builds continue to compile even when
+    // the method is absent from older SDK stubs.
+    private static final Method SET_ON_SEEK_BAR_CHANGE_METHOD = resolveSetOnSeekBarChangeMethod();
 
     @Override public void onUpdate(Context ctx, AppWidgetManager mgr, int[] ids) {
         for (int id : ids) {
@@ -112,15 +118,50 @@ public class WidgetProvider extends AppWidgetProvider {
                     seekIntent,
                     seekFlags
             );
-            rv.setOnSeekBarChangeResponse(
-                    R.id.progress,
-                    RemoteViews.RemoteResponse.fromPendingIntent(seek)
-            );
+            if (!setOnSeekBarChangeResponse(rv, R.id.progress, seek)) {
+                rv.setOnClickPendingIntent(R.id.progress, seek);
+            }
         }
 
         PendingIntent launch = TaskStackBuilder.create(ctx)
                 .addNextIntentWithParentStack(new Intent(ctx, MainActivity.class))
                 .getPendingIntent(requestCodeBase + 10, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
         rv.setOnClickPendingIntent(R.id.root, launch);
+    }
+
+    private static boolean setOnSeekBarChangeResponse(RemoteViews rv,
+                                                      int viewId,
+                                                      PendingIntent pendingIntent) {
+        Method method = SET_ON_SEEK_BAR_CHANGE_METHOD;
+        if (method == null) {
+            return false;
+        }
+        try {
+            method.invoke(rv, viewId, RemoteViews.RemoteResponse.fromPendingIntent(pendingIntent));
+            return true;
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            Log.w(TAG, "Unable to set seek bar change response", e);
+            return false;
+        }
+    }
+
+    private static Method resolveSetOnSeekBarChangeMethod() {
+        try {
+            return RemoteViews.class.getMethod(
+                    "setOnSeekBarChangeResponse",
+                    int.class,
+                    RemoteViews.RemoteResponse.class
+            );
+        } catch (NoSuchMethodException ignored) {
+            try {
+                return RemoteViews.class.getMethod(
+                        "setOnSeekBarChangeListener",
+                        int.class,
+                        RemoteViews.RemoteResponse.class
+                );
+            } catch (NoSuchMethodException innerIgnored) {
+                return null;
+            }
+        }
     }
 }
