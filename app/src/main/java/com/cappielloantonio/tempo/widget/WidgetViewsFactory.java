@@ -2,6 +2,7 @@ package com.cappielloantonio.tempo.widget;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -176,6 +177,9 @@ public final class WidgetViewsFactory {
     rv.setTextViewText(R.id.time_elapsed, elapsed);
     rv.setTextViewText(R.id.time_total, total);
     rv.setProgressBar(R.id.progress, PROGRESS_MAX, safeProgress, false);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      rv.setBoolean(R.id.progress, "setEnabled", !TextUtils.isEmpty(totalText));
+    }
 
     applySecondaryControls(ctx, rv, showSecondaryControls, shuffleEnabled, repeatMode);
 

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ProgressBar xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/progress"
+    style="?android:attr/progressBarStyleHorizontal"
+    android:indeterminate="false"
+    android:max="1000"
+    android:progress="0"
+    android:progressBackgroundTint="@color/widget_subtitle"
+    android:progressTint="@color/widget_icon_tint" />

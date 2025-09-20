@@ -76,17 +76,11 @@
                 android:visibility="invisible" />
         </LinearLayout>
 
-        <ProgressBar
-            android:id="@+id/progress"
-            style="?android:attr/progressBarStyleHorizontal"
+        <include
+            layout="@layout/widget_progress"
             android:layout_width="match_parent"
             android:layout_height="6dp"
-            android:layout_marginTop="10dp"
-            android:indeterminate="false"
-            android:max="1000"
-            android:progress="0"
-            android:progressBackgroundTint="@color/widget_subtitle"
-            android:progressTint="@color/widget_icon_tint" />
+            android:layout_marginTop="10dp" />
 
         <LinearLayout
             android:id="@+id/timing"

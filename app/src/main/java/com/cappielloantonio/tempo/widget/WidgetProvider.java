@@ -1,17 +1,17 @@
 package com.cappielloantonio.tempo.widget;
 
 import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.cappielloantonio.tempo.R;
-import android.app.TaskStackBuilder;
-import android.app.PendingIntent;
 import com.cappielloantonio.tempo.ui.activity.MainActivity;
-import android.util.Log;
 
 public class WidgetProvider extends AppWidgetProvider {
     private static final String TAG = "TempoWidget";
@@ -20,6 +20,7 @@ public class WidgetProvider extends AppWidgetProvider {
     public static final String ACT_PREV = "tempo.widget.PREV";
     public static final String ACT_TOGGLE_SHUFFLE = "tempo.widget.SHUFFLE";
     public static final String ACT_CYCLE_REPEAT = "tempo.widget.REPEAT";
+    public static final String ACT_SEEK_TO = "tempo.widget.SEEK_TO";
 
     @Override public void onUpdate(Context ctx, AppWidgetManager mgr, int[] ids) {
         for (int id : ids) {
@@ -34,8 +35,9 @@ public class WidgetProvider extends AppWidgetProvider {
         String a = intent.getAction();
         Log.d(TAG, "onReceive action=" + a);
         if (ACT_PLAY_PAUSE.equals(a) || ACT_NEXT.equals(a) || ACT_PREV.equals(a)
-                || ACT_TOGGLE_SHUFFLE.equals(a) || ACT_CYCLE_REPEAT.equals(a)) {
-            WidgetActions.dispatchToMediaSession(ctx, a);
+                || ACT_TOGGLE_SHUFFLE.equals(a) || ACT_CYCLE_REPEAT.equals(a)
+                || ACT_SEEK_TO.equals(a)) {
+            WidgetActions.dispatchToMediaSession(ctx, intent);
         } else if (AppWidgetManager.ACTION_APPWIDGET_UPDATE.equals(a)) {
             WidgetUpdateManager.refreshFromController(ctx);
         }
@@ -90,6 +92,24 @@ public class WidgetProvider extends AppWidgetProvider {
         rv.setOnClickPendingIntent(R.id.btn_prev, prev);
         rv.setOnClickPendingIntent(R.id.btn_shuffle, shuffle);
         rv.setOnClickPendingIntent(R.id.btn_repeat, repeat);
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            Intent seekIntent = new Intent(ctx, WidgetProvider4x1.class)
+                    .setAction(ACT_SEEK_TO)
+                    .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, requestCodeBase);
+            int seekFlags = PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE;
+            PendingIntent seek = PendingIntent.getBroadcast(
+                    ctx,
+                    requestCodeBase + 5,
+                    seekIntent,
+                    seekFlags
+            );
+            rv.setOnSeekBarChangeResponse(
+                    R.id.progress,
+                    RemoteViews.RemoteResponse.fromPendingIntent(seek)
+            );
+        }
 
         PendingIntent launch = TaskStackBuilder.create(ctx)
                 .addNextIntentWithParentStack(new Intent(ctx, MainActivity.class))
