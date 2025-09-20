@@ -19,10 +19,12 @@ import androidx.media3.exoplayer.trackselection.TrackSelectionArray
 import androidx.media3.session.*
 import androidx.media3.session.MediaSession.ControllerInfo
 import com.cappielloantonio.tempo.R
+import com.cappielloantonio.tempo.repository.QueueRepository
 import com.cappielloantonio.tempo.ui.activity.MainActivity
 import com.cappielloantonio.tempo.util.Constants
 import com.cappielloantonio.tempo.util.DownloadUtil
 import com.cappielloantonio.tempo.util.DynamicMediaSourceFactory
+import com.cappielloantonio.tempo.util.MappingUtil
 import com.cappielloantonio.tempo.util.Preferences
 import com.cappielloantonio.tempo.util.ReplayGainUtil
 import com.cappielloantonio.tempo.widget.WidgetUpdateManager
@@ -83,6 +85,7 @@ class MediaService : MediaLibraryService() {
         initializeCustomCommands()
         initializePlayer()
         initializeMediaLibrarySession()
+        restorePlayerFromQueue()
         initializePlayerListener()
         initializeEqualizerManager()
 
@@ -266,6 +269,33 @@ class MediaService : MediaLibraryService() {
         if (!customLayout.isEmpty()) {
             mediaLibrarySession.setCustomLayout(customLayout)
         }
+    }
+
+    private fun restorePlayerFromQueue() {
+        if (player.mediaItemCount > 0) return
+
+        val queueRepository = QueueRepository()
+        val storedQueue = queueRepository.media
+        if (storedQueue.isNullOrEmpty()) return
+
+        val mediaItems = MappingUtil.mapMediaItems(storedQueue)
+        if (mediaItems.isEmpty()) return
+
+        val lastIndex = try {
+            queueRepository.lastPlayedMediaIndex
+        } catch (_: Exception) {
+            0
+        }.coerceIn(0, mediaItems.size - 1)
+
+        val lastPosition = try {
+            queueRepository.lastPlayedMediaTimestamp
+        } catch (_: Exception) {
+            0L
+        }.let { if (it < 0L) 0L else it }
+
+        player.setMediaItems(mediaItems, lastIndex, lastPosition)
+        player.prepare()
+        updateWidget()
     }
 
     private fun initializePlayerListener() {
