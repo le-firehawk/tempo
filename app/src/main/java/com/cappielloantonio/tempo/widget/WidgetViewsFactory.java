@@ -232,7 +232,7 @@ public final class WidgetViewsFactory {
     rv.setTextViewText(R.id.time_elapsed, elapsed);
     rv.setTextViewText(R.id.time_total, total);
     rv.setProgressBar(R.id.progress, PROGRESS_MAX, safeProgress, false);
-    if (isInteractiveProgressSupported()) {
+    if (isInteractiveProgressSupported(ctx)) {
       rv.setBoolean(R.id.progress, "setEnabled", !TextUtils.isEmpty(totalText));
     }
 
