@@ -102,12 +102,12 @@ public class WidgetProvider extends AppWidgetProvider {
         rv.setOnClickPendingIntent(R.id.btn_shuffle, shuffle);
         rv.setOnClickPendingIntent(R.id.btn_repeat, repeat);
 
-
-        if (WidgetViewsFactory.isInteractiveProgressSupported()) {
+        WidgetViewsFactory.ProgressViewType progressViewType =
+                WidgetViewsFactory.getProgressViewType(ctx);
+        if (progressViewType == WidgetViewsFactory.ProgressViewType.SEEK_BAR) {
             Intent seekIntent = new Intent(ctx, WidgetProvider4x1.class)
                     .setAction(ACT_SEEK_TO);
-            seekIntent.putExtra(EXTRA_PROGRESS_VIEW_TYPE,
-                    WidgetViewsFactory.getProgressViewType().name());
+            seekIntent.putExtra(EXTRA_PROGRESS_VIEW_TYPE, progressViewType.name());
             if (appWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
                 seekIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
             }

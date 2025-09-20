@@ -1,9 +1,11 @@
 package com.cappielloantonio.tempo.widget;
 
 import android.content.Context;
+import android.content.res.XmlResourceParser;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 
@@ -12,7 +14,13 @@ import androidx.media3.common.Player;
 
 import com.cappielloantonio.tempo.R;
 
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
+
 public final class WidgetViewsFactory {
+
+  private static final String TAG = "WidgetViewsFactory";
 
   static final int PROGRESS_MAX = 1000;
 
@@ -21,14 +29,46 @@ public final class WidgetViewsFactory {
     SEEK_BAR
   }
 
-  static ProgressViewType getProgressViewType() {
-    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-        ? ProgressViewType.SEEK_BAR
-        : ProgressViewType.PROGRESS_BAR;
+  private static ProgressViewType cachedProgressViewType;
+  private static boolean progressViewTypeResolved;
+
+  static synchronized ProgressViewType getProgressViewType(Context ctx) {
+    if (!progressViewTypeResolved) {
+      cachedProgressViewType = resolveProgressViewType(ctx.getApplicationContext());
+      progressViewTypeResolved = true;
+    }
+    return cachedProgressViewType;
   }
 
-  static boolean isInteractiveProgressSupported() {
-    return getProgressViewType() == ProgressViewType.SEEK_BAR;
+  static boolean isInteractiveProgressSupported(Context ctx) {
+    return getProgressViewType(ctx) == ProgressViewType.SEEK_BAR;
+  }
+
+  private static ProgressViewType resolveProgressViewType(Context ctx) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+      return ProgressViewType.PROGRESS_BAR;
+    }
+    return isSeekBarLayout(ctx) ? ProgressViewType.SEEK_BAR : ProgressViewType.PROGRESS_BAR;
+  }
+
+  private static boolean isSeekBarLayout(Context ctx) {
+    XmlResourceParser parser = null;
+    try {
+      parser = ctx.getResources().getLayout(R.layout.widget_progress);
+      int eventType;
+      while ((eventType = parser.next()) != XmlResourceParser.END_DOCUMENT) {
+        if (eventType == XmlResourceParser.START_TAG) {
+          return "SeekBar".equals(parser.getName());
+        }
+      }
+    } catch (IOException | XmlPullParserException e) {
+      Log.w(TAG, "Unable to inspect widget_progress layout", e);
+    } finally {
+      if (parser != null) {
+        parser.close();
+      }
+    }
+    return false;
   }
 
   private WidgetViewsFactory() {}

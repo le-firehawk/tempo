@@ -66,7 +66,7 @@ public final class WidgetActions {
             c.setRepeatMode(nextMode);
             break;
           case WidgetProvider.ACT_SEEK_TO:
-            if (shouldHandleSeek(intent)) {
+            if (shouldHandleSeek(appCtx, intent)) {
               int progress = intent.getIntExtra(EXTRA_PROGRESS, -1);
               boolean fromUser = !intent.hasExtra(EXTRA_FROM_USER)
                   || intent.getBooleanExtra(EXTRA_FROM_USER, false);
@@ -89,8 +89,8 @@ public final class WidgetActions {
     }, MoreExecutors.directExecutor());
   }
 
-  private static boolean shouldHandleSeek(Intent intent) {
-    if (WidgetViewsFactory.isInteractiveProgressSupported()) {
+  private static boolean shouldHandleSeek(Context ctx, Intent intent) {
+    if (WidgetViewsFactory.isInteractiveProgressSupported(ctx)) {
       return true;
     }
     if (intent == null) {
