@@ -11,8 +11,9 @@
 
     <ImageView
         android:id="@+id/album_art"
-        android:layout_width="56dp"
-        android:layout_height="match_parent"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_centerVertical="true"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_splash_logo"
         android:contentDescription="@string/widget_content_desc_album_art"/>
@@ -79,4 +80,3 @@
             android:contentDescription="@string/widget_content_desc_next"/>
     </LinearLayout>
 </RelativeLayout>
-

@@ -416,6 +416,8 @@ class MediaService : MediaLibraryService() {
             ?: mi?.mediaMetadata?.extras?.getString("title")
         val artist = mi?.mediaMetadata?.artist?.toString()
             ?: mi?.mediaMetadata?.extras?.getString("artist")
+        val album = mi?.mediaMetadata?.albumTitle?.toString()
+            ?: mi?.mediaMetadata?.extras?.getString("album")
         val coverId = mi?.mediaMetadata?.extras?.getString("coverArtId")
         val position = player.currentPosition.takeIf { it != C.TIME_UNSET } ?: 0L
         val duration = player.duration.takeIf { it != C.TIME_UNSET } ?: 0L
@@ -423,8 +425,11 @@ class MediaService : MediaLibraryService() {
             this,
             title ?: "",
             artist ?: "",
+            album ?: "",
             coverId,
             player.isPlaying,
+            player.shuffleModeEnabled,
+            player.repeatMode,
             position,
             duration
         )
