@@ -16,6 +16,21 @@ public final class WidgetViewsFactory {
 
   static final int PROGRESS_MAX = 1000;
 
+  enum ProgressViewType {
+    PROGRESS_BAR,
+    SEEK_BAR
+  }
+
+  static ProgressViewType getProgressViewType() {
+    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+        ? ProgressViewType.SEEK_BAR
+        : ProgressViewType.PROGRESS_BAR;
+  }
+
+  static boolean isInteractiveProgressSupported() {
+    return getProgressViewType() == ProgressViewType.SEEK_BAR;
+  }
+
   private WidgetViewsFactory() {}
 
   public static RemoteViews buildCompact(Context ctx) {
@@ -177,7 +192,7 @@ public final class WidgetViewsFactory {
     rv.setTextViewText(R.id.time_elapsed, elapsed);
     rv.setTextViewText(R.id.time_total, total);
     rv.setProgressBar(R.id.progress, PROGRESS_MAX, safeProgress, false);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+    if (isInteractiveProgressSupported()) {
       rv.setBoolean(R.id.progress, "setEnabled", !TextUtils.isEmpty(totalText));
     }
 

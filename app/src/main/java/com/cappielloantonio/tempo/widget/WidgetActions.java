@@ -3,7 +3,6 @@ package com.cappielloantonio.tempo.widget;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -17,8 +16,14 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 
 import java.util.concurrent.ExecutionException;
+import java.lang.reflect.Field;
 
 public final class WidgetActions {
+  private static final String EXTRA_PROGRESS = resolveExtraConstant("EXTRA_PROGRESS",
+      "android.widget.extra.PROGRESS");
+  private static final String EXTRA_FROM_USER = resolveExtraConstant("EXTRA_FROM_USER",
+      "android.widget.extra.FROM_USER");
+
   public static void dispatchToMediaSession(Context ctx, Intent intent) {
     if (intent == null) return;
     String action = intent.getAction();
@@ -61,10 +66,10 @@ public final class WidgetActions {
             c.setRepeatMode(nextMode);
             break;
           case WidgetProvider.ACT_SEEK_TO:
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-              int progress = intent.getIntExtra(RemoteViews.EXTRA_PROGRESS, -1);
-              boolean fromUser = !intent.hasExtra(RemoteViews.EXTRA_FROM_USER)
-                  || intent.getBooleanExtra(RemoteViews.EXTRA_FROM_USER, false);
+            if (shouldHandleSeek(intent)) {
+              int progress = intent.getIntExtra(EXTRA_PROGRESS, -1);
+              boolean fromUser = !intent.hasExtra(EXTRA_FROM_USER)
+                  || intent.getBooleanExtra(EXTRA_FROM_USER, false);
               if (progress >= 0 && fromUser) {
                 int clamped = Math.min(Math.max(progress, 0), WidgetViewsFactory.PROGRESS_MAX);
                 long duration = c.getDuration();
@@ -82,5 +87,36 @@ public final class WidgetActions {
         Log.e("TempoWidget", "dispatch failed", e);
       }
     }, MoreExecutors.directExecutor());
+  }
+
+  private static boolean shouldHandleSeek(Intent intent) {
+    if (WidgetViewsFactory.isInteractiveProgressSupported()) {
+      return true;
+    }
+    if (intent == null) {
+      return false;
+    }
+    String typeName = intent.getStringExtra(WidgetProvider.EXTRA_PROGRESS_VIEW_TYPE);
+    if (typeName == null) {
+      return false;
+    }
+    try {
+      WidgetViewsFactory.ProgressViewType type = WidgetViewsFactory.ProgressViewType.valueOf(typeName);
+      return type == WidgetViewsFactory.ProgressViewType.SEEK_BAR;
+    } catch (IllegalArgumentException ignored) {
+      return false;
+    }
+  }
+
+  private static String resolveExtraConstant(String fieldName, String fallback) {
+    try {
+      Field field = RemoteViews.class.getField(fieldName);
+      Object value = field.get(null);
+      if (value instanceof String) {
+        return (String) value;
+      }
+    } catch (NoSuchFieldException | IllegalAccessException ignored) {
+    }
+    return fallback;
   }
 }

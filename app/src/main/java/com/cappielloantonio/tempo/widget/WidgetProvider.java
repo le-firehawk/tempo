@@ -6,7 +6,6 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -21,6 +20,7 @@ public class WidgetProvider extends AppWidgetProvider {
     public static final String ACT_TOGGLE_SHUFFLE = "tempo.widget.SHUFFLE";
     public static final String ACT_CYCLE_REPEAT = "tempo.widget.REPEAT";
     public static final String ACT_SEEK_TO = "tempo.widget.SEEK_TO";
+    public static final String EXTRA_PROGRESS_VIEW_TYPE = "tempo.widget.EXTRA_PROGRESS_VIEW_TYPE";
 
     @Override public void onUpdate(Context ctx, AppWidgetManager mgr, int[] ids) {
         for (int id : ids) {
@@ -52,10 +52,13 @@ public class WidgetProvider extends AppWidgetProvider {
     }
 
     public static void attachIntents(Context ctx, RemoteViews rv) {
-        attachIntents(ctx, rv, 0);
+        attachIntents(ctx, rv, AppWidgetManager.INVALID_APPWIDGET_ID);
     }
 
-    public static void attachIntents(Context ctx, RemoteViews rv, int requestCodeBase) {
+    public static void attachIntents(Context ctx, RemoteViews rv, int appWidgetId) {
+        int requestCodeBase = appWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID
+                ? appWidgetId
+                : 0;
         PendingIntent playPause = PendingIntent.getBroadcast(
                 ctx,
                 requestCodeBase + 0,
@@ -94,10 +97,14 @@ public class WidgetProvider extends AppWidgetProvider {
         rv.setOnClickPendingIntent(R.id.btn_repeat, repeat);
 
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        if (WidgetViewsFactory.isInteractiveProgressSupported()) {
             Intent seekIntent = new Intent(ctx, WidgetProvider4x1.class)
-                    .setAction(ACT_SEEK_TO)
-                    .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, requestCodeBase);
+                    .setAction(ACT_SEEK_TO);
+            seekIntent.putExtra(EXTRA_PROGRESS_VIEW_TYPE,
+                    WidgetViewsFactory.getProgressViewType().name());
+            if (appWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
+                seekIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+            }
             int seekFlags = PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE;
             PendingIntent seek = PendingIntent.getBroadcast(
                     ctx,
