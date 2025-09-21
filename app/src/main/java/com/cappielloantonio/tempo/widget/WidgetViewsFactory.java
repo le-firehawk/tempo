@@ -27,6 +27,13 @@ public final class WidgetViewsFactory {
       R.id.rating_click_area_4,
       R.id.rating_click_area_5
   };
+  private static final int[] RATING_STAR_IDS = {
+      R.id.rating_star_1,
+      R.id.rating_star_2,
+      R.id.rating_star_3,
+      R.id.rating_star_4,
+      R.id.rating_star_5
+  };
   private static final float ALBUM_ART_CORNER_RADIUS_DP = 6f;
 
   private WidgetViewsFactory() {}
@@ -241,8 +248,13 @@ public final class WidgetViewsFactory {
     rv.setViewVisibility(R.id.rating_click_targets, View.GONE);
     rv.setBoolean(R.id.button_favorite, "setChecked", false);
     rv.setViewVisibility(R.id.button_favorite, View.GONE);
-    rv.setFloat(R.id.song_rating_bar, "setRating", 0f);
     rv.setTextViewText(R.id.rating_text, ctx.getString(R.string.widget_rating_unset));
+    int inactiveColor = ContextCompat.getColor(ctx, R.color.widget_icon_tint);
+    for (int id : RATING_STAR_IDS) {
+      rv.setViewVisibility(id, View.VISIBLE);
+      rv.setImageViewResource(id, R.drawable.ic_star_outlined);
+      rv.setInt(id, "setColorFilter", inactiveColor);
+    }
     for (int id : RATING_TARGET_IDS) {
       rv.setViewVisibility(id, View.GONE);
     }
@@ -269,7 +281,15 @@ public final class WidgetViewsFactory {
     rv.setViewVisibility(R.id.rating_click_targets, View.VISIBLE);
     rv.setViewVisibility(R.id.button_favorite, View.VISIBLE);
     rv.setBoolean(R.id.button_favorite, "setChecked", isFavorite);
-    rv.setFloat(R.id.song_rating_bar, "setRating", (float) clampedRating);
+    int activeColor = ContextCompat.getColor(ctx, R.color.widget_icon_tint_active);
+    int inactiveColor = ContextCompat.getColor(ctx, R.color.widget_icon_tint);
+    for (int i = 0; i < RATING_STAR_IDS.length; i++) {
+      int starViewId = RATING_STAR_IDS[i];
+      boolean filled = clampedRating > i;
+      rv.setViewVisibility(starViewId, View.VISIBLE);
+      rv.setImageViewResource(starViewId, filled ? R.drawable.ic_star : R.drawable.ic_star_outlined);
+      rv.setInt(starViewId, "setColorFilter", filled ? activeColor : inactiveColor);
+    }
     rv.setTextViewText(R.id.rating_text,
         clampedRating > 0
             ? ctx.getString(R.string.widget_rating_value, clampedRating)
