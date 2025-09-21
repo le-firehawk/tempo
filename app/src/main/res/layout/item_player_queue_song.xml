@@ -40,7 +40,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:src="@drawable/button_play_pause_selector" />
+        android:src="@drawable/ic_play" />
 
     <TextView
         android:id="@+id/queue_song_title_text_view"

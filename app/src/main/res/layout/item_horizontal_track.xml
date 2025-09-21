@@ -75,7 +75,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/different_disk_divider_sector"
-        android:src="@drawable/button_play_pause_selector" />
+        android:src="@drawable/ic_play" />
 
     <TextView
         android:id="@+id/track_number_text_view"
