@@ -16,13 +16,13 @@ import androidx.media3.common.Tracks
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession.ControllerInfo
 import com.cappielloantonio.tempo.repository.AutomotiveRepository
 import com.cappielloantonio.tempo.ui.activity.MainActivity
 import com.cappielloantonio.tempo.util.Constants
 import com.cappielloantonio.tempo.util.DownloadUtil
+import com.cappielloantonio.tempo.util.DynamicMediaSourceFactory
 import com.cappielloantonio.tempo.util.Preferences
 import com.cappielloantonio.tempo.util.ReplayGainUtil
 import com.google.android.gms.cast.framework.CastContext
@@ -114,13 +114,13 @@ class MediaService : MediaLibraryService(), SessionAvailabilityListener {
 
     private fun initializePlayer() {
         player = ExoPlayer.Builder(this)
-            .setRenderersFactory(getRenderersFactory())
-            .setMediaSourceFactory(getMediaSourceFactory())
-            .setAudioAttributes(AudioAttributes.DEFAULT, true)
-            .setHandleAudioBecomingNoisy(true)
-            .setWakeMode(C.WAKE_MODE_NETWORK)
-            .setLoadControl(initializeLoadControl())
-            .build()
+                .setRenderersFactory(getRenderersFactory())
+                .setMediaSourceFactory(DynamicMediaSourceFactory(this))
+                .setAudioAttributes(AudioAttributes.DEFAULT, true)
+                .setHandleAudioBecomingNoisy(true)
+                .setWakeMode(C.WAKE_MODE_NETWORK)
+                .setLoadControl(initializeLoadControl())
+                .build()
 
         player.shuffleModeEnabled = Preferences.isShuffleModeEnabled()
         player.repeatMode = Preferences.getRepeatMode()
