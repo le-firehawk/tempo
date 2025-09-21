@@ -17,6 +17,7 @@ import com.cappielloantonio.tempo.databinding.ItemPlayerQueueSongBinding;
 import com.cappielloantonio.tempo.glide.CustomGlideRequest;
 import com.cappielloantonio.tempo.interfaces.ClickCallback;
 import com.cappielloantonio.tempo.interfaces.MediaIndexCallback;
+import com.cappielloantonio.tempo.interfaces.MediaSongIdCallback;
 import com.cappielloantonio.tempo.service.MediaManager;
 import com.cappielloantonio.tempo.subsonic.models.Child;
 import com.cappielloantonio.tempo.util.Constants;
@@ -82,6 +83,19 @@ public class PlayerSongQueueAdapter extends RecyclerView.Adapter<PlayerSongQueue
                     holder.item.queueSongTitleTextView.setAlpha(1.0f);
                     holder.item.queueSongSubtitleTextView.setAlpha(1.0f);
                     holder.item.ratingIndicatorImageView.setAlpha(1.0f);
+                }
+            }
+        });
+
+        MediaManager.getCurrentSongId(mediaBrowserListenableFuture, new MediaSongIdCallback() {
+            @Override
+            public void onRecovery(String id) {
+                if (song.getId().equals(id)) {
+                    holder.item.playPauseIcon.setVisibility(View.VISIBLE);
+                    holder.item.coverArtOverlay.setVisibility(View.VISIBLE);
+                } else {
+                    holder.item.playPauseIcon.setVisibility(View.INVISIBLE);
+                    holder.item.coverArtOverlay.setVisibility(View.INVISIBLE);
                 }
             }
         });
