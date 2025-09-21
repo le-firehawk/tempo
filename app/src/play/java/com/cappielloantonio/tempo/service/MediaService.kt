@@ -200,7 +200,6 @@ class MediaService : MediaLibraryService(), SessionAvailabilityListener {
     }
 
     private fun getQueueFromPlayer(player: Player): List<MediaItem> {
-        // Helper function to get all media items from a player's queue.
         val queue = mutableListOf<MediaItem>()
         for (i in 0 until player.mediaItemCount) {
             queue.add(player.getMediaItemAt(i))
@@ -209,7 +208,6 @@ class MediaService : MediaLibraryService(), SessionAvailabilityListener {
     }
 
     private fun setPlayer(oldPlayer: Player?, newPlayer: Player) {
-        // Safely switches the player instance and handles state transfer.
         if (oldPlayer === newPlayer) return
 
         oldPlayer?.stop()
@@ -230,32 +228,26 @@ class MediaService : MediaLibraryService(), SessionAvailabilityListener {
         DefaultMediaSourceFactory(this).setDataSourceFactory(DownloadUtil.getDataSourceFactory(this))
 
     override fun onCastSessionAvailable() {
-        // Get the current queue, item index, and position from the local player.
         val currentQueue = getQueueFromPlayer(player)
         val currentIndex = player.currentMediaItemIndex
         val currentPosition = player.currentPosition
         val isPlaying = player.playWhenReady
 
-        // Switch the player to the CastPlayer.
         setPlayer(player, castPlayer)
 
-        // Transfer the entire queue to the CastPlayer and start playback.
         castPlayer.setMediaItems(currentQueue, currentIndex, currentPosition)
         castPlayer.playWhenReady = isPlaying
         castPlayer.prepare()
     }
 
     override fun onCastSessionUnavailable() {
-        // Get the current queue, item index, and position from the CastPlayer.
         val currentQueue = getQueueFromPlayer(castPlayer)
         val currentIndex = castPlayer.currentMediaItemIndex
         val currentPosition = castPlayer.currentPosition
         val isPlaying = castPlayer.playWhenReady
 
-        // Switch the player back to the local ExoPlayer.
         setPlayer(castPlayer, player)
 
-        // Transfer the entire queue to the local ExoPlayer and start playback.
         player.setMediaItems(currentQueue, currentIndex, currentPosition)
         player.playWhenReady = isPlaying
         player.prepare()
