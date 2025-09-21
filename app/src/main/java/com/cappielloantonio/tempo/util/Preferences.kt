@@ -69,7 +69,8 @@ object Preferences {
     private const val NEXT_UPDATE_CHECK = "next_update_check"
     private const val CONTINUOUS_PLAY = "continuous_play"
     private const val LAST_INSTANT_MIX = "last_instant_mix"
-
+    private const val EQUALIZER_ENABLED = "equalizer_enabled"
+    private const val EQUALIZER_BAND_LEVELS = "equalizer_band_levels"
 
     @JvmStatic
     fun getServer(): String? {
@@ -537,5 +538,32 @@ object Preferences {
         return App.getInstance().preferences.getLong(
                 LAST_INSTANT_MIX, 0
         ) + 5000 < System.currentTimeMillis()
+    }
+
+    @JvmStatic
+    fun setEqualizerEnabled(enabled: Boolean) {
+        App.getInstance().preferences.edit().putBoolean(EQUALIZER_ENABLED, enabled).apply()
+    }
+
+    @JvmStatic
+    fun isEqualizerEnabled(): Boolean {
+        return App.getInstance().preferences.getBoolean(EQUALIZER_ENABLED, false)
+    }
+
+    @JvmStatic
+    fun setEqualizerBandLevels(bandLevels: ShortArray) {
+        val asString = bandLevels.joinToString(",")
+        App.getInstance().preferences.edit().putString(EQUALIZER_BAND_LEVELS, asString).apply()
+    }
+
+    @JvmStatic
+    fun getEqualizerBandLevels(bandCount: Short): ShortArray {
+        val str = App.getInstance().preferences.getString(EQUALIZER_BAND_LEVELS, null)
+        if (str.isNullOrBlank()) {
+            return ShortArray(bandCount.toInt())
+        }
+        val parts = str.split(",")
+        if (parts.size < bandCount) return ShortArray(bandCount.toInt())
+        return ShortArray(bandCount.toInt()) { i -> parts[i].toShortOrNull() ?: 0 }
     }
 }

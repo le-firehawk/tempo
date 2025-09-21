@@ -4,6 +4,8 @@ import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.app.TaskStackBuilder
 import android.content.Intent
+import android.os.Binder
+import android.os.IBinder
 import androidx.media3.cast.CastPlayer
 import androidx.media3.cast.SessionAvailabilityListener
 import androidx.media3.common.AudioAttributes
@@ -34,6 +36,19 @@ class MediaService : MediaLibraryService(), SessionAvailabilityListener {
     private lateinit var castPlayer: CastPlayer
     private lateinit var mediaLibrarySession: MediaLibrarySession
     private lateinit var librarySessionCallback: MediaLibrarySessionCallback
+    lateinit var equalizerManager: EqualizerManager
+
+    inner class LocalBinder : Binder() {
+        fun getEqualizerManager(): EqualizerManager {
+            return this@MediaService.equalizerManager
+        }
+    }
+
+    private val binder = LocalBinder()
+
+    companion object {
+        const val ACTION_BIND_EQUALIZER = "com.cappielloantonio.tempo.service.BIND_EQUALIZER"
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -43,6 +58,7 @@ class MediaService : MediaLibraryService(), SessionAvailabilityListener {
         initializeCastPlayer()
         initializeMediaLibrarySession()
         initializePlayerListener()
+        initializeEqualizerManager()
 
         setPlayer(
             null,
@@ -63,12 +79,37 @@ class MediaService : MediaLibraryService(), SessionAvailabilityListener {
     }
 
     override fun onDestroy() {
+        equalizerManager.release()
         releasePlayer()
         super.onDestroy()
     }
 
+    override fun onBind(intent: Intent?): IBinder? {
+        // Check if the intent is for our custom equalizer binder
+        if (intent?.action == ACTION_BIND_EQUALIZER) {
+            return binder
+        }
+        // Otherwise, handle it as a normal MediaLibraryService connection
+        return super.onBind(intent)
+    }
+
     private fun initializeRepository() {
         automotiveRepository = AutomotiveRepository()
+    }
+
+    private fun initializeEqualizerManager() {
+        equalizerManager = EqualizerManager()
+        val audioSessionId = player.audioSessionId
+        if (equalizerManager.attachToSession(audioSessionId)) {
+            val enabled = Preferences.isEqualizerEnabled()
+            equalizerManager.setEnabled(enabled)
+
+            val bands = equalizerManager.getNumberOfBands()
+            val savedLevels = Preferences.getEqualizerBandLevels(bands)
+            for (i in 0 until bands) {
+                equalizerManager.setBandLevel(i.toShort(), savedLevels[i])
+            }
+        }
     }
 
     private fun initializePlayer() {
