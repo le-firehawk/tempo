@@ -458,6 +458,10 @@
     <string name="widget_content_desc_prev">Previous track</string>
     <string name="widget_content_desc_shuffle">Toggle shuffle</string>
     <string name="widget_content_desc_repeat">Change repeat mode</string>
+    <string name="widget_content_desc_favorite">Toggle favorite</string>
+    <string name="widget_content_desc_rate">Rate %1$d stars</string>
+    <string name="widget_rating_unset">Tap to rate</string>
+    <string name="widget_rating_value">%1$d/5</string>
     <plurals name="home_sync_starred_albums_count">
         <item quantity="one">%d album to sync</item>
         <item quantity="other">%d albums to sync</item>

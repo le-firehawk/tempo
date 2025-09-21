@@ -30,7 +30,12 @@ public final class WidgetUpdateManager {
                                      boolean shuffleEnabled,
                                      int repeatMode,
                                      long positionMs,
-                                     long durationMs) {
+                                     long durationMs,
+                                     String mediaId,
+                                     String albumId,
+                                     String artistId,
+                                     boolean isFavorite,
+                                     int userRating) {
     if (TextUtils.isEmpty(title)) title = ctx.getString(R.string.widget_not_playing);
     if (TextUtils.isEmpty(artist)) artist = ctx.getString(R.string.widget_placeholder_subtitle);
     if (TextUtils.isEmpty(album)) album = "";
@@ -40,9 +45,13 @@ public final class WidgetUpdateManager {
     AppWidgetManager mgr = AppWidgetManager.getInstance(ctx);
     int[] ids = mgr.getAppWidgetIds(new ComponentName(ctx, WidgetProvider4x1.class));
     for (int id : ids) {
-      android.widget.RemoteViews rv = choosePopulate(ctx, title, artist, album, art, playing,
-          timing.elapsedText, timing.totalText, timing.progress, shuffleEnabled, repeatMode, id);
-      WidgetProvider.attachIntents(ctx, rv, id);
+      LayoutSize size = resolveLayoutSize(ctx, id);
+      android.widget.RemoteViews rv = populateForSize(ctx, size, title, artist, album, art, playing,
+          timing.elapsedText, timing.totalText, timing.progress, shuffleEnabled, repeatMode,
+          mediaId, albumId, artistId, isFavorite, userRating);
+      boolean supportsExtended = size == LayoutSize.LARGE || size == LayoutSize.EXPANDED;
+      WidgetProvider.attachIntents(ctx, rv, id, mediaId, albumId, artistId, isFavorite, userRating,
+          supportsExtended);
       mgr.updateAppWidget(id, rv);
     }
   }
@@ -66,7 +75,12 @@ public final class WidgetUpdateManager {
                                      boolean shuffleEnabled,
                                      int repeatMode,
                                      long positionMs,
-                                     long durationMs) {
+                                     long durationMs,
+                                     String mediaId,
+                                     String albumId,
+                                     String artistId,
+                                     boolean isFavorite,
+                                     int userRating) {
     final Context appCtx = ctx.getApplicationContext();
     final String t = TextUtils.isEmpty(title) ? appCtx.getString(R.string.widget_not_playing) : title;
     final String a = TextUtils.isEmpty(artist) ? appCtx.getString(R.string.widget_placeholder_subtitle) : artist;
@@ -75,6 +89,11 @@ public final class WidgetUpdateManager {
     final boolean sh = shuffleEnabled;
     final int rep = repeatMode;
     final TimingInfo timing = createTimingInfo(positionMs, durationMs);
+    final String media = mediaId;
+    final String albId = albumId;
+    final String artId = artistId;
+    final boolean fav = isFavorite;
+    final int rating = userRating;
 
     if (!TextUtils.isEmpty(coverArtId)) {
       CustomGlideRequest.loadAlbumArtBitmap(
@@ -86,9 +105,13 @@ public final class WidgetUpdateManager {
               AppWidgetManager mgr = AppWidgetManager.getInstance(appCtx);
               int[] ids = mgr.getAppWidgetIds(new ComponentName(appCtx, WidgetProvider4x1.class));
               for (int id : ids) {
-                android.widget.RemoteViews rv = choosePopulate(appCtx, t, a, alb, resource, p,
-                    timing.elapsedText, timing.totalText, timing.progress, sh, rep, id);
-                WidgetProvider.attachIntents(appCtx, rv, id);
+                LayoutSize size = resolveLayoutSize(appCtx, id);
+                android.widget.RemoteViews rv = populateForSize(appCtx, size, t, a, alb, resource, p,
+                    timing.elapsedText, timing.totalText, timing.progress, sh, rep,
+                    media, albId, artId, fav, rating);
+                boolean supportsExtended = size == LayoutSize.LARGE || size == LayoutSize.EXPANDED;
+                WidgetProvider.attachIntents(appCtx, rv, id, media, albId, artId, fav, rating,
+                    supportsExtended);
                 mgr.updateAppWidget(id, rv);
               }
             }
@@ -97,9 +120,13 @@ public final class WidgetUpdateManager {
               AppWidgetManager mgr = AppWidgetManager.getInstance(appCtx);
               int[] ids = mgr.getAppWidgetIds(new ComponentName(appCtx, WidgetProvider4x1.class));
               for (int id : ids) {
-                android.widget.RemoteViews rv = choosePopulate(appCtx, t, a, alb, null, p,
-                    timing.elapsedText, timing.totalText, timing.progress, sh, rep, id);
-                WidgetProvider.attachIntents(appCtx, rv, id);
+                LayoutSize size = resolveLayoutSize(appCtx, id);
+                android.widget.RemoteViews rv = populateForSize(appCtx, size, t, a, alb, null, p,
+                    timing.elapsedText, timing.totalText, timing.progress, sh, rep,
+                    media, albId, artId, fav, rating);
+                boolean supportsExtended = size == LayoutSize.LARGE || size == LayoutSize.EXPANDED;
+                WidgetProvider.attachIntents(appCtx, rv, id, media, albId, artId, fav, rating,
+                    supportsExtended);
                 mgr.updateAppWidget(id, rv);
               }
             }
@@ -109,9 +136,13 @@ public final class WidgetUpdateManager {
       AppWidgetManager mgr = AppWidgetManager.getInstance(appCtx);
       int[] ids = mgr.getAppWidgetIds(new ComponentName(appCtx, WidgetProvider4x1.class));
       for (int id : ids) {
-        android.widget.RemoteViews rv = choosePopulate(appCtx, t, a, alb, null, p,
-            timing.elapsedText, timing.totalText, timing.progress, sh, rep, id);
-        WidgetProvider.attachIntents(appCtx, rv, id);
+        LayoutSize size = resolveLayoutSize(appCtx, id);
+        android.widget.RemoteViews rv = populateForSize(appCtx, size, t, a, alb, null, p,
+            timing.elapsedText, timing.totalText, timing.progress, sh, rep,
+            media, albId, artId, fav, rating);
+        boolean supportsExtended = size == LayoutSize.LARGE || size == LayoutSize.EXPANDED;
+        WidgetProvider.attachIntents(appCtx, rv, id, media, albId, artId, fav, rating,
+            supportsExtended);
         mgr.updateAppWidget(id, rv);
       }
     }
@@ -127,6 +158,9 @@ public final class WidgetUpdateManager {
         MediaController c = future.get();
         androidx.media3.common.MediaItem mi = c.getCurrentMediaItem();
         String title = null, artist = null, album = null, coverId = null;
+        String mediaId = null, albumId = null, artistId = null;
+        boolean favorite = false;
+        int rating = 0;
         if (mi != null && mi.mediaMetadata != null) {
           if (mi.mediaMetadata.title != null) title = mi.mediaMetadata.title.toString();
           if (mi.mediaMetadata.artist != null) artist = mi.mediaMetadata.artist.toString();
@@ -136,6 +170,24 @@ public final class WidgetUpdateManager {
             if (artist == null) artist = mi.mediaMetadata.extras.getString("artist");
             if (album == null) album = mi.mediaMetadata.extras.getString("album");
             coverId = mi.mediaMetadata.extras.getString("coverArtId");
+            mediaId = mi.mediaMetadata.extras.getString("id");
+            albumId = mi.mediaMetadata.extras.getString("albumId");
+            artistId = mi.mediaMetadata.extras.getString("artistId");
+            long starredValue = mi.mediaMetadata.extras.getLong("starred", 0L);
+            favorite = starredValue > 0L;
+            rating = mi.mediaMetadata.extras.getInt("userRating", 0);
+          }
+        }
+        if (mi != null && mi.requestMetadata != null && mi.requestMetadata.extras != null) {
+          if (TextUtils.isEmpty(mediaId)) mediaId = mi.requestMetadata.extras.getString("id");
+          if (TextUtils.isEmpty(albumId)) albumId = mi.requestMetadata.extras.getString("albumId");
+          if (TextUtils.isEmpty(artistId)) artistId = mi.requestMetadata.extras.getString("artistId");
+          if (!favorite) {
+            long starredValue = mi.requestMetadata.extras.getLong("starred", 0L);
+            favorite = starredValue > 0L;
+          }
+          if (rating <= 0) {
+            rating = mi.requestMetadata.extras.getInt("userRating", 0);
           }
         }
         long position = c.getCurrentPosition();
@@ -151,7 +203,12 @@ public final class WidgetUpdateManager {
             c.getShuffleModeEnabled(),
             c.getRepeatMode(),
             position,
-            duration);
+            duration,
+            mediaId,
+            albumId,
+            artistId,
+            favorite,
+            rating);
         c.release();
       } catch (ExecutionException | InterruptedException ignored) {
       }
@@ -203,33 +260,41 @@ public final class WidgetUpdateManager {
     }
   }
 
-  private static android.widget.RemoteViews choosePopulate(Context ctx,
-                                                          String title,
-                                                          String artist,
-                                                          String album,
-                                                          Bitmap art,
-                                                          boolean playing,
-                                                          String elapsedText,
-                                                          String totalText,
-                                                          int progress,
-                                                          boolean shuffleEnabled,
-                                                          int repeatMode,
-                                                          int appWidgetId) {
-    LayoutSize size = resolveLayoutSize(ctx, appWidgetId);
+  private static android.widget.RemoteViews populateForSize(Context ctx,
+                                                            LayoutSize size,
+                                                            String title,
+                                                            String artist,
+                                                            String album,
+                                                            Bitmap art,
+                                                            boolean playing,
+                                                            String elapsedText,
+                                                            String totalText,
+                                                            int progress,
+                                                            boolean shuffleEnabled,
+                                                            int repeatMode,
+                                                            String mediaId,
+                                                            String albumId,
+                                                            String artistId,
+                                                            boolean isFavorite,
+                                                            int userRating) {
     switch (size) {
       case MEDIUM:
         return WidgetViewsFactory.populateMedium(ctx, title, artist, album, art, playing,
-            elapsedText, totalText, progress, shuffleEnabled, repeatMode);
+            elapsedText, totalText, progress, shuffleEnabled, repeatMode,
+            mediaId, albumId, artistId, isFavorite, userRating);
       case LARGE:
         return WidgetViewsFactory.populateLarge(ctx, title, artist, album, art, playing,
-            elapsedText, totalText, progress, shuffleEnabled, repeatMode);
+            elapsedText, totalText, progress, shuffleEnabled, repeatMode,
+            mediaId, albumId, artistId, isFavorite, userRating);
       case EXPANDED:
         return WidgetViewsFactory.populateExpanded(ctx, title, artist, album, art, playing,
-            elapsedText, totalText, progress, shuffleEnabled, repeatMode);
+            elapsedText, totalText, progress, shuffleEnabled, repeatMode,
+            mediaId, albumId, artistId, isFavorite, userRating);
       case COMPACT:
       default:
         return WidgetViewsFactory.populateCompact(ctx, title, artist, album, art, playing,
-            elapsedText, totalText, progress, shuffleEnabled, repeatMode);
+            elapsedText, totalText, progress, shuffleEnabled, repeatMode,
+            mediaId, albumId, artistId, isFavorite, userRating);
     }
   }
 

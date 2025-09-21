@@ -307,6 +307,12 @@ class MediaService : MediaLibraryService(), SessionAvailabilityListener {
         val album = mi?.mediaMetadata?.albumTitle?.toString()
             ?: mi?.mediaMetadata?.extras?.getString("album")
         val coverId = mi?.mediaMetadata?.extras?.getString("coverArtId")
+        val extras = mi?.mediaMetadata?.extras
+        val mediaId = extras?.getString("id")
+        val albumId = extras?.getString("albumId")
+        val artistId = extras?.getString("artistId")
+        val favorite = (extras?.getLong("starred") ?: 0L) > 0L
+        val rating = extras?.getInt("userRating") ?: 0
         val position = player.currentPosition.takeIf { it != C.TIME_UNSET } ?: 0L
         val duration = player.duration.takeIf { it != C.TIME_UNSET } ?: 0L
         WidgetUpdateManager.updateFromState(
@@ -319,7 +325,12 @@ class MediaService : MediaLibraryService(), SessionAvailabilityListener {
             player.shuffleModeEnabled,
             player.repeatMode,
             position,
-            duration
+            duration,
+            mediaId,
+            albumId,
+            artistId,
+            favorite,
+            rating
         )
     }
 

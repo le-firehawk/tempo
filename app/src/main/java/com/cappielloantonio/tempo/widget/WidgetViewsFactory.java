@@ -20,6 +20,13 @@ import com.cappielloantonio.tempo.R;
 public final class WidgetViewsFactory {
 
   static final int PROGRESS_MAX = 1000;
+  private static final int[] RATING_TARGET_IDS = {
+      R.id.rating_click_area_1,
+      R.id.rating_click_area_2,
+      R.id.rating_click_area_3,
+      R.id.rating_click_area_4,
+      R.id.rating_click_area_5
+  };
   private static final float ALBUM_ART_CORNER_RADIUS_DP = 6f;
 
   private WidgetViewsFactory() {}
@@ -55,6 +62,7 @@ public final class WidgetViewsFactory {
     rv.setImageViewResource(R.id.btn_play_pause, R.drawable.ic_play);
     rv.setImageViewResource(R.id.album_art, R.drawable.ic_splash_logo);
     applySecondaryControlsDefaults(ctx, rv, showSecondaryControls);
+    applyFavoriteAndRatingDefaults(ctx, rv, layoutRes);
     return rv;
   }
 
@@ -84,9 +92,15 @@ public final class WidgetViewsFactory {
                                             String totalText,
                                             int progress,
                                             boolean shuffleEnabled,
-                                            int repeatMode) {
+                                            int repeatMode,
+                                            String mediaId,
+                                            String albumId,
+                                            String artistId,
+                                            boolean isFavorite,
+                                            int userRating) {
     return populateWithLayout(ctx, title, subtitle, album, art, playing, elapsedText, totalText,
-        progress, R.layout.widget_layout_compact, false, false, shuffleEnabled, repeatMode);
+        progress, R.layout.widget_layout_compact, false, false, shuffleEnabled, repeatMode,
+        mediaId, albumId, artistId, isFavorite, userRating);
   }
 
   public static RemoteViews populateMedium(Context ctx,
@@ -99,9 +113,15 @@ public final class WidgetViewsFactory {
                                            String totalText,
                                            int progress,
                                            boolean shuffleEnabled,
-                                           int repeatMode) {
+                                           int repeatMode,
+                                           String mediaId,
+                                           String albumId,
+                                           String artistId,
+                                           boolean isFavorite,
+                                           int userRating) {
     return populateWithLayout(ctx, title, subtitle, album, art, playing, elapsedText, totalText,
-        progress, R.layout.widget_layout_medium, true, true, shuffleEnabled, repeatMode);
+        progress, R.layout.widget_layout_medium, true, true, shuffleEnabled, repeatMode,
+        mediaId, albumId, artistId, isFavorite, userRating);
   }
 
   public static RemoteViews populateLarge(Context ctx,
@@ -114,9 +134,15 @@ public final class WidgetViewsFactory {
                                           String totalText,
                                           int progress,
                                           boolean shuffleEnabled,
-                                          int repeatMode) {
+                                          int repeatMode,
+                                          String mediaId,
+                                          String albumId,
+                                          String artistId,
+                                          boolean isFavorite,
+                                          int userRating) {
     return populateWithLayout(ctx, title, subtitle, album, art, playing, elapsedText, totalText,
-        progress, R.layout.widget_layout_large_short, true, true, shuffleEnabled, repeatMode);
+        progress, R.layout.widget_layout_large_short, true, true, shuffleEnabled, repeatMode,
+        mediaId, albumId, artistId, isFavorite, userRating);
   }
 
   public static RemoteViews populateExpanded(Context ctx,
@@ -129,9 +155,15 @@ public final class WidgetViewsFactory {
                                             String totalText,
                                             int progress,
                                             boolean shuffleEnabled,
-                                            int repeatMode) {
+                                            int repeatMode,
+                                            String mediaId,
+                                            String albumId,
+                                            String artistId,
+                                            boolean isFavorite,
+                                            int userRating) {
     return populateWithLayout(ctx, title, subtitle, album, art, playing, elapsedText, totalText,
-        progress, R.layout.widget_layout_large, true, true, shuffleEnabled, repeatMode);
+        progress, R.layout.widget_layout_large, true, true, shuffleEnabled, repeatMode,
+        mediaId, albumId, artistId, isFavorite, userRating);
   }
 
   private static RemoteViews populateWithLayout(Context ctx,
@@ -147,7 +179,12 @@ public final class WidgetViewsFactory {
                                             boolean showAlbum,
                                             boolean showSecondaryControls,
                                             boolean shuffleEnabled,
-                                            int repeatMode) {
+                                            int repeatMode,
+                                            String mediaId,
+                                            String albumId,
+                                            String artistId,
+                                            boolean isFavorite,
+                                            int userRating) {
     RemoteViews rv = new RemoteViews(ctx.getPackageName(), layoutRes);
     rv.setTextViewText(R.id.title, title);
     rv.setTextViewText(R.id.subtitle, subtitle);
@@ -186,8 +223,65 @@ public final class WidgetViewsFactory {
     rv.setProgressBar(R.id.progress, PROGRESS_MAX, safeProgress, false);
 
     applySecondaryControls(ctx, rv, showSecondaryControls, shuffleEnabled, repeatMode);
+    applyFavoriteAndRating(ctx, rv, layoutRes, !TextUtils.isEmpty(mediaId), isFavorite, userRating);
 
     return rv;
+  }
+
+  private static boolean isLargeLayout(int layoutRes) {
+    return layoutRes == R.layout.widget_layout_large_short || layoutRes == R.layout.widget_layout_large;
+  }
+
+  private static void applyFavoriteAndRatingDefaults(Context ctx, RemoteViews rv, int layoutRes) {
+    if (!isLargeLayout(layoutRes)) {
+      return;
+    }
+    rv.setViewVisibility(R.id.metadata_actions, View.GONE);
+    rv.setViewVisibility(R.id.rating_container, View.GONE);
+    rv.setViewVisibility(R.id.rating_click_targets, View.GONE);
+    rv.setBoolean(R.id.button_favorite, "setChecked", false);
+    rv.setViewVisibility(R.id.button_favorite, View.GONE);
+    rv.setFloat(R.id.song_rating_bar, "setRating", 0f);
+    rv.setTextViewText(R.id.rating_text, ctx.getString(R.string.widget_rating_unset));
+    for (int id : RATING_TARGET_IDS) {
+      rv.setViewVisibility(id, View.GONE);
+    }
+  }
+
+  private static void applyFavoriteAndRating(Context ctx,
+                                             RemoteViews rv,
+                                             int layoutRes,
+                                             boolean hasMedia,
+                                             boolean isFavorite,
+                                             int userRating) {
+    if (!isLargeLayout(layoutRes)) {
+      return;
+    }
+
+    if (!hasMedia) {
+      applyFavoriteAndRatingDefaults(ctx, rv, layoutRes);
+      return;
+    }
+
+    int clampedRating = Math.max(0, Math.min(userRating, 5));
+    rv.setViewVisibility(R.id.metadata_actions, View.VISIBLE);
+    rv.setViewVisibility(R.id.rating_container, View.VISIBLE);
+    rv.setViewVisibility(R.id.rating_click_targets, View.VISIBLE);
+    rv.setViewVisibility(R.id.button_favorite, View.VISIBLE);
+    rv.setBoolean(R.id.button_favorite, "setChecked", isFavorite);
+    rv.setFloat(R.id.song_rating_bar, "setRating", (float) clampedRating);
+    rv.setTextViewText(R.id.rating_text,
+        clampedRating > 0
+            ? ctx.getString(R.string.widget_rating_value, clampedRating)
+            : ctx.getString(R.string.widget_rating_unset));
+    rv.setContentDescription(R.id.button_favorite,
+        ctx.getString(R.string.widget_content_desc_favorite));
+    for (int i = 0; i < RATING_TARGET_IDS.length; i++) {
+      int id = RATING_TARGET_IDS[i];
+      rv.setViewVisibility(id, View.VISIBLE);
+      rv.setContentDescription(id,
+          ctx.getString(R.string.widget_content_desc_rate, i + 1));
+    }
   }
 
   private static Bitmap maybeRoundBitmap(Context ctx, Bitmap source) {
