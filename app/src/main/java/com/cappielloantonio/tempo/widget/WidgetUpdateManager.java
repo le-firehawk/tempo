@@ -51,7 +51,7 @@ public final class WidgetUpdateManager {
           mediaId, albumId, artistId, isFavorite, userRating);
       boolean supportsExtended = size == LayoutSize.LARGE || size == LayoutSize.EXPANDED;
       WidgetProvider.attachIntents(ctx, rv, id, mediaId, albumId, artistId, isFavorite, userRating,
-          supportsExtended)
+          supportsExtended);
       mgr.updateAppWidget(id, rv);
     }
   }
