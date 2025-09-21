@@ -144,6 +144,8 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
     public void onResume() {
         super.onResume();
         refreshSharesView();
+        setTopSongMediaBrowserListenableFuture();
+        setStarredSongMediaBrowserListenableFuture();
     }
 
     @Override
@@ -477,6 +479,7 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
 
         topSongAdapter = new SongHorizontalAdapter(this, true, false, null);
         bind.topSongsRecyclerView.setAdapter(topSongAdapter);
+        setTopSongMediaBrowserListenableFuture();
         homeViewModel.getChronologySample(getViewLifecycleOwner()).observe(getViewLifecycleOwner(), chronologies -> {
             if (chronologies == null || chronologies.isEmpty()) {
                 if (bind != null) bind.homeGridTracksSector.setVisibility(View.GONE);
@@ -515,6 +518,7 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
 
         starredSongAdapter = new SongHorizontalAdapter(this, true, false, null);
         bind.starredTracksRecyclerView.setAdapter(starredSongAdapter);
+        setStarredSongMediaBrowserListenableFuture();
         homeViewModel.getStarredTracks(getViewLifecycleOwner()).observe(getViewLifecycleOwner(), songs -> {
             if (songs == null) {
                 if (bind != null) bind.starredTracksSector.setVisibility(View.GONE);
@@ -954,6 +958,8 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
             MediaManager.startQueue(mediaBrowserListenableFuture, bundle.getParcelableArrayList(Constants.TRACKS_OBJECT), bundle.getInt(Constants.ITEM_POSITION));
             activity.setBottomSheetInPeek(true);
         }
+        topSongAdapter.notifyDataSetChanged();
+        starredSongAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -1042,5 +1048,17 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
     @Override
     public void onShareLongClick(Bundle bundle) {
         Navigation.findNavController(requireView()).navigate(R.id.shareBottomSheetDialog, bundle);
+    }
+
+    private void setTopSongMediaBrowserListenableFuture() {
+        if (topSongAdapter != null) {
+            topSongAdapter.setMediaBrowserListenableFuture(mediaBrowserListenableFuture);
+        }
+    }
+
+    private void setStarredSongMediaBrowserListenableFuture() {
+        if (starredSongAdapter != null) {
+            starredSongAdapter.setMediaBrowserListenableFuture(mediaBrowserListenableFuture);
+        }
     }
 }

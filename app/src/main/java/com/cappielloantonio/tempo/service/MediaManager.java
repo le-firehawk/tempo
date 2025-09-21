@@ -12,6 +12,7 @@ import androidx.media3.session.SessionToken;
 
 import com.cappielloantonio.tempo.App;
 import com.cappielloantonio.tempo.interfaces.MediaIndexCallback;
+import com.cappielloantonio.tempo.interfaces.MediaSongIdCallback;
 import com.cappielloantonio.tempo.model.Chronology;
 import com.cappielloantonio.tempo.repository.ChronologyRepository;
 import com.cappielloantonio.tempo.repository.QueueRepository;
@@ -284,6 +285,25 @@ public class MediaManager {
                 try {
                     if (mediaBrowserListenableFuture.isDone()) {
                         callback.onRecovery(mediaBrowserListenableFuture.get().getCurrentMediaItemIndex());
+                    }
+                } catch (ExecutionException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }, MoreExecutors.directExecutor());
+        }
+    }
+
+    public static void getCurrentSongId(ListenableFuture<MediaBrowser> mediaBrowserListenableFuture, MediaSongIdCallback callback) {
+        if (mediaBrowserListenableFuture != null) {
+            mediaBrowserListenableFuture.addListener(() -> {
+                try {
+                    if (mediaBrowserListenableFuture.isDone()) {
+                        MediaItem currentItem = mediaBrowserListenableFuture.get().getCurrentMediaItem();
+                        if (currentItem != null) {
+                            callback.onRecovery(currentItem.mediaMetadata.extras.getString("id"));
+                        } else {
+                            callback.onRecovery(null);
+                        }
                     }
                 } catch (ExecutionException | InterruptedException e) {
                     e.printStackTrace();

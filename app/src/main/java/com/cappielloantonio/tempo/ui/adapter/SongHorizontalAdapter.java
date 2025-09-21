@@ -10,12 +10,15 @@ import android.widget.Filterable;
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.media3.common.util.UnstableApi;
+import androidx.media3.session.MediaBrowser;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cappielloantonio.tempo.R;
 import com.cappielloantonio.tempo.databinding.ItemHorizontalTrackBinding;
 import com.cappielloantonio.tempo.glide.CustomGlideRequest;
 import com.cappielloantonio.tempo.interfaces.ClickCallback;
+import com.cappielloantonio.tempo.interfaces.MediaSongIdCallback;
+import com.cappielloantonio.tempo.service.MediaManager;
 import com.cappielloantonio.tempo.subsonic.models.AlbumID3;
 import com.cappielloantonio.tempo.subsonic.models.Child;
 import com.cappielloantonio.tempo.subsonic.models.DiscTitle;
@@ -23,6 +26,7 @@ import com.cappielloantonio.tempo.util.Constants;
 import com.cappielloantonio.tempo.util.DownloadUtil;
 import com.cappielloantonio.tempo.util.MusicUtil;
 import com.cappielloantonio.tempo.util.Preferences;
+import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,6 +45,7 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
     private List<Child> songsFull;
     private List<Child> songs;
     private String currentFilter;
+    private ListenableFuture<MediaBrowser> mediaBrowserListenableFuture;
 
     private final Filter filtering = new Filter() {
         @Override
@@ -165,6 +170,21 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
         } else {
             holder.item.ratingIndicatorImageView.setVisibility(View.GONE);
         }
+
+        MediaManager.getCurrentSongId(mediaBrowserListenableFuture, new MediaSongIdCallback() {
+            @Override
+            public void onRecovery(String id) {
+                if (song.getId().equals(id)) {
+                    holder.item.playPauseIcon.setVisibility(View.VISIBLE);
+                    if (!showCoverArt) holder.item.trackNumberTextView.setVisibility(View.INVISIBLE);
+                    if (showCoverArt) holder.item.coverArtOverlay.setVisibility(View.VISIBLE);
+                } else {
+                    holder.item.playPauseIcon.setVisibility(View.INVISIBLE);
+                    if (showCoverArt) holder.item.coverArtOverlay.setVisibility(View.INVISIBLE);
+                    if (!showCoverArt) holder.item.trackNumberTextView.setVisibility(View.VISIBLE);
+                }
+            }
+        });
     }
 
     @Override
@@ -246,5 +266,9 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
         }
 
         notifyDataSetChanged();
+    }
+
+    public void setMediaBrowserListenableFuture(ListenableFuture<MediaBrowser> mediaBrowserListenableFuture) {
+        this.mediaBrowserListenableFuture = mediaBrowserListenableFuture;
     }
 }

@@ -83,6 +83,12 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        setMediaBrowserListenableFuture();
+    }
+
+    @Override
     public void onStop() {
         releaseMediaBrowser();
         super.onStop();
@@ -174,6 +180,7 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
 
         songHorizontalAdapter = new SongHorizontalAdapter(this, true, true, null);
         bind.mostStreamedSongRecyclerView.setAdapter(songHorizontalAdapter);
+        setMediaBrowserListenableFuture();
         artistPageViewModel.getArtistTopSongList().observe(getViewLifecycleOwner(), songs -> {
             if (songs == null) {
                 if (bind != null) bind.artistPageTopSongsSector.setVisibility(View.GONE);
@@ -246,6 +253,7 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
     @Override
     public void onMediaClick(Bundle bundle) {
         MediaManager.startQueue(mediaBrowserListenableFuture, bundle.getParcelableArrayList(Constants.TRACKS_OBJECT), bundle.getInt(Constants.ITEM_POSITION));
+        songHorizontalAdapter.notifyDataSetChanged();
         activity.setBottomSheetInPeek(true);
     }
 
@@ -272,5 +280,11 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
     @Override
     public void onArtistLongClick(Bundle bundle) {
         Navigation.findNavController(requireView()).navigate(R.id.artistBottomSheetDialog, bundle);
+    }
+
+    private void setMediaBrowserListenableFuture() {
+        if (songHorizontalAdapter != null) {
+            songHorizontalAdapter.setMediaBrowserListenableFuture(mediaBrowserListenableFuture);
+        }
     }
 }

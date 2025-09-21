@@ -76,6 +76,12 @@ public class SearchFragment extends Fragment implements ClickCallback {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        setMediaBrowserListenableFuture();
+    }
+
+    @Override
     public void onStop() {
         releaseMediaBrowser();
         super.onStop();
@@ -113,6 +119,7 @@ public class SearchFragment extends Fragment implements ClickCallback {
         bind.searchResultTracksRecyclerView.setHasFixedSize(true);
 
         songHorizontalAdapter = new SongHorizontalAdapter(this, true, false, null);
+        setMediaBrowserListenableFuture();
         bind.searchResultTracksRecyclerView.setAdapter(songHorizontalAdapter);
     }
 
@@ -260,6 +267,7 @@ public class SearchFragment extends Fragment implements ClickCallback {
     @Override
     public void onMediaClick(Bundle bundle) {
         MediaManager.startQueue(mediaBrowserListenableFuture, bundle.getParcelableArrayList(Constants.TRACKS_OBJECT), bundle.getInt(Constants.ITEM_POSITION));
+        songHorizontalAdapter.notifyDataSetChanged();
         activity.setBottomSheetInPeek(true);
     }
 
@@ -286,5 +294,11 @@ public class SearchFragment extends Fragment implements ClickCallback {
     @Override
     public void onArtistLongClick(Bundle bundle) {
         Navigation.findNavController(requireView()).navigate(R.id.artistBottomSheetDialog, bundle);
+    }
+
+    private void setMediaBrowserListenableFuture() {
+        if (songHorizontalAdapter != null) {
+            songHorizontalAdapter.setMediaBrowserListenableFuture(mediaBrowserListenableFuture);
+        }
     }
 }
