@@ -1,6 +1,5 @@
 package com.cappielloantonio.tempo.ui.adapter;
 
-import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
