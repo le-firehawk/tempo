@@ -307,7 +307,7 @@ public class AlbumPageFragment extends Fragment implements ClickCallback {
     }
 
     private void observePlayback() {
-        playbackViewModel.getCurrentMediaId().observe(getViewLifecycleOwner(), id -> {
+        playbackViewModel.getCurrentSongId().observe(getViewLifecycleOwner(), id -> {
             if (songHorizontalAdapter != null) {
                 Boolean playing = playbackViewModel.getIsPlaying().getValue();
                 songHorizontalAdapter.setPlaybackState(id, playing != null && playing);
@@ -315,7 +315,7 @@ public class AlbumPageFragment extends Fragment implements ClickCallback {
         });
         playbackViewModel.getIsPlaying().observe(getViewLifecycleOwner(), playing -> {
             if (songHorizontalAdapter != null) {
-                String id = playbackViewModel.getCurrentMediaId().getValue();
+                String id = playbackViewModel.getCurrentSongId().getValue();
                 songHorizontalAdapter.setPlaybackState(id, playing != null && playing);
             }
         });
@@ -323,7 +323,7 @@ public class AlbumPageFragment extends Fragment implements ClickCallback {
 
     private void reapplyPlayback() {
         if (songHorizontalAdapter != null) {
-            String id = playbackViewModel.getCurrentMediaId().getValue();
+            String id = playbackViewModel.getCurrentSongId().getValue();
             Boolean playing = playbackViewModel.getIsPlaying().getValue();
             songHorizontalAdapter.setPlaybackState(id, playing != null && playing);
         }

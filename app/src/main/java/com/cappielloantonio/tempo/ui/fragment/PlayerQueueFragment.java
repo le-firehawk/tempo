@@ -227,7 +227,7 @@ public class PlayerQueueFragment extends Fragment implements ClickCallback {
     }
 
     private void observePlayback() {
-        playbackViewModel.getCurrentMediaId().observe(getViewLifecycleOwner(), id -> {
+        playbackViewModel.getCurrentSongId().observe(getViewLifecycleOwner(), id -> {
             if (playerSongQueueAdapter != null) {
                 Boolean playing = playbackViewModel.getIsPlaying().getValue();
                 playerSongQueueAdapter.setPlaybackState(id, playing != null && playing);
@@ -235,7 +235,7 @@ public class PlayerQueueFragment extends Fragment implements ClickCallback {
         });
         playbackViewModel.getIsPlaying().observe(getViewLifecycleOwner(), playing -> {
             if (playerSongQueueAdapter != null) {
-                String id = playbackViewModel.getCurrentMediaId().getValue();
+                String id = playbackViewModel.getCurrentSongId().getValue();
                 playerSongQueueAdapter.setPlaybackState(id, playing != null && playing);
             }
         });
@@ -243,7 +243,7 @@ public class PlayerQueueFragment extends Fragment implements ClickCallback {
 
     private void reapplyPlayback() {
         if (playerSongQueueAdapter != null) {
-            String id = playbackViewModel.getCurrentMediaId().getValue();
+            String id = playbackViewModel.getCurrentSongId().getValue();
             Boolean playing = playbackViewModel.getIsPlaying().getValue();
             playerSongQueueAdapter.setPlaybackState(id, playing != null && playing);
         }

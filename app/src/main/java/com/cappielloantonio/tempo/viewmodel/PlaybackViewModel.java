@@ -8,20 +8,20 @@ import java.util.Objects;
 
 public class PlaybackViewModel extends ViewModel {
 
-    private final MutableLiveData<String> currentMediaId = new MutableLiveData<>(null);
+    private final MutableLiveData<String> currentSongId = new MutableLiveData<>(null);
     private final MutableLiveData<Boolean> isPlaying = new MutableLiveData<>(false);
 
-    public LiveData<String> getCurrentMediaId() {
-        return currentMediaId;
+    public LiveData<String> getCurrentSongId() {
+        return currentSongId;
     }
 
     public LiveData<Boolean> getIsPlaying() {
         return isPlaying;
     }
 
-    public void update(String mediaId, boolean playing) {
-        if (!Objects.equals(currentMediaId.getValue(), mediaId)) {
-            currentMediaId.postValue(mediaId);
+    public void update(String songId, boolean playing) {
+        if (!Objects.equals(currentSongId.getValue(), songId)) {
+            currentSongId.postValue(songId);
         }
         if (!Objects.equals(isPlaying.getValue(), playing)) {
             isPlaying.postValue(playing);
@@ -29,7 +29,7 @@ public class PlaybackViewModel extends ViewModel {
     }
 
     public void clear() {
-        currentMediaId.postValue(null);
+        currentSongId.postValue(null);
         isPlaying.postValue(false);
     }
 }

@@ -29,20 +29,16 @@ import com.cappielloantonio.tempo.service.MediaManager;
 import com.cappielloantonio.tempo.service.MediaService;
 import com.cappielloantonio.tempo.subsonic.models.ArtistID3;
 import com.cappielloantonio.tempo.ui.activity.MainActivity;
-import com.cappielloantonio.tempo.ui.adapter.AlbumArtistPageOrSimilarAdapter;
 import com.cappielloantonio.tempo.ui.adapter.AlbumCatalogueAdapter;
 import com.cappielloantonio.tempo.ui.adapter.ArtistCatalogueAdapter;
-import com.cappielloantonio.tempo.ui.adapter.ArtistSimilarAdapter;
 import com.cappielloantonio.tempo.ui.adapter.SongHorizontalAdapter;
 import com.cappielloantonio.tempo.util.Constants;
 import com.cappielloantonio.tempo.util.MusicUtil;
-import com.cappielloantonio.tempo.util.Preferences;
 import com.cappielloantonio.tempo.viewmodel.ArtistPageViewModel;
 import com.cappielloantonio.tempo.viewmodel.PlaybackViewModel;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @UnstableApi
@@ -282,7 +278,7 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
     }
 
     private void observePlayback() {
-        playbackViewModel.getCurrentMediaId().observe(getViewLifecycleOwner(), id -> {
+        playbackViewModel.getCurrentSongId().observe(getViewLifecycleOwner(), id -> {
             if (songHorizontalAdapter != null) {
                 Boolean playing = playbackViewModel.getIsPlaying().getValue();
                 songHorizontalAdapter.setPlaybackState(id, playing != null && playing);
@@ -290,7 +286,7 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
         });
         playbackViewModel.getIsPlaying().observe(getViewLifecycleOwner(), playing -> {
             if (songHorizontalAdapter != null) {
-                String id = playbackViewModel.getCurrentMediaId().getValue();
+                String id = playbackViewModel.getCurrentSongId().getValue();
                 songHorizontalAdapter.setPlaybackState(id, playing != null && playing);
             }
         });
@@ -298,7 +294,7 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
 
     private void reapplyPlayback() {
         if (songHorizontalAdapter != null) {
-            String id = playbackViewModel.getCurrentMediaId().getValue();
+            String id = playbackViewModel.getCurrentSongId().getValue();
             Boolean playing = playbackViewModel.getIsPlaying().getValue();
             songHorizontalAdapter.setPlaybackState(id, playing != null && playing);
         }

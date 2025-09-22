@@ -1058,7 +1058,7 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
     }
 
     private void observeStarredSongsPlayback() {
-        playbackViewModel.getCurrentMediaId().observe(getViewLifecycleOwner(), id -> {
+        playbackViewModel.getCurrentSongId().observe(getViewLifecycleOwner(), id -> {
             if (starredSongAdapter != null) {
                 Boolean playing = playbackViewModel.getIsPlaying().getValue();
                 starredSongAdapter.setPlaybackState(id, playing != null && playing);
@@ -1066,14 +1066,14 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
         });
         playbackViewModel.getIsPlaying().observe(getViewLifecycleOwner(), playing -> {
             if (starredSongAdapter != null) {
-                String id = playbackViewModel.getCurrentMediaId().getValue();
+                String id = playbackViewModel.getCurrentSongId().getValue();
                 starredSongAdapter.setPlaybackState(id, playing != null && playing);
             }
         });
     }
 
     private void observeTopSongsPlayback() {
-        playbackViewModel.getCurrentMediaId().observe(getViewLifecycleOwner(), id -> {
+        playbackViewModel.getCurrentSongId().observe(getViewLifecycleOwner(), id -> {
             if (topSongAdapter != null) {
                 Boolean playing = playbackViewModel.getIsPlaying().getValue();
                 topSongAdapter.setPlaybackState(id, playing != null && playing);
@@ -1081,7 +1081,7 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
         });
         playbackViewModel.getIsPlaying().observe(getViewLifecycleOwner(), playing -> {
             if (topSongAdapter != null) {
-                String id = playbackViewModel.getCurrentMediaId().getValue();
+                String id = playbackViewModel.getCurrentSongId().getValue();
                 topSongAdapter.setPlaybackState(id, playing != null && playing);
             }
         });
@@ -1089,7 +1089,7 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
 
     private void reapplyStarredSongsPlayback() {
         if (starredSongAdapter != null) {
-            String id = playbackViewModel.getCurrentMediaId().getValue();
+            String id = playbackViewModel.getCurrentSongId().getValue();
             Boolean playing = playbackViewModel.getIsPlaying().getValue();
             starredSongAdapter.setPlaybackState(id, playing != null && playing);
         }
@@ -1097,7 +1097,7 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
 
     private void reapplyTopSongsPlayback() {
         if (topSongAdapter != null) {
-            String id = playbackViewModel.getCurrentMediaId().getValue();
+            String id = playbackViewModel.getCurrentSongId().getValue();
             Boolean playing = playbackViewModel.getIsPlaying().getValue();
             topSongAdapter.setPlaybackState(id, playing != null && playing);
         }
