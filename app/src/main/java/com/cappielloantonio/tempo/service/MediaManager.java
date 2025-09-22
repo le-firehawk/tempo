@@ -1,6 +1,7 @@
 package com.cappielloantonio.tempo.service;
 
 import android.content.ComponentName;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,12 +40,7 @@ public class MediaManager {
     private static final String TAG = "MediaManager";
     private static WeakReference<MediaBrowser> attachedBrowserRef = new WeakReference<>(null);
 
-    /**
-     * Attach a Player.Listener to the MediaBrowser (once per browser instance).
-     * Safe to call every time you (re)create the MediaBrowser future (e.g. in Fragment.onStart()).
-     */
     public static void registerPlaybackObserver(
-            LifecycleOwner lifecycleOwner,
             ListenableFuture<MediaBrowser> browserFuture,
             PlaybackViewModel playbackViewModel
     ) {
@@ -92,15 +88,11 @@ public class MediaManager {
 
             @Override
             public void onFailure(@NonNull Throwable t) {
-                // Log or handle if needed
+                Log.e(TAG, "Failed to get MediaBrowser instance", t);
             }
         }, MoreExecutors.directExecutor());
     }
 
-    /**
-     * Call this when you truly want to discard the browser (e.g. Activity.onStop()).
-     * If fragments call it, they should accept that next onStart will recreate a browser & listener.
-     */
     public static void onBrowserReleased(@Nullable MediaBrowser released) {
         MediaBrowser attached = attachedBrowserRef.get();
         if (attached == released) {

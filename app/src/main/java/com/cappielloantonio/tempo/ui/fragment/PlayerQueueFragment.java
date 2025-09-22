@@ -63,7 +63,7 @@ public class PlayerQueueFragment extends Fragment implements ClickCallback {
         initializeBrowser();
         bindMediaController();
 
-        MediaManager.registerPlaybackObserver(getViewLifecycleOwner(), mediaBrowserListenableFuture, playbackViewModel);
+        MediaManager.registerPlaybackObserver(mediaBrowserListenableFuture, playbackViewModel);
         observePlayback();
     }
 
@@ -71,6 +71,7 @@ public class PlayerQueueFragment extends Fragment implements ClickCallback {
     public void onResume() {
         super.onResume();
         setMediaBrowserListenableFuture();
+        updateNowPlayingItem();
     }
 
     @Override
@@ -214,6 +215,10 @@ public class PlayerQueueFragment extends Fragment implements ClickCallback {
             MediaManager.removeRange(mediaBrowserListenableFuture, playerSongQueueAdapter.getItems(), startPosition, endPosition);
             bind.playerQueueRecyclerView.getAdapter().notifyItemRangeRemoved(startPosition, endPosition);
         });
+    }
+
+    private void updateNowPlayingItem() {
+        playerSongQueueAdapter.notifyDataSetChanged();
     }
 
     @Override

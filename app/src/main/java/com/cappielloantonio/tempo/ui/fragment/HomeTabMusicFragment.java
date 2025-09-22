@@ -142,7 +142,7 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
 
         initializeMediaBrowser();
 
-        MediaManager.registerPlaybackObserver(getViewLifecycleOwner(), mediaBrowserListenableFuture, playbackViewModel);
+        MediaManager.registerPlaybackObserver(mediaBrowserListenableFuture, playbackViewModel);
         observeStarredSongsPlayback();
         observeTopSongsPlayback();
     }

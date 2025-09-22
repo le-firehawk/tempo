@@ -113,7 +113,7 @@ public class PlaylistPageFragment extends Fragment implements ClickCallback {
 
         initializeMediaBrowser();
 
-        MediaManager.registerPlaybackObserver(getViewLifecycleOwner(), mediaBrowserListenableFuture, playbackViewModel);
+        MediaManager.registerPlaybackObserver(mediaBrowserListenableFuture, playbackViewModel);
         observePlayback();
     }
 

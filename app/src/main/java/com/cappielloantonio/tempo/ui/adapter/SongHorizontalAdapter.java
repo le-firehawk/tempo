@@ -240,6 +240,7 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
     public void setItems(List<Child> songs) {
         this.songsFull = songs != null ? songs : Collections.emptyList();
         filtering.filter(currentFilter);
+        notifyDataSetChanged();
     }
 
     @Override
@@ -320,21 +321,17 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
 
         public void onClick() {
             Bundle bundle = new Bundle();
-            bundle.putParcelableArrayList(
-                    Constants.TRACKS_OBJECT,
-                    new ArrayList<>(MusicUtil.limitPlayableMedia(songs, getBindingAdapterPosition()))
-            );
-            bundle.putInt(
-                    Constants.ITEM_POSITION,
-                    MusicUtil.getPlayableMediaPosition(songs, getBindingAdapterPosition())
-            );
+            bundle.putParcelableArrayList(Constants.TRACKS_OBJECT, new ArrayList<>(MusicUtil.limitPlayableMedia(songs, getBindingAdapterPosition())));
+            bundle.putInt( Constants.ITEM_POSITION, MusicUtil.getPlayableMediaPosition(songs, getBindingAdapterPosition()));
             click.onMediaClick(bundle);
         }
 
         private boolean onLongClick() {
             Bundle bundle = new Bundle();
             bundle.putParcelable(Constants.TRACK_OBJECT, songs.get(getBindingAdapterPosition()));
+
             click.onMediaLongClick(bundle);
+
             return true;
         }
     }

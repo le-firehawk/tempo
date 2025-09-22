@@ -83,7 +83,7 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
         super.onStart();
 
         initializeMediaBrowser();
-        MediaManager.registerPlaybackObserver(getViewLifecycleOwner(), mediaBrowserListenableFuture, playbackViewModel);
+        MediaManager.registerPlaybackObserver(mediaBrowserListenableFuture, playbackViewModel);
         observePlayback();
     }
 
