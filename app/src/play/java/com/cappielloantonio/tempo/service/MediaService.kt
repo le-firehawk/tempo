@@ -265,9 +265,6 @@ class MediaService : MediaLibraryService(), SessionAvailabilityListener {
 
     private fun getRenderersFactory() = DownloadUtil.buildRenderersFactory(this, false)
 
-    private fun getMediaSourceFactory() =
-        DefaultMediaSourceFactory(this).setDataSourceFactory(DownloadUtil.getDataSourceFactory(this))
-
     override fun onCastSessionAvailable() {
         val currentQueue = getQueueFromPlayer(player)
         val currentIndex = player.currentMediaItemIndex
