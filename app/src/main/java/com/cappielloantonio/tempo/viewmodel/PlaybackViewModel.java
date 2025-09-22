@@ -11,9 +11,6 @@ public class PlaybackViewModel extends ViewModel {
     private final MutableLiveData<String> currentMediaId = new MutableLiveData<>(null);
     private final MutableLiveData<Boolean> isPlaying = new MutableLiveData<>(false);
 
-    // (Optional) expose position or other info
-    // private final MutableLiveData<Long> positionMs = new MutableLiveData<>(0L);
-
     public LiveData<String> getCurrentMediaId() {
         return currentMediaId;
     }
