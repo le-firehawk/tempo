@@ -1,6 +1,8 @@
 package com.cappielloantonio.tempo.ui.adapter;
 
+import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,8 +19,6 @@ import com.cappielloantonio.tempo.R;
 import com.cappielloantonio.tempo.databinding.ItemHorizontalTrackBinding;
 import com.cappielloantonio.tempo.glide.CustomGlideRequest;
 import com.cappielloantonio.tempo.interfaces.ClickCallback;
-import com.cappielloantonio.tempo.interfaces.MediaSongIdCallback;
-import com.cappielloantonio.tempo.service.MediaManager;
 import com.cappielloantonio.tempo.subsonic.models.AlbumID3;
 import com.cappielloantonio.tempo.subsonic.models.Child;
 import com.cappielloantonio.tempo.subsonic.models.DiscTitle;
@@ -45,7 +45,10 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
     private List<Child> songsFull;
     private List<Child> songs;
     private String currentFilter;
-    private ListenableFuture<MediaBrowser> mediaBrowserListenableFuture;
+
+    private String currentPlayingId;
+    private boolean isPlaying;
+    private List<Integer> currentPlayingPositions = Collections.emptyList();
 
     private final Filter filtering = new Filter() {
         @Override
@@ -75,6 +78,12 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
         protected void publishResults(CharSequence constraint, FilterResults results) {
             songs = (List<Child>) results.values;
             notifyDataSetChanged();
+
+            for (int pos : currentPlayingPositions) {
+                if (pos >= 0 && pos < songs.size()) {
+                    notifyItemChanged(pos, "payload_playback");
+                }
+            }
         }
     };
 
@@ -86,6 +95,7 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
         this.songsFull = Collections.emptyList();
         this.currentFilter = "";
         this.album = album;
+        setHasStableIds(false);
     }
 
     @NonNull
@@ -96,7 +106,16 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull List<Object> payloads) {
+        if (!payloads.isEmpty() && payloads.contains("payload_playback")) {
+            bindPlaybackState(holder, songs.get(position));
+        } else {
+            super.onBindViewHolder(holder, position, payloads);
+        }
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Child song = songs.get(position);
 
         holder.item.searchResultSongTitleTextView.setText(song.getTitle());
@@ -171,20 +190,46 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
             holder.item.ratingIndicatorImageView.setVisibility(View.GONE);
         }
 
-        MediaManager.getCurrentSongId(mediaBrowserListenableFuture, new MediaSongIdCallback() {
-            @Override
-            public void onRecovery(String id) {
-                if (song.getId().equals(id)) {
-                    holder.item.playPauseIcon.setVisibility(View.VISIBLE);
-                    if (!showCoverArt) holder.item.trackNumberTextView.setVisibility(View.INVISIBLE);
-                    if (showCoverArt) holder.item.coverArtOverlay.setVisibility(View.VISIBLE);
+        holder.item.playPauseButton.setOnClickListener(v -> {
+            Activity a = (Activity) v.getContext();
+            View root = a.findViewById(android.R.id.content);
+            View exoPlayPause = root.findViewById(R.id.exo_play_pause);
+            if (exoPlayPause != null) exoPlayPause.performClick();
+        });
+        bindPlaybackState(holder, song);
+    }
+
+    private void bindPlaybackState(@NonNull ViewHolder holder, @NonNull Child song) {
+        boolean isCurrent = currentPlayingId != null && currentPlayingId.equals(song.getId()) && isPlaying;
+
+        if (isCurrent) {
+            holder.item.playPauseButton.setVisibility(View.VISIBLE);
+            holder.item.playPauseButton.setChecked(true);
+            if (!showCoverArt) {
+                holder.item.trackNumberTextView.setVisibility(View.GONE);
+            } else {
+                holder.item.coverArtOverlay.setVisibility(View.VISIBLE);
+            }
+        } else {
+            boolean sameIdPaused = currentPlayingId != null && currentPlayingId.equals(song.getId()) && !isPlaying;
+            if (sameIdPaused) {
+                holder.item.playPauseButton.setVisibility(View.VISIBLE);
+                holder.item.playPauseButton.setChecked(false);
+                if (!showCoverArt) {
+                    holder.item.trackNumberTextView.setVisibility(View.GONE);
                 } else {
-                    holder.item.playPauseIcon.setVisibility(View.INVISIBLE);
-                    if (showCoverArt) holder.item.coverArtOverlay.setVisibility(View.INVISIBLE);
-                    if (!showCoverArt) holder.item.trackNumberTextView.setVisibility(View.VISIBLE);
+                    holder.item.coverArtOverlay.setVisibility(View.VISIBLE);
+                }
+            } else {
+                holder.item.playPauseButton.setVisibility(View.GONE);
+                holder.item.playPauseButton.setChecked(false);
+                if (!showCoverArt) {
+                    holder.item.trackNumberTextView.setVisibility(View.VISIBLE);
+                } else {
+                    holder.item.coverArtOverlay.setVisibility(View.INVISIBLE);
                 }
             }
-        });
+        }
     }
 
     @Override
@@ -195,7 +240,6 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
     public void setItems(List<Child> songs) {
         this.songsFull = songs != null ? songs : Collections.emptyList();
         filtering.filter(currentFilter);
-        notifyDataSetChanged();
     }
 
     @Override
@@ -206,6 +250,46 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
     @Override
     public long getItemId(int position) {
         return position;
+    }
+
+    public void setPlaybackState(String mediaId, boolean playing) {
+        String oldId = this.currentPlayingId;
+        boolean oldPlaying = this.isPlaying;
+        List<Integer> oldPositions = currentPlayingPositions;
+
+        this.currentPlayingId = mediaId;
+        this.isPlaying = playing;
+
+        if (Objects.equals(oldId, mediaId) && oldPlaying == playing) {
+            List<Integer> newPositionsCheck = mediaId != null ? findPositionsById(mediaId) : Collections.emptyList();
+            if (oldPositions.equals(newPositionsCheck)) {
+                return;
+            }
+        }
+
+        currentPlayingPositions = mediaId != null ? findPositionsById(mediaId) : Collections.emptyList();
+
+        for (int pos : oldPositions) {
+            if (pos >= 0 && pos < songs.size()) {
+                notifyItemChanged(pos, "payload_playback");
+            }
+        }
+        for (int pos : currentPlayingPositions) {
+            if (!oldPositions.contains(pos) && pos >= 0 && pos < songs.size()) {
+                notifyItemChanged(pos, "payload_playback");
+            }
+        }
+    }
+
+    private List<Integer> findPositionsById(String id) {
+        if (id == null) return Collections.emptyList();
+        List<Integer> positions = new ArrayList<>();
+        for (int i = 0; i < songs.size(); i++) {
+            if (id.equals(songs.get(i).getId())) {
+                positions.add(i);
+            }
+        }
+        return positions;
     }
 
     @Override
@@ -236,18 +320,21 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
 
         public void onClick() {
             Bundle bundle = new Bundle();
-            bundle.putParcelableArrayList(Constants.TRACKS_OBJECT, new ArrayList<>(MusicUtil.limitPlayableMedia(songs, getBindingAdapterPosition())));
-            bundle.putInt(Constants.ITEM_POSITION, MusicUtil.getPlayableMediaPosition(songs, getBindingAdapterPosition()));
-
+            bundle.putParcelableArrayList(
+                    Constants.TRACKS_OBJECT,
+                    new ArrayList<>(MusicUtil.limitPlayableMedia(songs, getBindingAdapterPosition()))
+            );
+            bundle.putInt(
+                    Constants.ITEM_POSITION,
+                    MusicUtil.getPlayableMediaPosition(songs, getBindingAdapterPosition())
+            );
             click.onMediaClick(bundle);
         }
 
         private boolean onLongClick() {
             Bundle bundle = new Bundle();
             bundle.putParcelable(Constants.TRACK_OBJECT, songs.get(getBindingAdapterPosition()));
-
             click.onMediaLongClick(bundle);
-
             return true;
         }
     }
@@ -266,9 +353,5 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
         }
 
         notifyDataSetChanged();
-    }
-
-    public void setMediaBrowserListenableFuture(ListenableFuture<MediaBrowser> mediaBrowserListenableFuture) {
-        this.mediaBrowserListenableFuture = mediaBrowserListenableFuture;
     }
 }

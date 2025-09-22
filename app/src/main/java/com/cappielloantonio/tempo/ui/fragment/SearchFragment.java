@@ -34,6 +34,7 @@ import com.cappielloantonio.tempo.ui.adapter.AlbumAdapter;
 import com.cappielloantonio.tempo.ui.adapter.ArtistAdapter;
 import com.cappielloantonio.tempo.ui.adapter.SongHorizontalAdapter;
 import com.cappielloantonio.tempo.util.Constants;
+import com.cappielloantonio.tempo.viewmodel.PlaybackViewModel;
 import com.cappielloantonio.tempo.viewmodel.SearchViewModel;
 import com.google.common.util.concurrent.ListenableFuture;
 
@@ -46,6 +47,7 @@ public class SearchFragment extends Fragment implements ClickCallback {
     private FragmentSearchBinding bind;
     private MainActivity activity;
     private SearchViewModel searchViewModel;
+    private PlaybackViewModel playbackViewModel;
 
     private ArtistAdapter artistAdapter;
     private AlbumAdapter albumAdapter;
@@ -61,6 +63,7 @@ public class SearchFragment extends Fragment implements ClickCallback {
         bind = FragmentSearchBinding.inflate(inflater, container, false);
         View view = bind.getRoot();
         searchViewModel = new ViewModelProvider(requireActivity()).get(SearchViewModel.class);
+        playbackViewModel = new ViewModelProvider(requireActivity()).get(PlaybackViewModel.class);
 
         initSearchResultView();
         initSearchView();
@@ -73,12 +76,14 @@ public class SearchFragment extends Fragment implements ClickCallback {
     public void onStart() {
         super.onStart();
         initializeMediaBrowser();
+
+        MediaManager.registerPlaybackObserver(getViewLifecycleOwner(), mediaBrowserListenableFuture, playbackViewModel);
+        observePlayback();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        setMediaBrowserListenableFuture();
     }
 
     @Override
@@ -119,7 +124,8 @@ public class SearchFragment extends Fragment implements ClickCallback {
         bind.searchResultTracksRecyclerView.setHasFixedSize(true);
 
         songHorizontalAdapter = new SongHorizontalAdapter(this, true, false, null);
-        setMediaBrowserListenableFuture();
+        reapplyPlayback();
+
         bind.searchResultTracksRecyclerView.setAdapter(songHorizontalAdapter);
     }
 
@@ -296,9 +302,26 @@ public class SearchFragment extends Fragment implements ClickCallback {
         Navigation.findNavController(requireView()).navigate(R.id.artistBottomSheetDialog, bundle);
     }
 
-    private void setMediaBrowserListenableFuture() {
+    private void observePlayback() {
+        playbackViewModel.getCurrentMediaId().observe(getViewLifecycleOwner(), id -> {
+            if (songHorizontalAdapter != null) {
+                Boolean playing = playbackViewModel.getIsPlaying().getValue();
+                songHorizontalAdapter.setPlaybackState(id, playing != null && playing);
+            }
+        });
+        playbackViewModel.getIsPlaying().observe(getViewLifecycleOwner(), playing -> {
+            if (songHorizontalAdapter != null) {
+                String id = playbackViewModel.getCurrentMediaId().getValue();
+                songHorizontalAdapter.setPlaybackState(id, playing != null && playing);
+            }
+        });
+    }
+
+    private void reapplyPlayback() {
         if (songHorizontalAdapter != null) {
-            songHorizontalAdapter.setMediaBrowserListenableFuture(mediaBrowserListenableFuture);
+            String id = playbackViewModel.getCurrentMediaId().getValue();
+            Boolean playing = playbackViewModel.getIsPlaying().getValue();
+            songHorizontalAdapter.setPlaybackState(id, playing != null && playing);
         }
     }
 }

@@ -31,16 +31,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/play_pause_icon"
+    <ToggleButton
+        android:id="@+id/play_pause_button"
         android:layout_width="28dp"
         android:layout_height="28dp"
         android:layout_marginStart="14dp"
         android:visibility="gone"
+        android:background="@drawable/button_play_pause_selector"
+        android:checked="false"
+        android:foreground="?android:attr/selectableItemBackgroundBorderless"
+        android:text=""
+        android:textOff=""
+        android:textOn=""
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:src="@drawable/ic_play" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/queue_song_title_text_view"
