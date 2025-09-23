@@ -112,7 +112,7 @@ public class PlayerSongQueueAdapter extends RecyclerView.Adapter<PlayerSongQueue
         } else {
             holder.item.ratingIndicatorImageView.setVisibility(View.GONE);
         }
-        holder.item.playPauseButton.setOnClickListener(v -> {
+        holder.itemView.setOnClickListener(v -> {
             mediaBrowserListenableFuture.addListener(() -> {
                 try {
                     MediaBrowser mediaBrowser = mediaBrowserListenableFuture.get();
@@ -138,23 +138,19 @@ public class PlayerSongQueueAdapter extends RecyclerView.Adapter<PlayerSongQueue
     }
 
     private void bindPlaybackState(@NonNull PlayerSongQueueAdapter.ViewHolder holder, @NonNull Child song) {
-        boolean isCurrent = currentPlayingId != null && currentPlayingId.equals(song.getId()) && isPlaying;
+        boolean isCurrent = currentPlayingId != null && currentPlayingId.equals(song.getId());
 
         if (isCurrent) {
-            holder.item.playPauseButton.setVisibility(View.VISIBLE);
-            holder.item.playPauseButton.setChecked(true);
+            holder.item.playPauseIcon.setVisibility(View.VISIBLE);
+            if (isPlaying) {
+                holder.item.playPauseIcon.setImageResource(R.drawable.ic_pause);
+            } else {
+                holder.item.playPauseIcon.setImageResource(R.drawable.ic_play);
+            }
             holder.item.coverArtOverlay.setVisibility(View.VISIBLE);
         } else {
-            boolean sameIdPaused = currentPlayingId != null && currentPlayingId.equals(song.getId()) && !isPlaying;
-            if (sameIdPaused) {
-                holder.item.playPauseButton.setVisibility(View.VISIBLE);
-                holder.item.playPauseButton.setChecked(false);
-                holder.item.coverArtOverlay.setVisibility(View.VISIBLE);
-            } else {
-                holder.item.playPauseButton.setVisibility(View.GONE);
-                holder.item.playPauseButton.setChecked(false);
-                holder.item.coverArtOverlay.setVisibility(View.INVISIBLE);
-            }
+            holder.item.playPauseIcon.setVisibility(View.INVISIBLE);
+            holder.item.coverArtOverlay.setVisibility(View.INVISIBLE);
         }
     }
 

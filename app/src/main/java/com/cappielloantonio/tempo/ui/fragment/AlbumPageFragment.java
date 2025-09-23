@@ -99,6 +99,11 @@ public class AlbumPageFragment extends Fragment implements ClickCallback {
         observePlayback();
     }
 
+    public void onResume() {
+        super.onResume();
+        if (songHorizontalAdapter != null) setMediaBrowserListenableFuture();
+    }
+
     @Override
     public void onStop() {
         releaseMediaBrowser();
@@ -277,6 +282,7 @@ public class AlbumPageFragment extends Fragment implements ClickCallback {
 
                 songHorizontalAdapter = new SongHorizontalAdapter(this, false, false, album);
                 bind.songRecyclerView.setAdapter(songHorizontalAdapter);
+                setMediaBrowserListenableFuture();
                 reapplyPlayback();
 
                 albumPageViewModel.getAlbumSongLiveList().observe(getViewLifecycleOwner(), songs -> {
@@ -327,5 +333,9 @@ public class AlbumPageFragment extends Fragment implements ClickCallback {
             Boolean playing = playbackViewModel.getIsPlaying().getValue();
             songHorizontalAdapter.setPlaybackState(id, playing != null && playing);
         }
+    }
+
+    private void setMediaBrowserListenableFuture() {
+        songHorizontalAdapter.setMediaBrowserListenableFuture(mediaBrowserListenableFuture);
     }
 }

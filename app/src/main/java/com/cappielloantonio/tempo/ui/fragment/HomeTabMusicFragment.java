@@ -151,6 +151,8 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
     public void onResume() {
         super.onResume();
         refreshSharesView();
+        if (topSongAdapter != null) setTopSongsMediaBrowserListenableFuture();
+        if (starredSongAdapter != null) setStarredSongsMediaBrowserListenableFuture();
     }
 
     @Override
@@ -484,6 +486,7 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
 
         topSongAdapter = new SongHorizontalAdapter(this, true, false, null);
         bind.topSongsRecyclerView.setAdapter(topSongAdapter);
+        setTopSongsMediaBrowserListenableFuture();
         reapplyTopSongsPlayback();
         homeViewModel.getChronologySample(getViewLifecycleOwner()).observe(getViewLifecycleOwner(), chronologies -> {
             if (chronologies == null || chronologies.isEmpty()) {
@@ -524,6 +527,7 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
 
         starredSongAdapter = new SongHorizontalAdapter(this, true, false, null);
         bind.starredTracksRecyclerView.setAdapter(starredSongAdapter);
+        setStarredSongsMediaBrowserListenableFuture();
         reapplyStarredSongsPlayback();
         homeViewModel.getStarredTracks(getViewLifecycleOwner()).observe(getViewLifecycleOwner(), songs -> {
             if (songs == null) {
@@ -1101,5 +1105,13 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
             Boolean playing = playbackViewModel.getIsPlaying().getValue();
             topSongAdapter.setPlaybackState(id, playing != null && playing);
         }
+    }
+
+    private void setTopSongsMediaBrowserListenableFuture() {
+        topSongAdapter.setMediaBrowserListenableFuture(mediaBrowserListenableFuture);
+    }
+
+    private void setStarredSongsMediaBrowserListenableFuture() {
+        starredSongAdapter.setMediaBrowserListenableFuture(mediaBrowserListenableFuture);
     }
 }
