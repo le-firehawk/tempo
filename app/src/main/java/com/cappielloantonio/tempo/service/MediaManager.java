@@ -11,6 +11,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
+import androidx.media3.common.Timeline;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.session.MediaBrowser;
 import androidx.media3.session.SessionToken;
@@ -177,11 +178,24 @@ public class MediaManager {
             mediaBrowserListenableFuture.addListener(() -> {
                 try {
                     if (mediaBrowserListenableFuture.isDone()) {
-                        mediaBrowserListenableFuture.get().clearMediaItems();
-                        mediaBrowserListenableFuture.get().setMediaItems(MappingUtil.mapMediaItems(media));
-                        mediaBrowserListenableFuture.get().prepare();
-                        mediaBrowserListenableFuture.get().seekTo(startIndex, 0);
-                        mediaBrowserListenableFuture.get().play();
+                        MediaBrowser browser = mediaBrowserListenableFuture.get();
+                        browser.clearMediaItems();
+                        browser.setMediaItems(MappingUtil.mapMediaItems(media));
+                        browser.prepare();
+
+                        Player.Listener timelineListener = new Player.Listener() {
+                            @Override
+                            public void onTimelineChanged(Timeline timeline, int reason) {
+                                int itemCount = browser.getMediaItemCount();
+                                if (itemCount > 0 && startIndex >= 0 && startIndex < itemCount) {
+                                    browser.seekTo(startIndex, 0);
+                                    browser.play();
+                                    browser.removeListener(this);
+                                }
+                            }
+                        };
+                        browser.addListener(timelineListener);
+
                         enqueueDatabase(media, true, 0);
                     }
                 } catch (ExecutionException | InterruptedException e) {
