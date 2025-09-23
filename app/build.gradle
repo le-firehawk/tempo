@@ -11,7 +11,7 @@ android {
         targetSdk 35
 
         versionCode 32
-        versionName '3.14.9'
+        versionName '3.15.0'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
 
         javaCompileOptions {
@@ -62,6 +62,7 @@ android {
             minifyEnabled true
             debuggable false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            universalApk true
         }
 
         debug {
