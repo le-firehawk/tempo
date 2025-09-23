@@ -107,6 +107,7 @@
     <string name="home_section_music">Muzyka</string>
     <string name="home_section_podcast">Podcasty</string>
     <string name="home_section_radio">Radio</string>
+    <string name="player_queue_save_queue_success">Zapisano kolejkę odtwarzania</string>
     <string name="track_info_bit_depth">Głębia bitowa</string>
     <string name="track_info_sampling_rate">Częstotliwość próbkowania</string>
     <string name="settings_system_language">Język systemu</string>
@@ -289,8 +290,8 @@
     <string name="settings_delete_download_storage_summary">Zatwierdzenie nieodwracalnie usunie wszystkie zapisane elementy</string>
     <string name="settings_delete_download_storage_title">Usuń zapisane elementy</string>
     <string name="settings_download_storage_title">Pamięć do pobierania</string>
-    <string name="settings_equalizer_summary">Zmień ustawienia audio</string>
-    <string name="settings_equalizer_title">Equalizer</string>
+    <string name="settings_system_equalizer_summary">Zmień ustawienia audio</string>
+    <string name="settings_system_equalizer_title">Korektor systemowy</string>
     <string name="settings_github_link">https://github.com/eddyizm/tempo</string>
     <string name="settings_github_summary">Śledź tworzenie aplikacji</string>
     <string name="settings_github_title">GitHub</string>
@@ -421,4 +422,14 @@
     <string name="undraw_page">unDraw</string>
     <string name="undraw_thanks">Specjalne podziękowania dla unDraw bez którego ilustracji nie mogliśmy uczynić tej aplikacji jeszcze piękniejszą.</string>
     <string name="undraw_url">https://undraw.co/</string>
+    <plurals name="home_sync_starred_albums_count">
+        <item quantity="one">%d album do zsynchronizowania </item>
+        <item quantity="other">%d albumów do zsynchrpnizowania</item>
+    </plurals>
+    <string name="equalizer_fragment_title">Korektor dźwięku</string>
+    <string name="equalizer_reset">Reset</string>
+    <string name="equalizer_enable">Włączony</string>
+    <string name="equalizer_not_supported">Nie wspierane na tym urządzeniu</string>
+    <string name="settings_app_equalizer">Korektor dźwięku</string>
+    <string name="settings_app_equalizer_summary">Otwórz wbudowany korektor dźwięku</string>
 </resources>
