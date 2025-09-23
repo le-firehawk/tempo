@@ -165,7 +165,10 @@ class MediaService : MediaLibraryService(), SessionAvailabilityListener {
 
             override fun onTracksChanged(tracks: Tracks) {
                 ReplayGainUtil.setReplayGain(player, tracks)
-                MediaManager.scrobble(player.currentMediaItem, false)
+                val currentMediaItem = player.currentMediaItem
+                if (currentMediaItem != null && currentMediaItem.mediaMetadata.extras != null) {
+                    MediaManager.scrobble(currentMediaItem, false)
+                }
 
                 if (player.currentMediaItemIndex + 1 == player.mediaItemCount)
                     MediaManager.continuousPlay(player.currentMediaItem)
