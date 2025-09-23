@@ -149,7 +149,7 @@ public class PlayerSongQueueAdapter extends RecyclerView.Adapter<PlayerSongQueue
             }
             holder.item.coverArtOverlay.setVisibility(View.VISIBLE);
         } else {
-            holder.item.playPauseIcon.setVisibility(View.GONE);
+            holder.item.playPauseIcon.setVisibility(View.INVISIBLE);
             holder.item.coverArtOverlay.setVisibility(View.INVISIBLE);
         }
     }

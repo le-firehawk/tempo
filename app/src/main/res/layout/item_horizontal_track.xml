@@ -66,18 +66,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/different_disk_divider_sector" />
 
-    <ToggleButton
-        android:id="@+id/play_pause_button"
+    <ImageView
+        android:id="@+id/play_pause_icon"
         android:layout_width="28dp"
         android:layout_height="28dp"
+        android:layout_gravity="center"
         android:layout_marginStart="28dp"
-        android:visibility="gone"
-        android:background="@drawable/button_play_pause_selector"
-        android:checked="false"
-        android:foreground="?android:attr/selectableItemBackgroundBorderless"
-        android:text=""
-        android:textOff=""
-        android:textOn=""
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/different_disk_divider_sector" />

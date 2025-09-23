@@ -81,6 +81,7 @@ public class SearchFragment extends Fragment implements ClickCallback {
     @Override
     public void onResume() {
         super.onResume();
+        if (songHorizontalAdapter != null) setMediaBrowserListenableFuture();
     }
 
     @Override
@@ -121,6 +122,7 @@ public class SearchFragment extends Fragment implements ClickCallback {
         bind.searchResultTracksRecyclerView.setHasFixedSize(true);
 
         songHorizontalAdapter = new SongHorizontalAdapter(this, true, false, null);
+        setMediaBrowserListenableFuture();
         reapplyPlayback();
 
         bind.searchResultTracksRecyclerView.setAdapter(songHorizontalAdapter);
@@ -320,5 +322,9 @@ public class SearchFragment extends Fragment implements ClickCallback {
             Boolean playing = playbackViewModel.getIsPlaying().getValue();
             songHorizontalAdapter.setPlaybackState(id, playing != null && playing);
         }
+    }
+
+    private void setMediaBrowserListenableFuture() {
+        songHorizontalAdapter.setMediaBrowserListenableFuture(mediaBrowserListenableFuture);
     }
 }
