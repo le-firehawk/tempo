@@ -165,7 +165,7 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
 
         bind.artistPageRadioButton.setOnClickListener(v -> {
             artistPageViewModel.getArtistInstantMix().observe(getViewLifecycleOwner(), songs -> {
-                if (!songs.isEmpty()) {
+                if (songs != null && !songs.isEmpty()) {
                     MediaManager.startQueue(mediaBrowserListenableFuture, songs, 0);
                     activity.setBottomSheetInPeek(true);
                 } else {
