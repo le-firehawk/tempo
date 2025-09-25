@@ -493,9 +493,6 @@ class MediaService : MediaLibraryService() {
 
 
     private fun getRenderersFactory() = DownloadUtil.buildRenderersFactory(this, false)
-
-    private fun getMediaSourceFactory() =
-        DefaultMediaSourceFactory(this).setDataSourceFactory(DownloadUtil.getDataSourceFactory(this))
 }
 
 private const val WIDGET_UPDATE_INTERVAL_MS = 1000L
