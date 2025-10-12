@@ -118,6 +118,7 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        initSwipeRefresh();
         initSyncStarredView();
         initSyncStarredAlbumsView();
         initSyncStarredArtistsView();
@@ -169,6 +170,7 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        stopSwipeRefreshing();
         bind = null;
     }
 
@@ -276,6 +278,53 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
         });
 
         bind.gridTracksPreTextView.setOnClickListener(view -> showPopupMenu(view, R.menu.filter_top_songs_popup_menu));
+    }
+
+    private void initSwipeRefresh() {
+        bind.homeSwipeRefresh.setColorSchemeResources(R.color.md_theme_light_primary);
+        bind.homeSwipeRefresh.setOnRefreshListener(() -> {
+            if (bind == null) {
+                return;
+            }
+
+            bind.homeSwipeRefresh.setRefreshing(true);
+            requestHomeRefresh();
+        });
+    }
+
+    private void requestHomeRefresh() {
+        if (homeViewModel == null) {
+            stopSwipeRefreshing();
+            return;
+        }
+
+        homeViewModel.refreshDiscoverySongSample(getViewLifecycleOwner());
+        homeViewModel.refreshSimilarSongSample(getViewLifecycleOwner());
+        homeViewModel.refreshRadioArtistSample(getViewLifecycleOwner());
+        homeViewModel.refreshBestOfArtist(getViewLifecycleOwner());
+        homeViewModel.refreshStarredTracks(getViewLifecycleOwner());
+        homeViewModel.refreshStarredAlbums(getViewLifecycleOwner());
+        homeViewModel.refreshStarredArtists(getViewLifecycleOwner());
+        homeViewModel.refreshMostPlayedAlbums(getViewLifecycleOwner());
+        homeViewModel.refreshMostRecentlyAddedAlbums(getViewLifecycleOwner());
+        homeViewModel.refreshRecentlyPlayedAlbumList(getViewLifecycleOwner());
+        homeViewModel.refreshRecentlyReleasedAlbums(getViewLifecycleOwner());
+        homeViewModel.refreshYearList(getViewLifecycleOwner());
+        homeViewModel.refreshShares(getViewLifecycleOwner());
+        homeViewModel.getChronologySample(getViewLifecycleOwner());
+        homeViewModel.getPinnedPlaylists(getViewLifecycleOwner());
+    }
+
+    private void stopSwipeRefreshing() {
+        if (bind == null || !bind.homeSwipeRefresh.isRefreshing()) {
+            return;
+        }
+
+        bind.homeSwipeRefresh.post(() -> {
+            if (bind != null) {
+                bind.homeSwipeRefresh.setRefreshing(false);
+            }
+        });
     }
 
     private void initSyncStarredView() {
@@ -517,6 +566,8 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
 
                 discoverSongAdapter.setItems(songs);
             }
+
+            stopSwipeRefreshing();
         });
 
         setSlideViewOffset(bind.discoverSongViewPager, 20, 16);
@@ -541,6 +592,8 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
 
                 similarMusicAdapter.setItems(songs);
             }
+
+            stopSwipeRefreshing();
         });
 
         CustomLinearSnapHelper similarSongSnapHelper = new CustomLinearSnapHelper();
@@ -564,6 +617,8 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
 
                 bestOfArtistAdapter.setItems(artists);
             }
+
+            stopSwipeRefreshing();
         });
 
         CustomLinearSnapHelper artistBestOfSnapHelper = new CustomLinearSnapHelper();
@@ -589,6 +644,8 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
 
                 radioArtistAdapter.setItems(artists);
             }
+
+            stopSwipeRefreshing();
         });
 
         CustomLinearSnapHelper artistRadioSnapHelper = new CustomLinearSnapHelper();
@@ -621,6 +678,8 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
                 topSongAdapter.setItems(topSongs);
                 reapplyTopSongsPlayback();
             }
+
+            stopSwipeRefreshing();
         });
 
         SnapHelper topTrackSnapHelper = new PagerSnapHelper();
@@ -657,6 +716,8 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
                 starredSongAdapter.setItems(songs);
                 reapplyStarredSongsPlayback();
             }
+
+            stopSwipeRefreshing();
         });
 
         SnapHelper starredTrackSnapHelper = new PagerSnapHelper();
@@ -690,6 +751,8 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
 
                 starredAlbumAdapter.setItems(albums);
             }
+
+            stopSwipeRefreshing();
         });
 
         SnapHelper starredAlbumSnapHelper = new PagerSnapHelper();
@@ -725,6 +788,8 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
 
                 starredArtistAdapter.setItems(artists);
             }
+
+            stopSwipeRefreshing();
         });
 
         SnapHelper starredArtistSnapHelper = new PagerSnapHelper();
@@ -758,6 +823,8 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
 
                 newReleasesAlbumAdapter.setItems(albums);
             }
+
+            stopSwipeRefreshing();
         });
 
         SnapHelper newReleasesSnapHelper = new PagerSnapHelper();
@@ -790,6 +857,8 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
 
                 yearAdapter.setItems(years);
             }
+
+            stopSwipeRefreshing();
         });
 
         CustomLinearSnapHelper yearSnapHelper = new CustomLinearSnapHelper();
@@ -813,6 +882,8 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
 
                 mostPlayedAlbumAdapter.setItems(albums);
             }
+
+            stopSwipeRefreshing();
         });
 
         CustomLinearSnapHelper mostPlayedAlbumSnapHelper = new CustomLinearSnapHelper();
@@ -836,6 +907,8 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
 
                 recentlyPlayedAlbumAdapter.setItems(albums);
             }
+
+            stopSwipeRefreshing();
         });
 
         CustomLinearSnapHelper recentPlayedAlbumSnapHelper = new CustomLinearSnapHelper();
@@ -859,6 +932,8 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
 
                 recentlyAddedAlbumAdapter.setItems(albums);
             }
+
+            stopSwipeRefreshing();
         });
 
         CustomLinearSnapHelper recentAddedAlbumSnapHelper = new CustomLinearSnapHelper();
@@ -882,6 +957,8 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
 
                 playlistHorizontalAdapter.setItems(playlists);
             }
+
+            stopSwipeRefreshing();
         });
     }
 
@@ -904,6 +981,8 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
 
                     shareHorizontalAdapter.setItems(shares);
                 }
+
+                stopSwipeRefreshing();
             });
         }
 

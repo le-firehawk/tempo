@@ -68,6 +68,7 @@ public class LibraryFragment extends Fragment implements ClickCallback {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        initSwipeRefresh();
         initAppBar();
         initMusicFolderView();
         initAlbumView();
@@ -91,6 +92,7 @@ public class LibraryFragment extends Fragment implements ClickCallback {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        stopSwipeRefreshing();
         bind = null;
     }
 
@@ -122,6 +124,43 @@ public class LibraryFragment extends Fragment implements ClickCallback {
         });
     }
 
+    private void initSwipeRefresh() {
+        bind.librarySwipeRefresh.setColorSchemeResources(R.color.md_theme_light_primary);
+        bind.librarySwipeRefresh.setOnRefreshListener(() -> {
+            if (bind == null) {
+                return;
+            }
+
+            bind.librarySwipeRefresh.setRefreshing(true);
+            requestLibraryRefresh();
+        });
+    }
+
+    private void requestLibraryRefresh() {
+        if (libraryViewModel == null) {
+            stopSwipeRefreshing();
+            return;
+        }
+
+        libraryViewModel.refreshMusicFolders(getViewLifecycleOwner());
+        libraryViewModel.refreshAlbumSample(getViewLifecycleOwner());
+        libraryViewModel.refreshArtistSample(getViewLifecycleOwner());
+        libraryViewModel.refreshGenreSample(getViewLifecycleOwner());
+        libraryViewModel.refreshPlaylistSample(getViewLifecycleOwner());
+    }
+
+    private void stopSwipeRefreshing() {
+        if (bind == null || !bind.librarySwipeRefresh.isRefreshing()) {
+            return;
+        }
+
+        bind.librarySwipeRefresh.post(() -> {
+            if (bind != null) {
+                bind.librarySwipeRefresh.setRefreshing(false);
+            }
+        });
+    }
+
     private void initAppBar() {
         materialToolbar = bind.getRoot().findViewById(R.id.toolbar);
 
@@ -149,6 +188,8 @@ public class LibraryFragment extends Fragment implements ClickCallback {
 
                 musicFolderAdapter.setItems(musicFolders);
             }
+
+            stopSwipeRefreshing();
         });
     }
 
@@ -167,6 +208,8 @@ public class LibraryFragment extends Fragment implements ClickCallback {
 
                 albumAdapter.setItems(albums);
             }
+
+            stopSwipeRefreshing();
         });
 
         CustomLinearSnapHelper albumSnapHelper = new CustomLinearSnapHelper();
@@ -188,6 +231,8 @@ public class LibraryFragment extends Fragment implements ClickCallback {
 
                 artistAdapter.setItems(artists);
             }
+
+            stopSwipeRefreshing();
         });
 
         CustomLinearSnapHelper artistSnapHelper = new CustomLinearSnapHelper();
@@ -210,6 +255,8 @@ public class LibraryFragment extends Fragment implements ClickCallback {
 
                 genreAdapter.setItems(genres);
             }
+
+            stopSwipeRefreshing();
         });
 
         CustomLinearSnapHelper genreSnapHelper = new CustomLinearSnapHelper();
@@ -231,6 +278,8 @@ public class LibraryFragment extends Fragment implements ClickCallback {
 
                 playlistHorizontalAdapter.setItems(playlists);
             }
+
+            stopSwipeRefreshing();
         });
     }
 

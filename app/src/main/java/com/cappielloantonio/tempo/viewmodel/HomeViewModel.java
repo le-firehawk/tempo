@@ -359,6 +359,21 @@ public class HomeViewModel extends AndroidViewModel {
         sharingRepository.getShares().observe(owner, this.shares::postValue);
     }
 
+    public void refreshRecentlyReleasedAlbums(LifecycleOwner owner) {
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+
+        albumRepository.getAlbums("byYear", 500, currentYear, currentYear).observe(owner, albums -> {
+            if (albums != null) {
+                albums.sort(Comparator.comparing(AlbumID3::getCreated).reversed());
+                newReleasedAlbum.postValue(albums.subList(0, Math.min(20, albums.size())));
+            }
+        });
+    }
+
+    public void refreshYearList(LifecycleOwner owner) {
+        albumRepository.getDecades().observe(owner, years::postValue);
+    }
+
     private void setHomeSectorList() {
         if (Preferences.getHomeSectorList() != null && !Preferences.getHomeSectorList().equals("null")) {
             sectors = new Gson().fromJson(

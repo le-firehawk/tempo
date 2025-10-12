@@ -130,6 +130,10 @@ public class LibraryViewModel extends AndroidViewModel {
         playlistRepository.getPlaylists(true, 10).observe(owner, playlistSample::postValue);
     }
 
+    public void refreshMusicFolders(LifecycleOwner owner) {
+        directoryRepository.getMusicFolders().observe(owner, musicFolders::postValue);
+    }
+
     private void handleOfflinePreferenceChange() {
         boolean offlineEnabled = Preferences.isOfflineModeEnabled();
 
