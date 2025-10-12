@@ -24,15 +24,17 @@ class DynamicMediaSourceFactory(
 
         val streamingCacheSize = Preferences.getStreamingCacheSize()
         val bypassCache = mediaType == Constants.MEDIA_TYPE_RADIO
+        val streamToDownloadEnabled = Preferences.isStreamToDownloadEnabled()
 
-        val useUpstream = when {
-            streamingCacheSize.toInt() == 0 -> true
-            streamingCacheSize > 0 && bypassCache -> true
-            streamingCacheSize > 0 && !bypassCache -> false
-            else -> true
+        val useCacheDataSource = when {
+            bypassCache -> false
+            streamToDownloadEnabled -> true
+            streamingCacheSize.toInt() == 0 -> false
+            streamingCacheSize > 0 -> true
+            else -> false
         }
 
-        val dataSourceFactory: DataSource.Factory = if (useUpstream) {
+        val dataSourceFactory: DataSource.Factory = if (!useCacheDataSource) {
             DownloadUtil.getUpstreamDataSourceFactory(context)
         } else {
             DownloadUtil.getCacheDataSourceFactory(context)

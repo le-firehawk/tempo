@@ -74,6 +74,7 @@ object Preferences {
     private const val ESTIMATE_CONTENT_LENGTH = "estimate_content_length"
     private const val BUFFERING_STRATEGY = "buffering_strategy"
     private const val SKIP_MIN_STAR_RATING = "skip_min_star_rating"
+    private const val STREAM_TO_DOWNLOAD_ENABLED = "stream_to_download_enabled"
     private const val MIN_STAR_RATING = "min_star_rating"
     private const val ALWAYS_ON_DISPLAY = "always_on_display"
     private const val AUDIO_QUALITY_PER_ITEM = "audio_quality_per_item"
@@ -432,6 +433,16 @@ object Preferences {
     @JvmStatic
     fun getStreamingCacheSize(): Long {
         return App.getInstance().preferences.getString(STREAMING_CACHE_SIZE, "256")!!.toLong()
+    }
+
+    @JvmStatic
+    fun isStreamToDownloadEnabled(): Boolean {
+        return App.getInstance().preferences.getBoolean(STREAM_TO_DOWNLOAD_ENABLED, false)
+    }
+
+    @JvmStatic
+    fun setStreamToDownloadEnabled(enabled: Boolean) {
+        App.getInstance().preferences.edit().putBoolean(STREAM_TO_DOWNLOAD_ENABLED, enabled).apply()
     }
 
     @JvmStatic

@@ -85,12 +85,31 @@ public final class DownloadUtil {
     }
 
     public static synchronized DataSource.Factory getCacheDataSourceFactory(Context context) {
+        if (Preferences.isStreamToDownloadEnabled()) {
+            CacheDataSource.Factory downloadCacheFactory = new CacheDataSource.Factory()
+                    .setCache(getDownloadCache(context))
+                    .setUpstreamDataSourceFactory(new DefaultDataSource.Factory(context, getHttpDataSourceFactory()))
+                    .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR);
+
+            ResolvingDataSource.Factory resolvingFactory = new ResolvingDataSource.Factory(
+                    new StreamingCacheDataSource.Factory(downloadCacheFactory, true),
+                    dataSpec -> {
+                        DataSpec.Builder builder = dataSpec.buildUpon();
+                        builder.setFlags(dataSpec.flags & ~DataSpec.FLAG_DONT_CACHE_IF_LENGTH_UNKNOWN);
+                        return builder.build();
+                    }
+            );
+
+            dataSourceFactory = resolvingFactory;
+            return dataSourceFactory;
+        }
+
         CacheDataSource.Factory streamCacheFactory = new CacheDataSource.Factory()
                 .setCache(getStreamingCache(context))
                 .setUpstreamDataSourceFactory(getUpstreamDataSourceFactory(context));
 
         ResolvingDataSource.Factory resolvingFactory = new ResolvingDataSource.Factory(
-                new StreamingCacheDataSource.Factory(streamCacheFactory),
+                new StreamingCacheDataSource.Factory(streamCacheFactory, true),
                 dataSpec -> {
                     DataSpec.Builder builder = dataSpec.buildUpon();
                     builder.setFlags(dataSpec.flags & ~DataSpec.FLAG_DONT_CACHE_IF_LENGTH_UNKNOWN);
