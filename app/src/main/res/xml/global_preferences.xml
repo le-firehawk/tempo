@@ -195,6 +195,12 @@
             android:key="delete_download_storage"
             app:title="@string/settings_delete_download_storage_title"
             app:summary="@string/settings_delete_download_storage_summary"/>
+
+        <SwitchPreference
+            android:key="stream_to_download_enabled"
+            android:title="@string/settings_stream_download_title"
+            android:summary="@string/settings_stream_download_summary"
+            android:defaultValue="false"/>
     </PreferenceCategory>
 
     <PreferenceCategory app:title="@string/settings_title_transcoding">
