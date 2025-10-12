@@ -26,6 +26,7 @@ import com.cappielloantonio.tempo.util.AssetLinkUtil
 import com.cappielloantonio.tempo.util.Constants
 import com.cappielloantonio.tempo.util.DownloadUtil
 import com.cappielloantonio.tempo.util.DynamicMediaSourceFactory
+import com.cappielloantonio.tempo.util.ExternalAudioWriter
 import com.cappielloantonio.tempo.util.MappingUtil
 import com.cappielloantonio.tempo.util.Preferences
 import com.cappielloantonio.tempo.util.ReplayGainUtil
@@ -347,6 +348,7 @@ class MediaService : MediaLibraryService() {
                 ) {
                     MediaManager.scrobble(player.currentMediaItem, true)
                     MediaManager.saveChronology(player.currentMediaItem)
+                    ExternalAudioWriter.persistStreamToUserDirectory(this@MediaService, player.currentMediaItem)
                 }
                 updateWidget()
             }
@@ -362,6 +364,7 @@ class MediaService : MediaLibraryService() {
                     if (oldPosition.mediaItem?.mediaMetadata?.extras?.getString("type") == Constants.MEDIA_TYPE_MUSIC) {
                         MediaManager.scrobble(oldPosition.mediaItem, true)
                         MediaManager.saveChronology(oldPosition.mediaItem)
+                        ExternalAudioWriter.persistStreamToUserDirectory(this@MediaService, oldPosition.mediaItem)
                     }
 
                     if (newPosition.mediaItem?.mediaMetadata?.extras?.getString("type") == Constants.MEDIA_TYPE_MUSIC) {

@@ -11,8 +11,14 @@ import android.webkit.MimeTypeMap;
 import androidx.core.app.NotificationCompat;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.media3.common.MediaItem;
+import androidx.media3.common.C;
+import androidx.media3.datasource.cache.Cache;
+import androidx.media3.datasource.cache.CacheSpan;
+import androidx.media3.datasource.cache.CacheUtil;
+import androidx.media3.datasource.cache.ContentMetadata;
 
 import com.cappielloantonio.tempo.model.Download;
+import com.cappielloantonio.tempo.model.Chronology;
 import com.cappielloantonio.tempo.repository.DownloadRepository;
 import com.cappielloantonio.tempo.subsonic.models.Child;
 import com.cappielloantonio.tempo.ui.activity.MainActivity;
@@ -25,7 +31,12 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.Normalizer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -72,6 +83,221 @@ public class ExternalAudioWriter {
         MediaItem mediaItem = MappingUtil.mapDownload(child);
         String fallbackName = child.getTitle() != null ? child.getTitle() : child.getId();
         EXECUTOR.execute(() -> performDownload(appContext, mediaItem, fallbackName, child));
+    }
+
+    public static void persistStreamToUserDirectory(Context context, MediaItem mediaItem) {
+        if (context == null || mediaItem == null) {
+            return;
+        }
+        if (!Preferences.isStreamToDownloadEnabled()) {
+            return;
+        }
+        if (Preferences.getDownloadDirectoryUri() == null) {
+            return;
+        }
+        if (mediaItem.mediaMetadata == null || mediaItem.mediaMetadata.extras == null) {
+            return;
+        }
+        String type = mediaItem.mediaMetadata.extras.getString("type");
+        if (type == null || !Constants.MEDIA_TYPE_MUSIC.equals(type)) {
+            return;
+        }
+        Context appContext = context.getApplicationContext();
+        EXECUTOR.execute(() -> downloadFromCache(appContext, mediaItem));
+    }
+
+    private static void downloadFromCache(Context context, MediaItem mediaItem) {
+        String uriString = Preferences.getDownloadDirectoryUri();
+        if (uriString == null) {
+            return;
+        }
+
+        DocumentFile directory = DocumentFile.fromTreeUri(context, Uri.parse(uriString));
+        if (directory == null || !directory.canWrite()) {
+            notifyFailure(context, "Cannot write to folder.");
+            return;
+        }
+
+        Chronology child;
+        try {
+            child = new Chronology(mediaItem);
+        } catch (Exception e) {
+            notifyFailure(context, "Missing media metadata.");
+            return;
+        }
+
+        String fallbackName = child.getTitle() != null ? child.getTitle() : mediaItem.mediaId;
+        String artist = child.getArtist() != null ? child.getArtist() : "";
+        String title = child.getTitle() != null ? child.getTitle() : fallbackName;
+        String album = child.getAlbum() != null ? child.getAlbum() : "";
+        String baseName = artist.isEmpty() ? title : artist + " - " + title;
+        if (!album.isEmpty()) baseName += " (" + album + ")";
+        if (baseName.isEmpty()) {
+            baseName = fallbackName != null ? fallbackName : "download";
+        }
+        String metadataKey = normalizeForComparison(baseName);
+
+        Uri mediaUri = null;
+        if (mediaItem.localConfiguration != null) {
+            mediaUri = mediaItem.localConfiguration.uri;
+            if (mediaItem.localConfiguration.cacheKey != null) {
+                // Defer to the cache key provided later on
+            }
+        }
+        if (mediaUri == null && mediaItem.requestMetadata != null) {
+            mediaUri = mediaItem.requestMetadata.mediaUri;
+        }
+        if (mediaUri == null) {
+            notifyFailure(context, "Invalid media URI.");
+            return;
+        }
+
+        Cache cache = DownloadUtil.getDownloadCache(context);
+        if (cache == null) {
+            return;
+        }
+
+        String cacheKey;
+        if (mediaItem.localConfiguration != null && mediaItem.localConfiguration.cacheKey != null) {
+            cacheKey = mediaItem.localConfiguration.cacheKey;
+        } else {
+            cacheKey = CacheUtil.generateKey(mediaUri);
+        }
+
+        Set<CacheSpan> spans = cache.getCachedSpans(cacheKey);
+        if (spans == null || spans.isEmpty()) {
+            return;
+        }
+
+        List<CacheSpan> sortedSpans = new ArrayList<>(spans);
+        Collections.sort(sortedSpans, Comparator.comparingLong(span -> span.position));
+
+        long expectedPosition = 0;
+        for (CacheSpan span : sortedSpans) {
+            if (!span.isCached || span.file == null) {
+                return;
+            }
+            if (span.position != expectedPosition) {
+                return;
+            }
+            expectedPosition += span.length;
+        }
+
+        ContentMetadata metadata = cache.getContentMetadata(cacheKey);
+        long contentLength = ContentMetadata.getContentLength(metadata);
+        if (contentLength == C.LENGTH_UNSET) {
+            contentLength = expectedPosition;
+        }
+        if (contentLength <= 0) {
+            return;
+        }
+        if (expectedPosition < contentLength) {
+            return;
+        }
+
+        String mimeType = child.getTranscodedContentType();
+        if (mimeType == null || mimeType.isEmpty()) {
+            mimeType = child.getContentType();
+        }
+        if ((mimeType == null || mimeType.isEmpty()) && child.getSuffix() != null && !child.getSuffix().isEmpty()) {
+            mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(child.getSuffix());
+        }
+        if (mimeType == null || mimeType.isEmpty()) {
+            mimeType = "application/octet-stream";
+        }
+
+        String extension = child.getTranscodedSuffix();
+        if (extension == null || extension.isEmpty()) {
+            extension = child.getSuffix();
+        }
+        if ((extension == null || extension.isEmpty()) && mimeType != null && !mimeType.isEmpty()) {
+            String fromMime = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType);
+            if (fromMime != null && !fromMime.isEmpty()) {
+                extension = fromMime;
+            }
+        }
+        if (extension == null || extension.isEmpty()) {
+            extension = "bin";
+        }
+
+        String sanitized = sanitizeFileName(baseName);
+        if (sanitized.isEmpty()) sanitized = sanitizeFileName(fallbackName);
+        if (sanitized.isEmpty()) sanitized = "download";
+        String fileName = sanitized + "." + extension;
+
+        DocumentFile existingFile = findFile(directory, fileName);
+        Long recordedSize = ExternalDownloadMetadataStore.getSize(metadataKey);
+
+        if (existingFile != null && existingFile.exists()) {
+            long localLength = existingFile.length();
+            boolean matches = false;
+            if (localLength == contentLength) {
+                matches = true;
+            } else if (recordedSize != null && localLength == recordedSize) {
+                matches = true;
+            }
+
+            if (matches) {
+                ExternalDownloadMetadataStore.recordSize(metadataKey, localLength);
+                recordDownload(child, existingFile.getUri());
+                ExternalAudioReader.refreshCacheAsync();
+                return;
+            } else {
+                existingFile.delete();
+                ExternalDownloadMetadataStore.remove(metadataKey);
+            }
+        }
+
+        DocumentFile targetFile = directory.createFile(mimeType, fileName);
+        if (targetFile == null) {
+            notifyFailure(context, "Failed to create file.");
+            return;
+        }
+
+        Uri targetUri = targetFile.getUri();
+        try (OutputStream out = context.getContentResolver().openOutputStream(targetUri)) {
+            if (out == null) {
+                notifyFailure(context, "Cannot open output stream.");
+                targetFile.delete();
+                return;
+            }
+
+            byte[] buffer = new byte[BUFFER_SIZE];
+            long total = 0;
+            for (CacheSpan span : sortedSpans) {
+                try (InputStream in = new FileInputStream(span.file)) {
+                    int len;
+                    while ((len = in.read(buffer)) != -1) {
+                        out.write(buffer, 0, len);
+                        total += len;
+                    }
+                }
+            }
+            out.flush();
+
+            if (total <= 0) {
+                targetFile.delete();
+                ExternalDownloadMetadataStore.remove(metadataKey);
+                notifyFailure(context, "Empty download.");
+                return;
+            }
+
+            if (contentLength > 0 && total != contentLength) {
+                targetFile.delete();
+                ExternalDownloadMetadataStore.remove(metadataKey);
+                notifyFailure(context, "Incomplete download.");
+                return;
+            }
+
+            ExternalDownloadMetadataStore.recordSize(metadataKey, total);
+            recordDownload(child, targetUri);
+            notifySuccess(context, fileName, child, targetUri);
+            ExternalAudioReader.refreshCacheAsync();
+        } catch (Exception e) {
+            targetFile.delete();
+            ExternalDownloadMetadataStore.remove(metadataKey);
+            notifyFailure(context, e.getMessage() != null ? e.getMessage() : "Download failed");
+        }
     }
 
     private static void performDownload(Context context, MediaItem mediaItem, String fallbackName, Child child) {
