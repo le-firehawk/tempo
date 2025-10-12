@@ -12,9 +12,9 @@ import androidx.core.app.NotificationCompat;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.C;
+import androidx.media3.datasource.DataSpec;
 import androidx.media3.datasource.cache.Cache;
 import androidx.media3.datasource.cache.CacheSpan;
-import androidx.media3.datasource.cache.CacheUtil;
 import androidx.media3.datasource.cache.ContentMetadata;
 
 import com.cappielloantonio.tempo.model.Download;
@@ -73,6 +73,13 @@ public class ExternalAudioWriter {
             }
         }
         return null;
+    }
+
+    private static String generateDefaultCacheKey(Uri uri) {
+        DataSpec dataSpec = new DataSpec.Builder()
+                .setUri(uri)
+                .build();
+        return dataSpec.key;
     }
 
     public static void downloadToUserDirectory(Context context, Child child) {
@@ -141,7 +148,7 @@ public class ExternalAudioWriter {
         if (mediaItem.localConfiguration != null) {
             mediaUri = mediaItem.localConfiguration.uri;
             if (mediaItem.localConfiguration.cacheKey != null) {
-                // Defer to the cache key provided later on
+                // We'll prefer the provided cache key later
             }
         }
         if (mediaUri == null && mediaItem.requestMetadata != null) {
@@ -161,7 +168,7 @@ public class ExternalAudioWriter {
         if (mediaItem.localConfiguration != null && mediaItem.localConfiguration.cacheKey != null) {
             cacheKey = mediaItem.localConfiguration.cacheKey;
         } else {
-            cacheKey = CacheUtil.generateKey(mediaUri);
+            cacheKey = generateDefaultCacheKey(mediaUri);
         }
 
         Set<CacheSpan> spans = cache.getCachedSpans(cacheKey);
