@@ -17,6 +17,7 @@ import com.cappielloantonio.tempo.interfaces.StarCallback;
 import com.cappielloantonio.tempo.model.Download;
 import com.cappielloantonio.tempo.model.LyricsCache;
 import com.cappielloantonio.tempo.model.Queue;
+import com.cappielloantonio.tempo.offline.OfflineLyricsManager;
 import com.cappielloantonio.tempo.repository.AlbumRepository;
 import com.cappielloantonio.tempo.repository.ArtistRepository;
 import com.cappielloantonio.tempo.repository.FavoriteRepository;
@@ -181,8 +182,17 @@ public class PlayerBottomSheetViewModel extends AndroidViewModel {
                 lyricsListLiveData.postValue(lyricsList);
                 lyricsLiveData.postValue(null);
 
-                if (shouldAutoDownloadLyrics() && hasStructuredLyrics(lyricsList)) {
-                    saveLyricsToCache(media, null, lyricsList);
+                if (shouldAutoDownloadLyrics() && OfflineLyricsManager.hasStructuredLyrics(lyricsList)) {
+                    OfflineLyricsManager.CachedLyrics cached = OfflineLyricsManager.saveLyricsToCache(
+                            lyricsRepository,
+                            media,
+                            null,
+                            lyricsList,
+                            gson
+                    );
+                    if (cached != null) {
+                        lyricsCachedLiveData.postValue(true);
+                    }
                 }
             });
         } else {
@@ -191,7 +201,16 @@ public class PlayerBottomSheetViewModel extends AndroidViewModel {
                 lyricsListLiveData.postValue(null);
 
                 if (shouldAutoDownloadLyrics() && !TextUtils.isEmpty(lyrics)) {
-                    saveLyricsToCache(media, lyrics, null);
+                    OfflineLyricsManager.CachedLyrics cached = OfflineLyricsManager.saveLyricsToCache(
+                            lyricsRepository,
+                            media,
+                            lyrics,
+                            null,
+                            gson
+                    );
+                    if (cached != null) {
+                        lyricsCachedLiveData.postValue(true);
+                    }
                 }
             });
         }
@@ -322,45 +341,14 @@ public class PlayerBottomSheetViewModel extends AndroidViewModel {
 
         lyricsCachedLiveData.postValue(true);
 
-        if (!TextUtils.isEmpty(lyricsCache.getStructuredLyrics())) {
-            try {
-                LyricsList cachedList = gson.fromJson(lyricsCache.getStructuredLyrics(), LyricsList.class);
-                lyricsListLiveData.postValue(cachedList);
-                lyricsLiveData.postValue(null);
-            } catch (Exception exception) {
-                lyricsListLiveData.postValue(null);
-                lyricsLiveData.postValue(lyricsCache.getLyrics());
-            }
+        OfflineLyricsManager.CachedLyrics cachedLyrics = OfflineLyricsManager.decodeCachedLyrics(lyricsCache, gson);
+        if (cachedLyrics != null && cachedLyrics.getStructured() != null) {
+            lyricsListLiveData.postValue(cachedLyrics.getStructured());
+            lyricsLiveData.postValue(null);
         } else {
             lyricsListLiveData.postValue(null);
-            lyricsLiveData.postValue(lyricsCache.getLyrics());
+            lyricsLiveData.postValue(cachedLyrics != null ? cachedLyrics.getPlainText() : null);
         }
-    }
-
-    private void saveLyricsToCache(Child media, String lyrics, LyricsList lyricsList) {
-        if (media == null) {
-            return;
-        }
-
-        if ((lyricsList == null || !hasStructuredLyrics(lyricsList)) && TextUtils.isEmpty(lyrics)) {
-            return;
-        }
-
-        LyricsCache lyricsCache = new LyricsCache(media.getId());
-        lyricsCache.setArtist(media.getArtist());
-        lyricsCache.setTitle(media.getTitle());
-        lyricsCache.setUpdatedAt(System.currentTimeMillis());
-
-        if (lyricsList != null && hasStructuredLyrics(lyricsList)) {
-            lyricsCache.setStructuredLyrics(gson.toJson(lyricsList));
-            lyricsCache.setLyrics(null);
-        } else {
-            lyricsCache.setLyrics(lyrics);
-            lyricsCache.setStructuredLyrics(null);
-        }
-
-        lyricsRepository.insert(lyricsCache);
-        lyricsCachedLiveData.postValue(true);
     }
 
     private boolean hasStructuredLyrics(LyricsList lyricsList) {
@@ -385,11 +373,25 @@ public class PlayerBottomSheetViewModel extends AndroidViewModel {
         LyricsList lyricsList = lyricsListLiveData.getValue();
         String lyrics = lyricsLiveData.getValue();
 
-        if ((lyricsList == null || !hasStructuredLyrics(lyricsList)) && TextUtils.isEmpty(lyrics)) {
+        if ((lyricsList == null || !OfflineLyricsManager.hasStructuredLyrics(lyricsList)) && TextUtils.isEmpty(lyrics)) {
             return false;
         }
 
-        saveLyricsToCache(media, lyrics, lyricsList);
+        OfflineLyricsManager.CachedLyrics cachedLyrics = OfflineLyricsManager.saveLyricsToCache(
+                lyricsRepository,
+                media,
+                lyrics,
+                lyricsList,
+                gson
+        );
+        if (cachedLyrics != null && cachedLyrics.getStructured() != null) {
+            lyricsListLiveData.postValue(cachedLyrics.getStructured());
+            lyricsLiveData.postValue(null);
+        } else if (cachedLyrics != null) {
+            lyricsListLiveData.postValue(null);
+            lyricsLiveData.postValue(cachedLyrics.getPlainText());
+        }
+        lyricsCachedLiveData.postValue(cachedLyrics != null);
         return true;
     }
 

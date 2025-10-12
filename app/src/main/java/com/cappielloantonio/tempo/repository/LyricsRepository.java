@@ -40,6 +40,12 @@ public class LyricsRepository {
         thread.start();
     }
 
+    public void deleteAll() {
+        DeleteAllThreadSafe deleteAll = new DeleteAllThreadSafe(lyricsDao);
+        Thread thread = new Thread(deleteAll);
+        thread.start();
+    }
+
     private static class GetLyricsThreadSafe implements Runnable {
         private final LyricsDao lyricsDao;
         private final String songId;
@@ -87,6 +93,19 @@ public class LyricsRepository {
         @Override
         public void run() {
             lyricsDao.delete(songId);
+        }
+    }
+
+    private static class DeleteAllThreadSafe implements Runnable {
+        private final LyricsDao lyricsDao;
+
+        private DeleteAllThreadSafe(LyricsDao lyricsDao) {
+            this.lyricsDao = lyricsDao;
+        }
+
+        @Override
+        public void run() {
+            lyricsDao.deleteAll();
         }
     }
 }

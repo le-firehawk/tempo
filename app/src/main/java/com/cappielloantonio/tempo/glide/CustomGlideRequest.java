@@ -32,7 +32,10 @@ public class CustomGlideRequest {
 
     public static final int CORNER_RADIUS = Preferences.isCornerRoundingEnabled() ? Preferences.getRoundedCornerSize() : 1;
 
-    public static final DiskCacheStrategy DEFAULT_DISK_CACHE_STRATEGY = DiskCacheStrategy.ALL;
+    private static DiskCacheStrategy resolveDiskCacheStrategy() {
+        boolean allowOfflineAlbumArt = Preferences.isOfflineModeEnabled() && Preferences.isOfflineAlbumArtEnabled();
+        return allowOfflineAlbumArt ? DiskCacheStrategy.ALL : DiskCacheStrategy.NONE;
+    }
 
     public enum ResourceType {
         Unknown,
@@ -51,7 +54,7 @@ public class CustomGlideRequest {
                 .placeholder(new ColorDrawable(SurfaceColors.SURFACE_5.getColor(context)))
                 .fallback(getPlaceholder(context, type))
                 .error(getPlaceholder(context, type))
-                .diskCacheStrategy(DEFAULT_DISK_CACHE_STRATEGY)
+                .diskCacheStrategy(resolveDiskCacheStrategy())
                 .signature(new ObjectKey(item != null ? item : 0))
                 .transform(new CenterCrop(), new RoundedCorners(CustomGlideRequest.CORNER_RADIUS));
     }

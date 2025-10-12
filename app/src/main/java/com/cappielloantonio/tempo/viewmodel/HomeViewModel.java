@@ -1,6 +1,7 @@
 package com.cappielloantonio.tempo.viewmodel;
 
 import android.app.Application;
+import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -8,6 +9,7 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.cappielloantonio.tempo.App;
 import com.cappielloantonio.tempo.interfaces.StarCallback;
 import com.cappielloantonio.tempo.model.Chronology;
 import com.cappielloantonio.tempo.model.Favorite;
@@ -38,6 +40,10 @@ import java.util.stream.Collectors;
 
 public class HomeViewModel extends AndroidViewModel {
     private static final String TAG = "HomeViewModel";
+
+    private final SharedPreferences preferences;
+    private final SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener =
+            (sharedPreferences, key) -> handleOfflinePreferenceChange();
 
     private final SongRepository songRepository;
     private final AlbumRepository albumRepository;
@@ -89,6 +95,10 @@ public class HomeViewModel extends AndroidViewModel {
         artistSyncViewModel = new StarredArtistsSyncViewModel(application);
 
         setOfflineFavorite();
+
+        preferences = App.getInstance().getPreferences();
+        preferences.registerOnSharedPreferenceChangeListener(preferenceChangeListener);
+        handleOfflinePreferenceChange();
     }
 
     public LiveData<List<Child>> getDiscoverSongSample(LifecycleOwner owner) {
@@ -274,6 +284,12 @@ public class HomeViewModel extends AndroidViewModel {
         return songRepository.getStarredSongs(false, -1);
     }
 
+    @Override
+    protected void onCleared() {
+        preferences.unregisterOnSharedPreferenceChangeListener(preferenceChangeListener);
+        super.onCleared();
+    }
+
     public void changeChronologyPeriod(LifecycleOwner owner, int period) {
         Calendar cal = Calendar.getInstance();
         String server = Preferences.getServerId();
@@ -364,6 +380,20 @@ public class HomeViewModel extends AndroidViewModel {
     }
 
     public void setOfflineFavorite() {
+        if (!Preferences.isOfflineModeEnabled() || !Preferences.isOfflineGenericMetadataEnabled()) {
+            favoriteRepository.deleteAll();
+            return;
+        }
+
+        boolean wantsStarSync = Preferences.isStarredSyncEnabled()
+                || Preferences.isStarredAlbumsSyncEnabled()
+                || Preferences.isStarredArtistsSyncEnabled();
+
+        if (!wantsStarSync) {
+            favoriteRepository.deleteAll();
+            return;
+        }
+
         ArrayList<Favorite> favorites = getFavorites();
         ArrayList<Favorite> favoritesToSave = getFavoritesToSave(favorites);
         ArrayList<Favorite> favoritesToDelete = getFavoritesToDelete(favorites, favoritesToSave);
@@ -466,5 +496,80 @@ public class HomeViewModel extends AndroidViewModel {
                 }
             });
         }
+    }
+
+    private void handleOfflinePreferenceChange() {
+        boolean offlineEnabled = Preferences.isOfflineModeEnabled();
+        boolean metadataEnabled = offlineEnabled && Preferences.isOfflineGenericMetadataEnabled();
+
+        if (!offlineEnabled) {
+            resetListLiveData(dicoverSongSample);
+            resetListLiveData(newReleasedAlbum);
+            resetListLiveData(recentlyAddedAlbumSample);
+            resetListLiveData(mostPlayedAlbumSample);
+            resetListLiveData(recentlyPlayedAlbumSample);
+            resetListLiveData(mediaInstantMix);
+            resetListLiveData(artistInstantMix);
+            resetListLiveData(artistBestOf);
+            resetListLiveData(shares);
+        }
+
+        if (!offlineEnabled || !Preferences.isOfflinePlaylistsEnabled()) {
+            resetListLiveData(pinnedPlaylists);
+        }
+
+        if (!metadataEnabled) {
+            resetListLiveData(starredTracksSample);
+            resetListLiveData(starredTracks);
+            resetListLiveData(starredAlbums);
+            resetListLiveData(starredArtistsSample);
+            resetListLiveData(bestOfArtists);
+            resetListLiveData(starredArtists);
+            resetListLiveData(thisGridTopSong);
+            resetListLiveData(mostPlayedAlbumSample);
+            resetListLiveData(recentlyPlayedAlbumSample);
+            resetListLiveData(years);
+            return;
+        }
+
+        if (!Preferences.isStarredSyncEnabled()) {
+            resetListLiveData(starredTracksSample);
+            resetListLiveData(starredTracks);
+        }
+
+        if (!Preferences.isStarredAlbumsSyncEnabled()) {
+            resetListLiveData(starredAlbums);
+        }
+
+        if (!Preferences.isStarredArtistsSyncEnabled()) {
+            resetListLiveData(starredArtistsSample);
+            resetListLiveData(bestOfArtists);
+            resetListLiveData(starredArtists);
+        }
+
+        if (!Preferences.isOfflineTopSongsEnabled()) {
+            resetListLiveData(thisGridTopSong);
+        }
+
+        if (!Preferences.isOfflineMostPlayedEnabled()) {
+            resetListLiveData(mostPlayedAlbumSample);
+        }
+
+        if (!Preferences.isOfflineLastPlayedEnabled()) {
+            resetListLiveData(recentlyPlayedAlbumSample);
+        }
+
+        if (!Preferences.isOfflineYearsEnabled()) {
+            resetListLiveData(years);
+        }
+    }
+
+    private <T> void resetListLiveData(MutableLiveData<List<T>> target) {
+        if (target == null) {
+            return;
+        }
+
+        target.postValue(Collections.<T>emptyList());
+        target.postValue(null);
     }
 }

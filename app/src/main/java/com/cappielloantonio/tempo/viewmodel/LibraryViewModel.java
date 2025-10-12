@@ -1,6 +1,7 @@
 package com.cappielloantonio.tempo.viewmodel;
 
 import android.app.Application;
+import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -8,6 +9,7 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.cappielloantonio.tempo.App;
 import com.cappielloantonio.tempo.repository.AlbumRepository;
 import com.cappielloantonio.tempo.repository.ArtistRepository;
 import com.cappielloantonio.tempo.repository.DirectoryRepository;
@@ -19,11 +21,17 @@ import com.cappielloantonio.tempo.subsonic.models.Genre;
 import com.cappielloantonio.tempo.subsonic.models.Indexes;
 import com.cappielloantonio.tempo.subsonic.models.MusicFolder;
 import com.cappielloantonio.tempo.subsonic.models.Playlist;
+import com.cappielloantonio.tempo.util.Preferences;
 
+import java.util.Collections;
 import java.util.List;
 
 public class LibraryViewModel extends AndroidViewModel {
     private static final String TAG = "LibraryViewModel";
+
+    private final SharedPreferences preferences;
+    private final SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener =
+            (sharedPreferences, key) -> handleOfflinePreferenceChange();
 
     private final DirectoryRepository directoryRepository;
     private final AlbumRepository albumRepository;
@@ -46,6 +54,10 @@ public class LibraryViewModel extends AndroidViewModel {
         artistRepository = new ArtistRepository();
         genreRepository = new GenreRepository();
         playlistRepository = new PlaylistRepository();
+
+        preferences = App.getInstance().getPreferences();
+        preferences.registerOnSharedPreferenceChangeListener(preferenceChangeListener);
+        handleOfflinePreferenceChange();
     }
 
     public LiveData<List<MusicFolder>> getMusicFolders(LifecycleOwner owner) {
@@ -96,6 +108,12 @@ public class LibraryViewModel extends AndroidViewModel {
         return playlistSample;
     }
 
+    @Override
+    protected void onCleared() {
+        preferences.unregisterOnSharedPreferenceChangeListener(preferenceChangeListener);
+        super.onCleared();
+    }
+
     public void refreshAlbumSample(LifecycleOwner owner) {
         albumRepository.getAlbums("random", 10, null, null).observe(owner, sampleAlbum::postValue);
     }
@@ -110,5 +128,42 @@ public class LibraryViewModel extends AndroidViewModel {
 
     public void refreshPlaylistSample(LifecycleOwner owner) {
         playlistRepository.getPlaylists(true, 10).observe(owner, playlistSample::postValue);
+    }
+
+    private void handleOfflinePreferenceChange() {
+        boolean offlineEnabled = Preferences.isOfflineModeEnabled();
+
+        if (!offlineEnabled) {
+            resetListLiveData(musicFolders);
+            indexes.postValue(null);
+            resetListLiveData(sampleAlbum);
+            resetListLiveData(sampleArtist);
+            resetListLiveData(sampleGenres);
+            resetListLiveData(playlistSample);
+            return;
+        }
+
+        boolean metadataEnabled = Preferences.isOfflineGenericMetadataEnabled();
+
+        if (!metadataEnabled) {
+            resetListLiveData(sampleAlbum);
+            resetListLiveData(sampleArtist);
+            resetListLiveData(sampleGenres);
+        } else if (!Preferences.isOfflineGenresEnabled()) {
+            resetListLiveData(sampleGenres);
+        }
+
+        if (!Preferences.isOfflinePlaylistsEnabled()) {
+            resetListLiveData(playlistSample);
+        }
+    }
+
+    private <T> void resetListLiveData(MutableLiveData<List<T>> target) {
+        if (target == null) {
+            return;
+        }
+
+        target.postValue(Collections.<T>emptyList());
+        target.postValue(null);
     }
 }

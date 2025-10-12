@@ -22,6 +22,12 @@ public class ChronologyRepository {
         thread.start();
     }
 
+    public void deleteAll() {
+        DeleteAllThreadSafe deleteAll = new DeleteAllThreadSafe(chronologyDao);
+        Thread thread = new Thread(deleteAll);
+        thread.start();
+    }
+
     private static class InsertThreadSafe implements Runnable {
         private final ChronologyDao chronologyDao;
         private final Chronology item;
@@ -34,6 +40,19 @@ public class ChronologyRepository {
         @Override
         public void run() {
             chronologyDao.insert(item);
+        }
+    }
+
+    private static class DeleteAllThreadSafe implements Runnable {
+        private final ChronologyDao chronologyDao;
+
+        public DeleteAllThreadSafe(ChronologyDao chronologyDao) {
+            this.chronologyDao = chronologyDao;
+        }
+
+        @Override
+        public void run() {
+            chronologyDao.deleteAll();
         }
     }
 }

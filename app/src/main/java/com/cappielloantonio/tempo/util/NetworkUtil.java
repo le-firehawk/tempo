@@ -10,6 +10,10 @@ import com.cappielloantonio.tempo.App;
 
 public class NetworkUtil {
     public static boolean isOffline() {
+        if (Preferences.isOfflineModeEnabled()) {
+            return true;
+        }
+
         ConnectivityManager connectivityManager = (ConnectivityManager) App.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
         if (connectivityManager != null) {

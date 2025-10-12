@@ -21,4 +21,7 @@ public interface LyricsDao {
 
     @Query("DELETE FROM lyrics_cache WHERE song_id = :songId")
     void delete(String songId);
+
+    @Query("DELETE FROM lyrics_cache")
+    void deleteAll();
 }

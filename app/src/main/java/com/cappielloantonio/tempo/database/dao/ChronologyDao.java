@@ -20,4 +20,7 @@ public interface ChronologyDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(Chronology chronologyObject);
+
+    @Query("DELETE FROM chronology")
+    void deleteAll();
 }

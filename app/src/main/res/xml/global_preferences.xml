@@ -93,12 +93,6 @@
             android:key="radio_section_visibility" />
 
         <SwitchPreference
-            android:title="@string/settings_auto_download_lyrics"
-            android:defaultValue="false"
-            android:summary="@string/settings_auto_download_lyrics_summary"
-            android:key="auto_download_lyrics" />
-
-        <SwitchPreference
             android:title="@string/settings_show_mini_shuffle_button"
             android:defaultValue="false"
             android:summary="@string/settings_show_mini_shuffle_button_summary"
@@ -166,23 +160,10 @@
             android:summary="@string/settings_data_saving_mode_summary"
             android:key="data_saving_mode" />
 
-        <SwitchPreference
-            android:title="@string/settings_sync_starred_tracks_for_offline_use_title"
-            android:defaultValue="false"
-            android:summary="@string/settings_sync_starred_tracks_for_offline_use_summary"
-            android:key="sync_starred_tracks_for_offline_use" />
-
-        <SwitchPreference
-            android:title="@string/settings_sync_starred_albums_for_offline_use_title"
-            android:defaultValue="false"
-            android:summary="@string/settings_sync_starred_albums_for_offline_use_summary"
-            android:key="sync_starred_albums_for_offline_use" />
-
-        <SwitchPreference
-            android:title="@string/settings_sync_starred_artists_for_offline_use_title"
-            android:defaultValue="false"
-            android:summary="@string/settings_sync_starred_artists_for_offline_use_summary"
-            android:key="sync_starred_artists_for_offline_use" />
+        <Preference
+            android:key="offline_settings"
+            android:title="@string/settings_offline_title"
+            android:summary="@string/settings_offline_summary" />
 
         <ListPreference
             app:defaultValue="1"

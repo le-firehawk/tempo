@@ -42,9 +42,6 @@ import com.cappielloantonio.tempo.service.MediaService;
 import com.cappielloantonio.tempo.ui.activity.MainActivity;
 import com.cappielloantonio.tempo.ui.dialog.DeleteDownloadStorageDialog;
 import com.cappielloantonio.tempo.ui.dialog.DownloadStorageDialog;
-import com.cappielloantonio.tempo.ui.dialog.StarredSyncDialog;
-import com.cappielloantonio.tempo.ui.dialog.StarredAlbumSyncDialog;
-import com.cappielloantonio.tempo.ui.dialog.StarredArtistSyncDialog;
 import com.cappielloantonio.tempo.ui.dialog.StreamingCacheStorageDialog;
 import com.cappielloantonio.tempo.util.DownloadUtil;
 import com.cappielloantonio.tempo.util.Preferences;
@@ -136,16 +133,13 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         actionLogout();
         actionScan();
-        actionSyncStarredAlbums();
-        actionSyncStarredTracks();
-        actionSyncStarredArtists();
         actionChangeStreamingCacheStorage();
         actionChangeDownloadStorage();
         actionSetDownloadDirectory();
         actionDeleteDownloadStorage();
         actionKeepScreenOn();
-        actionAutoDownloadLyrics();
         actionMiniPlayerHeart();
+        actionOpenOfflineSettings();
 
         bindMediaService();
         actionAppEqualizer();
@@ -334,48 +328,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
     }
 
-    private void actionSyncStarredTracks() {
-        findPreference("sync_starred_tracks_for_offline_use").setOnPreferenceChangeListener((preference, newValue) -> {
-            if (newValue instanceof Boolean) {
-                if ((Boolean) newValue) {
-                    StarredSyncDialog dialog = new StarredSyncDialog(() -> {
-                        ((SwitchPreference)preference).setChecked(false);
-                    });
-                    dialog.show(activity.getSupportFragmentManager(), null);
-                    }
-            }
-            return true;
-        });
-    }
-
-    private void actionSyncStarredAlbums() {
-        findPreference("sync_starred_albums_for_offline_use").setOnPreferenceChangeListener((preference, newValue) -> {
-            if (newValue instanceof Boolean) {
-                if ((Boolean) newValue) {
-                    StarredAlbumSyncDialog dialog = new StarredAlbumSyncDialog(() -> {
-                        ((SwitchPreference)preference).setChecked(false);
-                    });
-                    dialog.show(activity.getSupportFragmentManager(), null);
-                }
-            }
-            return true;
-        });
-    }
-
-    private void actionSyncStarredArtists() {
-        findPreference("sync_starred_artists_for_offline_use").setOnPreferenceChangeListener((preference, newValue) -> {
-            if (newValue instanceof Boolean) {
-                if ((Boolean) newValue) {
-                    StarredArtistSyncDialog dialog = new StarredArtistSyncDialog(() -> {
-                        ((SwitchPreference)preference).setChecked(false);
-                    });
-                    dialog.show(activity.getSupportFragmentManager(), null);
-                }
-            }
-            return true;
-        });
-    }
-
     private void actionChangeStreamingCacheStorage() {
         findPreference("streaming_cache_storage").setOnPreferenceClickListener(preference -> {
             StreamingCacheStorageDialog dialog = new StreamingCacheStorageDialog(new DialogClickCallback() {
@@ -468,17 +420,15 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
     }
 
-    private void actionAutoDownloadLyrics() {
-        SwitchPreference preference = findPreference("auto_download_lyrics");
+    private void actionOpenOfflineSettings() {
+        Preference preference = findPreference("offline_settings");
         if (preference == null) {
             return;
         }
 
-        preference.setChecked(Preferences.isAutoDownloadLyricsEnabled());
-        preference.setOnPreferenceChangeListener((pref, newValue) -> {
-            if (newValue instanceof Boolean) {
-                Preferences.setAutoDownloadLyricsEnabled((Boolean) newValue);
-            }
+        preference.setOnPreferenceClickListener(pref -> {
+            NavController navController = NavHostFragment.findNavController(this);
+            navController.navigate(R.id.action_settingsFragment_to_offlineSettingsFragment);
             return true;
         });
     }

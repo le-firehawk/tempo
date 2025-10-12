@@ -123,6 +123,12 @@ public class FavoriteRepository {
         thread.start();
     }
 
+    public void deleteAll() {
+        DeleteAllThreadSafe deleteAll = new DeleteAllThreadSafe(favoriteDao);
+        Thread thread = new Thread(deleteAll);
+        thread.start();
+    }
+
     private static class DeleteThreadSafe implements Runnable {
         private final FavoriteDao favoriteDao;
         private final Favorite favorite;
@@ -135,6 +141,19 @@ public class FavoriteRepository {
         @Override
         public void run() {
             favoriteDao.delete(favorite);
+        }
+    }
+
+    private static class DeleteAllThreadSafe implements Runnable {
+        private final FavoriteDao favoriteDao;
+
+        public DeleteAllThreadSafe(FavoriteDao favoriteDao) {
+            this.favoriteDao = favoriteDao;
+        }
+
+        @Override
+        public void run() {
+            favoriteDao.deleteAll();
         }
     }
 }

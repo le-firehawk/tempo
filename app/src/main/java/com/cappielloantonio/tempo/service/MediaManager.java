@@ -435,7 +435,10 @@ public class MediaManager {
     }
 
     public static void saveChronology(MediaItem mediaItem) {
-        if (mediaItem != null) {
+        if (mediaItem != null
+                && Preferences.isOfflineModeEnabled()
+                && Preferences.isOfflineGenericMetadataEnabled()
+                && (Preferences.isOfflineMostPlayedEnabled() || Preferences.isOfflineLastPlayedEnabled())) {
             getChronologyRepository().insert(new Chronology(mediaItem));
         }
     }

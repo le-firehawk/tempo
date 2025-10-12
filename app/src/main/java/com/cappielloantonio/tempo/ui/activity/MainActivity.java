@@ -396,6 +396,7 @@ public class MainActivity extends BaseActivity {
                     resetView();
                 } else {
                     Preferences.setOpenSubsonic(subsonicResponse.getOpenSubsonic() != null && subsonicResponse.getOpenSubsonic());
+                    updateOfflineBanner(false, false);
                 }
             });
         } else {
@@ -408,12 +409,14 @@ public class MainActivity extends BaseActivity {
             } else {
                 mainViewModel.ping().observe(this, subsonicResponse -> {
                     if (subsonicResponse == null) {
+                        updateOfflineBanner(true, Preferences.isOfflineModeEnabled());
                         if (Preferences.showServerUnreachableDialog()) {
                             ServerUnreachableDialog dialog = new ServerUnreachableDialog();
                             dialog.show(getSupportFragmentManager(), null);
                         }
                     } else {
                         Preferences.setOpenSubsonic(subsonicResponse.getOpenSubsonic() != null && subsonicResponse.getOpenSubsonic());
+                        updateOfflineBanner(false, false);
                     }
                 });
             }
@@ -458,6 +461,24 @@ public class MainActivity extends BaseActivity {
                 dialog.show(getSupportFragmentManager(), null);
             }
         }
+    }
+
+    public void updateOfflineBanner(boolean visible, boolean offlineModeActive) {
+        if (bind == null) {
+            return;
+        }
+
+        if (visible) {
+            bind.offlineModeTextView.setText(
+                    offlineModeActive ? R.string.activity_info_offline_mode : R.string.activity_info_offline);
+            bind.offlineModeTextView.setVisibility(View.VISIBLE);
+        } else {
+            bind.offlineModeTextView.setVisibility(View.GONE);
+        }
+    }
+
+    public boolean isOfflineBannerVisible() {
+        return bind != null && bind.offlineModeTextView.getVisibility() == View.VISIBLE;
     }
 
     private void maybeSchedulePlaybackIntent(Intent intent) {

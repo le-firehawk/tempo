@@ -4,12 +4,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
-import android.view.View;
 
 import androidx.annotation.OptIn;
 import androidx.media3.common.util.UnstableApi;
 
 import com.cappielloantonio.tempo.ui.activity.MainActivity;
+import com.cappielloantonio.tempo.util.Preferences;
 
 @OptIn(markerClass = UnstableApi.class)
 public class ConnectivityStatusBroadcastReceiver extends BroadcastReceiver {
@@ -25,9 +25,9 @@ public class ConnectivityStatusBroadcastReceiver extends BroadcastReceiver {
             boolean noConnectivity = intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);
 
             if (noConnectivity) {
-                activity.bind.offlineModeTextView.setVisibility(View.VISIBLE);
+                activity.updateOfflineBanner(true, Preferences.isOfflineModeEnabled());
             } else {
-                activity.bind.offlineModeTextView.setVisibility(View.GONE);
+                activity.updateOfflineBanner(false, false);
             }
         }
     }

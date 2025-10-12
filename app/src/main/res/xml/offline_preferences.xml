@@ -1,0 +1,98 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <SwitchPreference
+        android:key="offline_mode_enabled"
+        android:title="@string/offline_mode_title"
+        android:summary="@string/offline_mode_summary"
+        android:defaultValue="true" />
+
+    <PreferenceCategory
+        android:key="offline_content_category"
+        android:title="@string/offline_content_category_title">
+
+        <SwitchPreference
+            android:key="offline_lyrics_enabled"
+            android:title="@string/offline_lyrics_title"
+            android:summary="@string/offline_lyrics_summary"
+            android:defaultValue="false"
+            android:dependency="offline_mode_enabled" />
+
+        <SwitchPreference
+            android:key="offline_album_art_enabled"
+            android:title="@string/offline_album_art_title"
+            android:summary="@string/offline_album_art_summary"
+            android:defaultValue="false"
+            android:dependency="offline_mode_enabled" />
+
+        <SwitchPreference
+            android:key="sync_starred_tracks_for_offline_use"
+            android:title="@string/offline_metadata_starred_tracks_title"
+            android:summary="@string/settings_sync_starred_tracks_for_offline_use_summary"
+            android:defaultValue="false"
+            android:dependency="offline_mode_enabled" />
+
+        <SwitchPreference
+            android:key="sync_starred_albums_for_offline_use"
+            android:title="@string/offline_metadata_starred_albums_title"
+            android:summary="@string/settings_sync_starred_albums_for_offline_use_summary"
+            android:defaultValue="false"
+            android:dependency="offline_mode_enabled" />
+
+        <SwitchPreference
+            android:key="sync_starred_artists_for_offline_use"
+            android:title="@string/offline_metadata_starred_artists_title"
+            android:summary="@string/settings_sync_starred_artists_for_offline_use_summary"
+            android:defaultValue="false"
+            android:dependency="offline_mode_enabled" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="offline_metadata_category"
+        android:title="@string/offline_metadata_category_title">
+
+        <SwitchPreference
+            android:key="offline_generic_metadata_enabled"
+            android:title="@string/offline_generic_metadata_title"
+            android:summary="@string/offline_generic_metadata_summary"
+            android:defaultValue="false"
+            android:dependency="offline_mode_enabled" />
+
+        <SwitchPreference
+            android:key="offline_playlists_enabled"
+            android:title="@string/offline_playlists_title"
+            android:summary="@string/offline_playlists_summary"
+            android:defaultValue="true"
+            android:dependency="offline_generic_metadata_enabled" />
+
+        <SwitchPreference
+            android:key="offline_metadata_genres_enabled"
+            android:title="@string/offline_metadata_genres_title"
+            android:defaultValue="false"
+            android:dependency="offline_generic_metadata_enabled" />
+
+        <SwitchPreference
+            android:key="offline_metadata_years_enabled"
+            android:title="@string/offline_metadata_years_title"
+            android:defaultValue="false"
+            android:dependency="offline_generic_metadata_enabled" />
+
+        <SwitchPreference
+            android:key="offline_metadata_top_songs_enabled"
+            android:title="@string/offline_metadata_top_songs_title"
+            android:defaultValue="false"
+            android:dependency="offline_generic_metadata_enabled" />
+
+        <SwitchPreference
+            android:key="offline_metadata_most_played_enabled"
+            android:title="@string/offline_metadata_most_played_title"
+            android:defaultValue="false"
+            android:dependency="offline_generic_metadata_enabled" />
+
+        <SwitchPreference
+            android:key="offline_metadata_last_played_enabled"
+            android:title="@string/offline_metadata_last_played_title"
+            android:defaultValue="false"
+            android:dependency="offline_generic_metadata_enabled" />
+    </PreferenceCategory>
+</PreferenceScreen>

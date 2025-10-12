@@ -154,7 +154,15 @@
         <action
             android:id="@+id/action_settingsFragment_to_equalizerFragment"
             app:destination="@id/equalizerFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_offlineSettingsFragment"
+            app:destination="@id/offlineSettingsFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/offlineSettingsFragment"
+        android:name="com.cappielloantonio.tempo.ui.fragment.OfflineSettingsFragment"
+        android:label="OfflineSettingsFragment"
+        tools:layout="@layout/fragment_settings" />
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.cappielloantonio.tempo.ui.fragment.SearchFragment"

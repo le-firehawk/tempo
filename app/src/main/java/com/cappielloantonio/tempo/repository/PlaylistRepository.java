@@ -18,6 +18,7 @@ import com.cappielloantonio.tempo.subsonic.base.ApiResponse;
 import com.cappielloantonio.tempo.subsonic.models.Child;
 import com.cappielloantonio.tempo.subsonic.models.Playlist;
 import com.cappielloantonio.tempo.subsonic.models.PlaylistWithSongs;
+import com.cappielloantonio.tempo.util.Preferences;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -276,6 +277,10 @@ public class PlaylistRepository {
 
     @androidx.media3.common.util.UnstableApi
     public void insert(Playlist playlist) {
+        if (!Preferences.isOfflineModeEnabled() || !Preferences.isOfflinePlaylistsEnabled()) {
+            return;
+        }
+
         InsertThreadSafe insert = new InsertThreadSafe(playlistDao, playlist);
         Thread thread = new Thread(insert);
         thread.start();
@@ -285,6 +290,13 @@ public class PlaylistRepository {
     public void delete(Playlist playlist) {
         DeleteThreadSafe delete = new DeleteThreadSafe(playlistDao, playlist);
         Thread thread = new Thread(delete);
+        thread.start();
+    }
+
+    @androidx.media3.common.util.UnstableApi
+    public void clearPinnedPlaylists() {
+        DeleteAllThreadSafe deleteAll = new DeleteAllThreadSafe(playlistDao);
+        Thread thread = new Thread(deleteAll);
         thread.start();
     }
 
@@ -315,6 +327,19 @@ public class PlaylistRepository {
         @Override
         public void run() {
             playlistDao.delete(playlist);
+        }
+    }
+
+    private static class DeleteAllThreadSafe implements Runnable {
+        private final PlaylistDao playlistDao;
+
+        public DeleteAllThreadSafe(PlaylistDao playlistDao) {
+            this.playlistDao = playlistDao;
+        }
+
+        @Override
+        public void run() {
+            playlistDao.deleteAll();
         }
     }
 }

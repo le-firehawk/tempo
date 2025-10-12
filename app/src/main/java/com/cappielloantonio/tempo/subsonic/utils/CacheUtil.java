@@ -6,6 +6,7 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 
 import com.cappielloantonio.tempo.App;
+import com.cappielloantonio.tempo.util.Preferences;
 
 import okhttp3.Interceptor;
 import okhttp3.Request;
@@ -30,6 +31,10 @@ public class CacheUtil {
     public Interceptor offlineInterceptor = chain -> {
         Request request = chain.request();
         if (!isConnected()) {
+            if (!Preferences.isOfflineModeEnabled()) {
+                return chain.proceed(request);
+            }
+
             request = request.newBuilder()
                     .header("Cache-Control", "public, only-if-cached, max-stale=" + maxStale)
                     .removeHeader("Pragma")

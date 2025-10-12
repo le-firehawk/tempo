@@ -47,6 +47,16 @@ object Preferences {
     private const val PODCAST_SECTION_VISIBILITY = "podcast_section_visibility"
     private const val RADIO_SECTION_VISIBILITY = "radio_section_visibility"
     private const val AUTO_DOWNLOAD_LYRICS = "auto_download_lyrics"
+    private const val OFFLINE_MODE_ENABLED = "offline_mode_enabled"
+    private const val OFFLINE_LYRICS_ENABLED = "offline_lyrics_enabled"
+    private const val OFFLINE_ALBUM_ART_ENABLED = "offline_album_art_enabled"
+    private const val OFFLINE_PLAYLISTS_ENABLED = "offline_playlists_enabled"
+    private const val OFFLINE_GENERIC_METADATA_ENABLED = "offline_generic_metadata_enabled"
+    private const val OFFLINE_METADATA_GENRES_ENABLED = "offline_metadata_genres_enabled"
+    private const val OFFLINE_METADATA_YEARS_ENABLED = "offline_metadata_years_enabled"
+    private const val OFFLINE_METADATA_TOP_SONGS_ENABLED = "offline_metadata_top_songs_enabled"
+    private const val OFFLINE_METADATA_MOST_PLAYED_ENABLED = "offline_metadata_most_played_enabled"
+    private const val OFFLINE_METADATA_LAST_PLAYED_ENABLED = "offline_metadata_last_played_enabled"
     private const val MUSIC_DIRECTORY_SECTION_VISIBILITY = "music_directory_section_visibility"
     private const val REPLAY_GAIN_MODE = "replay_gain_mode"
     private const val AUDIO_TRANSCODE_PRIORITY = "audio_transcode_priority"
@@ -168,21 +178,142 @@ object Preferences {
     }
 
     @JvmStatic
-    fun isAutoDownloadLyricsEnabled(): Boolean {
-        val preferences = App.getInstance().preferences
+    fun isOfflineModeEnabled(): Boolean {
+        return App.getInstance().preferences.getBoolean(OFFLINE_MODE_ENABLED, true)
+    }
 
+    @JvmStatic
+    fun setOfflineModeEnabled(enabled: Boolean) {
+        App.getInstance().preferences.edit()
+            .putBoolean(OFFLINE_MODE_ENABLED, enabled)
+            .apply()
+    }
+
+    @JvmStatic
+    fun isOfflineLyricsEnabled(): Boolean {
+        val preferences = App.getInstance().preferences
+        if (preferences.contains(OFFLINE_LYRICS_ENABLED)) {
+            return preferences.getBoolean(OFFLINE_LYRICS_ENABLED, false)
+        }
+        // Fallback to legacy preference to keep behaviour for existing users
         if (preferences.contains(AUTO_DOWNLOAD_LYRICS)) {
             return preferences.getBoolean(AUTO_DOWNLOAD_LYRICS, false)
         }
-
         return false
     }
 
     @JvmStatic
-    fun setAutoDownloadLyricsEnabled(isEnabled: Boolean) {
+    fun setOfflineLyricsEnabled(isEnabled: Boolean) {
         App.getInstance().preferences.edit()
+            .putBoolean(OFFLINE_LYRICS_ENABLED, isEnabled)
             .putBoolean(AUTO_DOWNLOAD_LYRICS, isEnabled)
             .apply()
+    }
+
+    @JvmStatic
+    fun isOfflineAlbumArtEnabled(): Boolean {
+        return App.getInstance().preferences.getBoolean(OFFLINE_ALBUM_ART_ENABLED, false)
+    }
+
+    @JvmStatic
+    fun setOfflineAlbumArtEnabled(isEnabled: Boolean) {
+        App.getInstance().preferences.edit()
+            .putBoolean(OFFLINE_ALBUM_ART_ENABLED, isEnabled)
+            .apply()
+    }
+
+    @JvmStatic
+    fun isOfflinePlaylistsEnabled(): Boolean {
+        return App.getInstance().preferences.getBoolean(OFFLINE_PLAYLISTS_ENABLED, true)
+    }
+
+    @JvmStatic
+    fun setOfflinePlaylistsEnabled(isEnabled: Boolean) {
+        App.getInstance().preferences.edit()
+            .putBoolean(OFFLINE_PLAYLISTS_ENABLED, isEnabled)
+            .apply()
+    }
+
+    @JvmStatic
+    fun isOfflineGenericMetadataEnabled(): Boolean {
+        return App.getInstance().preferences.getBoolean(OFFLINE_GENERIC_METADATA_ENABLED, false)
+    }
+
+    @JvmStatic
+    fun setOfflineGenericMetadataEnabled(isEnabled: Boolean) {
+        App.getInstance().preferences.edit()
+            .putBoolean(OFFLINE_GENERIC_METADATA_ENABLED, isEnabled)
+            .apply()
+    }
+
+    @JvmStatic
+    fun isOfflineGenresEnabled(): Boolean {
+        return App.getInstance().preferences.getBoolean(OFFLINE_METADATA_GENRES_ENABLED, false)
+    }
+
+    @JvmStatic
+    fun setOfflineGenresEnabled(isEnabled: Boolean) {
+        App.getInstance().preferences.edit()
+            .putBoolean(OFFLINE_METADATA_GENRES_ENABLED, isEnabled)
+            .apply()
+    }
+
+    @JvmStatic
+    fun isOfflineYearsEnabled(): Boolean {
+        return App.getInstance().preferences.getBoolean(OFFLINE_METADATA_YEARS_ENABLED, false)
+    }
+
+    @JvmStatic
+    fun setOfflineYearsEnabled(isEnabled: Boolean) {
+        App.getInstance().preferences.edit()
+            .putBoolean(OFFLINE_METADATA_YEARS_ENABLED, isEnabled)
+            .apply()
+    }
+
+    @JvmStatic
+    fun isOfflineTopSongsEnabled(): Boolean {
+        return App.getInstance().preferences.getBoolean(OFFLINE_METADATA_TOP_SONGS_ENABLED, false)
+    }
+
+    @JvmStatic
+    fun setOfflineTopSongsEnabled(isEnabled: Boolean) {
+        App.getInstance().preferences.edit()
+            .putBoolean(OFFLINE_METADATA_TOP_SONGS_ENABLED, isEnabled)
+            .apply()
+    }
+
+    @JvmStatic
+    fun isOfflineMostPlayedEnabled(): Boolean {
+        return App.getInstance().preferences.getBoolean(OFFLINE_METADATA_MOST_PLAYED_ENABLED, false)
+    }
+
+    @JvmStatic
+    fun setOfflineMostPlayedEnabled(isEnabled: Boolean) {
+        App.getInstance().preferences.edit()
+            .putBoolean(OFFLINE_METADATA_MOST_PLAYED_ENABLED, isEnabled)
+            .apply()
+    }
+
+    @JvmStatic
+    fun isOfflineLastPlayedEnabled(): Boolean {
+        return App.getInstance().preferences.getBoolean(OFFLINE_METADATA_LAST_PLAYED_ENABLED, false)
+    }
+
+    @JvmStatic
+    fun setOfflineLastPlayedEnabled(isEnabled: Boolean) {
+        App.getInstance().preferences.edit()
+            .putBoolean(OFFLINE_METADATA_LAST_PLAYED_ENABLED, isEnabled)
+            .apply()
+    }
+
+    @JvmStatic
+    fun isAutoDownloadLyricsEnabled(): Boolean {
+        return isOfflineModeEnabled() && isOfflineLyricsEnabled()
+    }
+
+    @JvmStatic
+    fun setAutoDownloadLyricsEnabled(isEnabled: Boolean) {
+        setOfflineLyricsEnabled(isEnabled)
     }
 
     @JvmStatic
@@ -327,8 +458,14 @@ object Preferences {
     }
 
     @JvmStatic
+    private fun resolveGenericMetadataState(raw: Boolean): Boolean {
+        return isOfflineModeEnabled() && isOfflineGenericMetadataEnabled() && raw
+    }
+
+    @JvmStatic
     fun isStarredArtistsSyncEnabled(): Boolean {
-        return App.getInstance().preferences.getBoolean(SYNC_STARRED_ARTISTS_FOR_OFFLINE_USE, false)
+        val raw = App.getInstance().preferences.getBoolean(SYNC_STARRED_ARTISTS_FOR_OFFLINE_USE, false)
+        return resolveGenericMetadataState(raw)
     }
 
     @JvmStatic
@@ -340,7 +477,8 @@ object Preferences {
 
     @JvmStatic
     fun isStarredAlbumsSyncEnabled(): Boolean {
-        return App.getInstance().preferences.getBoolean(SYNC_STARRED_ALBUMS_FOR_OFFLINE_USE, false)
+        val raw = App.getInstance().preferences.getBoolean(SYNC_STARRED_ALBUMS_FOR_OFFLINE_USE, false)
+        return resolveGenericMetadataState(raw)
     }
 
     @JvmStatic
@@ -352,7 +490,8 @@ object Preferences {
 
     @JvmStatic
     fun isStarredSyncEnabled(): Boolean {
-        return App.getInstance().preferences.getBoolean(SYNC_STARRED_TRACKS_FOR_OFFLINE_USE, false)
+        val raw = App.getInstance().preferences.getBoolean(SYNC_STARRED_TRACKS_FOR_OFFLINE_USE, false)
+        return resolveGenericMetadataState(raw)
     }
 
     @JvmStatic
@@ -360,6 +499,21 @@ object Preferences {
         App.getInstance().preferences.edit().putBoolean(
                 SYNC_STARRED_TRACKS_FOR_OFFLINE_USE, isStarredSyncEnabled
         ).apply()
+    }
+
+    @JvmStatic
+    fun getStoredStarredTracksPreference(): Boolean {
+        return App.getInstance().preferences.getBoolean(SYNC_STARRED_TRACKS_FOR_OFFLINE_USE, false)
+    }
+
+    @JvmStatic
+    fun getStoredStarredAlbumsPreference(): Boolean {
+        return App.getInstance().preferences.getBoolean(SYNC_STARRED_ALBUMS_FOR_OFFLINE_USE, false)
+    }
+
+    @JvmStatic
+    fun getStoredStarredArtistsPreference(): Boolean {
+        return App.getInstance().preferences.getBoolean(SYNC_STARRED_ARTISTS_FOR_OFFLINE_USE, false)
     }
 
     @JvmStatic
