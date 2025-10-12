@@ -122,7 +122,7 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
     }
 
     private void initArtistInfo() {
-        artistPageViewModel.getArtistInfo(artistPageViewModel.getArtist().getId()).observe(getViewLifecycleOwner(), artistInfo -> {
+        artistPageViewModel.getArtistInfo().observe(getViewLifecycleOwner(), artistInfo -> {
             if (artistInfo == null) {
                 if (bind != null) bind.artistPageBioSector.setVisibility(View.GONE);
             } else {
@@ -223,7 +223,7 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
         artistCatalogueAdapter = new ArtistCatalogueAdapter(this);
         bind.similarArtistsRecyclerView.setAdapter(artistCatalogueAdapter);
 
-        artistPageViewModel.getArtistInfo(artistPageViewModel.getArtist().getId()).observe(getViewLifecycleOwner(), artist -> {
+        artistPageViewModel.getArtistInfo().observe(getViewLifecycleOwner(), artist -> {
             if (artist == null) {
                 if (bind != null) bind.similarArtistSector.setVisibility(View.GONE);
             } else {

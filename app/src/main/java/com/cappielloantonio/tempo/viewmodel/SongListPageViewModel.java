@@ -54,7 +54,7 @@ public class SongListPageViewModel extends AndroidViewModel {
                 songList = songRepository.getSongsByGenre(genre.getGenre(), 0);
                 break;
             case Constants.MEDIA_BY_ARTIST:
-                songList = artistRepository.getTopSongs(artist.getName(), 50);
+                songList = artistRepository.getTopSongs(artist, 50);
                 break;
             case Constants.MEDIA_BY_GENRES:
                 songList = songRepository.getSongsByGenres(filters);

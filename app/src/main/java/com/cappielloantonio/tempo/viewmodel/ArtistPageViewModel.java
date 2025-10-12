@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-import com.cappielloantonio.tempo.repository.AlbumRepository;
 import com.cappielloantonio.tempo.repository.ArtistRepository;
 import com.cappielloantonio.tempo.subsonic.models.AlbumID3;
 import com.cappielloantonio.tempo.subsonic.models.ArtistID3;
@@ -16,7 +15,6 @@ import com.cappielloantonio.tempo.subsonic.models.Child;
 import java.util.List;
 
 public class ArtistPageViewModel extends AndroidViewModel {
-    private final AlbumRepository albumRepository;
     private final ArtistRepository artistRepository;
 
     private ArtistID3 artist;
@@ -24,20 +22,19 @@ public class ArtistPageViewModel extends AndroidViewModel {
     public ArtistPageViewModel(@NonNull Application application) {
         super(application);
 
-        albumRepository = new AlbumRepository();
         artistRepository = new ArtistRepository();
     }
 
     public LiveData<List<AlbumID3>> getAlbumList() {
-        return albumRepository.getArtistAlbums(artist.getId());
+        return artistRepository.getArtistAlbums(artist);
     }
 
-    public LiveData<ArtistInfo2> getArtistInfo(String id) {
-        return artistRepository.getArtistFullInfo(id);
+    public LiveData<ArtistInfo2> getArtistInfo() {
+        return artistRepository.getArtistFullInfo(artist);
     }
 
     public LiveData<List<Child>> getArtistTopSongList() {
-        return artistRepository.getTopSongs(artist.getName(), 20);
+        return artistRepository.getTopSongs(artist, 20);
     }
 
     public LiveData<List<Child>> getArtistShuffleList() {

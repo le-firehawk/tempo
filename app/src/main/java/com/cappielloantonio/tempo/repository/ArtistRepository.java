@@ -1,19 +1,23 @@
 package com.cappielloantonio.tempo.repository;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.MutableLiveData;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.lifecycle.MutableLiveData;
+
 import com.cappielloantonio.tempo.App;
+import com.cappielloantonio.tempo.model.ArtistMetadataCache;
 import com.cappielloantonio.tempo.subsonic.base.ApiResponse;
-import com.cappielloantonio.tempo.subsonic.models.ArtistID3;
 import com.cappielloantonio.tempo.subsonic.models.AlbumID3;
+import com.cappielloantonio.tempo.subsonic.models.ArtistID3;
 import com.cappielloantonio.tempo.subsonic.models.ArtistInfo2;
 import com.cappielloantonio.tempo.subsonic.models.Child;
 import com.cappielloantonio.tempo.subsonic.models.IndexID3;
+import com.cappielloantonio.tempo.util.Preferences;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -23,9 +27,84 @@ import retrofit2.Response;
 
 public class ArtistRepository {
     private final AlbumRepository albumRepository;
+    private final ArtistMetadataRepository artistMetadataRepository;
 
     public ArtistRepository() {
         this.albumRepository = new AlbumRepository();
+        this.artistMetadataRepository = new ArtistMetadataRepository();
+    }
+
+    private boolean isArtistMetadataCachingEnabled() {
+        return Preferences.isOfflineModeEnabled()
+                && Preferences.isOfflineGenericMetadataEnabled()
+                && Preferences.isOfflineArtistMetadataEnabled();
+    }
+
+    private ArtistMetadataCache getCachedArtistMetadata(ArtistID3 artist) {
+        if (!isArtistMetadataCachingEnabled() || artist == null || artist.getId() == null) {
+            return null;
+        }
+        return artistMetadataRepository.get(artist.getId());
+    }
+
+    private void persistArtistMetadata(ArtistID3 artist, ArtistInfo2 info, List<Child> topSongs, List<AlbumID3> albums) {
+        if (artist == null || artist.getId() == null) {
+            return;
+        }
+
+        if (!isArtistMetadataCachingEnabled()) {
+            artistMetadataRepository.delete(artist.getId());
+            return;
+        }
+
+        List<Child> topSongsCopy = topSongs != null ? new ArrayList<>(topSongs) : null;
+        List<AlbumID3> albumsCopy = albums != null ? new ArrayList<>(albums) : null;
+        ArtistMetadataCache existing = artistMetadataRepository.get(artist.getId());
+        ArtistMetadataCache merged = ArtistMetadataCache.Companion.merge(existing, artist, info, topSongsCopy, albumsCopy);
+        artistMetadataRepository.insert(merged);
+    }
+
+    private void emitCachedArtistInfo(ArtistID3 artist, MutableLiveData<ArtistInfo2> target) {
+        ArtistMetadataCache cache = getCachedArtistMetadata(artist);
+        if (cache != null) {
+            ArtistInfo2 cachedInfo = cache.getArtistInfo();
+            if (cachedInfo != null) {
+                target.postValue(cachedInfo);
+            }
+        }
+    }
+
+    private void emitCachedTopSongs(ArtistID3 artist, int count, MutableLiveData<List<Child>> target) {
+        ArtistMetadataCache cache = getCachedArtistMetadata(artist);
+        if (cache != null) {
+            List<Child> songs = cache.getTopSongs();
+            if (songs != null) {
+                List<Child> limited = limitTopSongs(songs, count);
+                if (limited != null) {
+                    target.postValue(limited);
+                }
+            }
+        }
+    }
+
+    private void emitCachedAlbums(ArtistID3 artist, MutableLiveData<List<AlbumID3>> target) {
+        ArtistMetadataCache cache = getCachedArtistMetadata(artist);
+        if (cache != null) {
+            List<AlbumID3> albums = cache.getAlbums();
+            if (albums != null) {
+                target.postValue(new ArrayList<>(albums));
+            }
+        }
+    }
+
+    private List<Child> limitTopSongs(List<Child> songs, int count) {
+        if (songs == null) {
+            return null;
+        }
+        if (count <= 0 || songs.size() <= count) {
+            return new ArrayList<>(songs);
+        }
+        return new ArrayList<>(songs.subList(0, count));
     }
 
     public void getArtistAllSongs(String artistId, ArtistSongsCallback callback) {
@@ -99,6 +178,44 @@ public class ArtistRepository {
 
     public interface ArtistSongsCallback {
         void onSongsCollected(List<Child> songs);
+    }
+
+    public MutableLiveData<List<AlbumID3>> getArtistAlbums(ArtistID3 artist) {
+        MutableLiveData<List<AlbumID3>> artistsAlbum = new MutableLiveData<>(new ArrayList<>());
+
+        if (artist == null || artist.getId() == null) {
+            return artistsAlbum;
+        }
+
+        emitCachedAlbums(artist, artistsAlbum);
+
+        App.getSubsonicClientInstance(false)
+                .getBrowsingClient()
+                .getArtist(artist.getId())
+                .enqueue(new Callback<ApiResponse>() {
+                    @Override
+                    public void onResponse(@NonNull Call<ApiResponse> call, @NonNull Response<ApiResponse> response) {
+                        if (response.isSuccessful()
+                                && response.body() != null
+                                && response.body().getSubsonicResponse().getArtist() != null
+                                && response.body().getSubsonicResponse().getArtist().getAlbums() != null) {
+                            List<AlbumID3> albums = response.body().getSubsonicResponse().getArtist().getAlbums();
+                            if (albums != null) {
+                                albums.sort(Comparator.comparing(AlbumID3::getYear));
+                                Collections.reverse(albums);
+                                artistsAlbum.setValue(albums);
+                                persistArtistMetadata(artist, null, null, albums);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<ApiResponse> call, @NonNull Throwable t) {
+
+                    }
+                });
+
+        return artistsAlbum;
     }
 
     public MutableLiveData<List<ArtistID3>> getStarredArtists(boolean random, int size) {
@@ -221,17 +338,27 @@ public class ArtistRepository {
         return artist;
     }
 
-    public MutableLiveData<ArtistInfo2> getArtistFullInfo(String id) {
+    public MutableLiveData<ArtistInfo2> getArtistFullInfo(ArtistID3 artist) {
         MutableLiveData<ArtistInfo2> artistFullInfo = new MutableLiveData<>(null);
+
+        if (artist == null || artist.getId() == null) {
+            return artistFullInfo;
+        }
+
+        emitCachedArtistInfo(artist, artistFullInfo);
 
         App.getSubsonicClientInstance(false)
                 .getBrowsingClient()
-                .getArtistInfo2(id)
+                .getArtistInfo2(artist.getId())
                 .enqueue(new Callback<ApiResponse>() {
                     @Override
                     public void onResponse(@NonNull Call<ApiResponse> call, @NonNull Response<ApiResponse> response) {
-                        if (response.isSuccessful() && response.body() != null && response.body().getSubsonicResponse().getArtistInfo2() != null) {
-                            artistFullInfo.setValue(response.body().getSubsonicResponse().getArtistInfo2());
+                        if (response.isSuccessful()
+                                && response.body() != null
+                                && response.body().getSubsonicResponse().getArtistInfo2() != null) {
+                            ArtistInfo2 info = response.body().getSubsonicResponse().getArtistInfo2();
+                            artistFullInfo.setValue(info);
+                            persistArtistMetadata(artist, info, null, null);
                         }
                     }
 
@@ -336,17 +463,28 @@ public class ArtistRepository {
         return randomSongs;
     }
 
-    public MutableLiveData<List<Child>> getTopSongs(String artistName, int count) {
+    public MutableLiveData<List<Child>> getTopSongs(ArtistID3 artist, int count) {
         MutableLiveData<List<Child>> topSongs = new MutableLiveData<>(new ArrayList<>());
+
+        if (artist == null || artist.getName() == null) {
+            return topSongs;
+        }
+
+        emitCachedTopSongs(artist, count, topSongs);
 
         App.getSubsonicClientInstance(false)
                 .getBrowsingClient()
-                .getTopSongs(artistName, count)
+                .getTopSongs(artist.getName(), count)
                 .enqueue(new Callback<ApiResponse>() {
                     @Override
                     public void onResponse(@NonNull Call<ApiResponse> call, @NonNull Response<ApiResponse> response) {
-                        if (response.isSuccessful() && response.body() != null && response.body().getSubsonicResponse().getTopSongs() != null && response.body().getSubsonicResponse().getTopSongs().getSongs() != null) {
-                            topSongs.setValue(response.body().getSubsonicResponse().getTopSongs().getSongs());
+                        if (response.isSuccessful()
+                                && response.body() != null
+                                && response.body().getSubsonicResponse().getTopSongs() != null
+                                && response.body().getSubsonicResponse().getTopSongs().getSongs() != null) {
+                            List<Child> songs = response.body().getSubsonicResponse().getTopSongs().getSongs();
+                            topSongs.setValue(songs);
+                            persistArtistMetadata(artist, null, songs, null);
                         }
                     }
 

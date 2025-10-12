@@ -11,6 +11,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreference;
 
 import com.cappielloantonio.tempo.R;
+import com.cappielloantonio.tempo.repository.ArtistMetadataRepository;
 import com.cappielloantonio.tempo.repository.ChronologyRepository;
 import com.cappielloantonio.tempo.repository.FavoriteRepository;
 import com.cappielloantonio.tempo.repository.LyricsRepository;
@@ -30,6 +31,7 @@ public class OfflineSettingsFragment extends PreferenceFragmentCompat {
     private final FavoriteRepository favoriteRepository = new FavoriteRepository();
     private final ChronologyRepository chronologyRepository = new ChronologyRepository();
     private final LyricsRepository lyricsRepository = new LyricsRepository();
+    private final ArtistMetadataRepository artistMetadataRepository = new ArtistMetadataRepository();
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -258,6 +260,19 @@ public class OfflineSettingsFragment extends PreferenceFragmentCompat {
             });
         }
 
+        SwitchPreference artistMetadataPreference = findPreference("offline_artist_metadata_enabled");
+        if (artistMetadataPreference != null) {
+            artistMetadataPreference.setChecked(Preferences.isOfflineArtistMetadataEnabled());
+            artistMetadataPreference.setOnPreferenceChangeListener((pref, newValue) -> {
+                boolean enabled = newValue instanceof Boolean && (Boolean) newValue;
+                Preferences.setOfflineArtistMetadataEnabled(enabled);
+                if (!enabled) {
+                    artistMetadataRepository.deleteAll();
+                }
+                return true;
+            });
+        }
+
         updateMetadataAvailability(Preferences.isOfflineModeEnabled(), Preferences.isOfflineGenericMetadataEnabled());
     }
 
@@ -269,6 +284,7 @@ public class OfflineSettingsFragment extends PreferenceFragmentCompat {
 
         setSwitchEnabled("offline_lyrics_enabled", offlineEnabled);
         setSwitchEnabled("offline_album_art_enabled", offlineEnabled);
+        setSwitchEnabled("offline_artist_metadata_enabled", enableChildren);
         setSwitchEnabled("sync_starred_tracks_for_offline_use", offlineEnabled);
         setSwitchEnabled("sync_starred_albums_for_offline_use", offlineEnabled);
         setSwitchEnabled("sync_starred_artists_for_offline_use", offlineEnabled);
@@ -304,6 +320,7 @@ public class OfflineSettingsFragment extends PreferenceFragmentCompat {
     private void clearMetadataCaches() {
         favoriteRepository.deleteAll();
         chronologyRepository.deleteAll();
+        artistMetadataRepository.deleteAll();
     }
 
     private void purgeChronologyIfUnused() {
