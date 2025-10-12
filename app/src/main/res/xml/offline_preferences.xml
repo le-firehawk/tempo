@@ -84,9 +84,9 @@
             android:dependency="offline_generic_metadata_enabled" />
 
         <SwitchPreference
-            android:key="offline_artist_metadata_enabled"
-            android:title="@string/offline_artist_metadata_title"
-            android:summary="@string/offline_artist_metadata_summary"
+            android:key="offline_metadata_artist_enabled"
+            android:title="@string/offline_metadata_artist_title"
+            android:summary="@string/offline_metadata_artist_summary"
             android:defaultValue="false"
             android:dependency="offline_generic_metadata_enabled" />
 

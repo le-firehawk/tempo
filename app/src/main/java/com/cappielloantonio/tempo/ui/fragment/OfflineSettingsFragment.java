@@ -260,7 +260,7 @@ public class OfflineSettingsFragment extends PreferenceFragmentCompat {
             });
         }
 
-        SwitchPreference artistMetadataPreference = findPreference("offline_artist_metadata_enabled");
+        SwitchPreference artistMetadataPreference = findPreference("offline_metadata_artist_enabled");
         if (artistMetadataPreference != null) {
             artistMetadataPreference.setChecked(Preferences.isOfflineArtistMetadataEnabled());
             artistMetadataPreference.setOnPreferenceChangeListener((pref, newValue) -> {
@@ -284,7 +284,6 @@ public class OfflineSettingsFragment extends PreferenceFragmentCompat {
 
         setSwitchEnabled("offline_lyrics_enabled", offlineEnabled);
         setSwitchEnabled("offline_album_art_enabled", offlineEnabled);
-        setSwitchEnabled("offline_artist_metadata_enabled", enableChildren);
         setSwitchEnabled("sync_starred_tracks_for_offline_use", offlineEnabled);
         setSwitchEnabled("sync_starred_albums_for_offline_use", offlineEnabled);
         setSwitchEnabled("sync_starred_artists_for_offline_use", offlineEnabled);
@@ -303,6 +302,7 @@ public class OfflineSettingsFragment extends PreferenceFragmentCompat {
         setSwitchEnabled("offline_metadata_top_songs_enabled", enableChildren);
         setSwitchEnabled("offline_metadata_most_played_enabled", enableChildren);
         setSwitchEnabled("offline_metadata_last_played_enabled", enableChildren);
+        setSwitchEnabled("offline_metadata_artist_enabled", enableChildren);
     }
 
     @UnstableApi

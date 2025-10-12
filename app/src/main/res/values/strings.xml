@@ -377,8 +377,8 @@
     <string name="offline_metadata_genres_title">Genres</string>
     <string name="offline_metadata_years_title">Years (Flashback)</string>
     <string name="offline_metadata_top_songs_title">Top songs</string>
-    <string name="offline_artist_metadata_title">Artist pages</string>
-    <string name="offline_artist_metadata_summary">Keep artist bios, albums, top tracks, and "More like this" suggestions available offline.</string>
+    <string name="offline_metadata_artist_title">Artist pages</string>
+    <string name="offline_metadata_artist_summary">Keep artist bios, albums, top tracks, and "More like this" suggestions available offline.</string>
     <string name="offline_metadata_starred_tracks_title">Starred tracks</string>
     <string name="offline_metadata_starred_albums_title">Starred albums</string>
     <string name="offline_metadata_starred_artists_title">Starred artists</string>

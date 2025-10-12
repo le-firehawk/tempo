@@ -52,7 +52,7 @@ object Preferences {
     private const val OFFLINE_ALBUM_ART_ENABLED = "offline_album_art_enabled"
     private const val OFFLINE_PLAYLISTS_ENABLED = "offline_playlists_enabled"
     private const val OFFLINE_GENERIC_METADATA_ENABLED = "offline_generic_metadata_enabled"
-    private const val OFFLINE_ARTIST_METADATA_ENABLED = "offline_artist_metadata_enabled"
+    private const val OFFLINE_METADATA_ARTIST_ENABLED = "offline_metadata_artist_enabled"
     private const val OFFLINE_METADATA_GENRES_ENABLED = "offline_metadata_genres_enabled"
     private const val OFFLINE_METADATA_YEARS_ENABLED = "offline_metadata_years_enabled"
     private const val OFFLINE_METADATA_TOP_SONGS_ENABLED = "offline_metadata_top_songs_enabled"
@@ -249,13 +249,13 @@ object Preferences {
 
     @JvmStatic
     fun isOfflineArtistMetadataEnabled(): Boolean {
-        return App.getInstance().preferences.getBoolean(OFFLINE_ARTIST_METADATA_ENABLED, false)
+        return App.getInstance().preferences.getBoolean(OFFLINE_METADATA_ARTIST_ENABLED, false)
     }
 
     @JvmStatic
     fun setOfflineArtistMetadataEnabled(isEnabled: Boolean) {
         App.getInstance().preferences.edit()
-            .putBoolean(OFFLINE_ARTIST_METADATA_ENABLED, isEnabled)
+            .putBoolean(OFFLINE_METADATA_ARTIST_ENABLED, isEnabled)
             .apply()
     }
 
