@@ -12,7 +12,6 @@ import androidx.core.app.NotificationCompat;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.C;
-import androidx.media3.datasource.DataSpec;
 import androidx.media3.datasource.cache.Cache;
 import androidx.media3.datasource.cache.CacheSpan;
 import androidx.media3.datasource.cache.ContentMetadata;
@@ -76,10 +75,14 @@ public class ExternalAudioWriter {
     }
 
     private static String generateDefaultCacheKey(Uri uri) {
-        DataSpec dataSpec = new DataSpec.Builder()
-                .setUri(uri)
-                .build();
-        return dataSpec.key;
+        if (uri == null) {
+            return null;
+        }
+        Uri normalized = uri.normalizeScheme();
+        if (normalized != null) {
+            return normalized.toString();
+        }
+        return uri.toString();
     }
 
     public static void downloadToUserDirectory(Context context, Child child) {
@@ -147,9 +150,6 @@ public class ExternalAudioWriter {
         Uri mediaUri = null;
         if (mediaItem.localConfiguration != null) {
             mediaUri = mediaItem.localConfiguration.uri;
-            if (mediaItem.localConfiguration.cacheKey != null) {
-                // We'll prefer the provided cache key later
-            }
         }
         if (mediaUri == null && mediaItem.requestMetadata != null) {
             mediaUri = mediaItem.requestMetadata.mediaUri;
@@ -164,11 +164,15 @@ public class ExternalAudioWriter {
             return;
         }
 
-        String cacheKey;
-        if (mediaItem.localConfiguration != null && mediaItem.localConfiguration.cacheKey != null) {
-            cacheKey = mediaItem.localConfiguration.cacheKey;
-        } else {
+        String cacheKey = null;
+        if (mediaItem.localConfiguration != null) {
+            cacheKey = mediaItem.localConfiguration.customCacheKey;
+        }
+        if (cacheKey == null || cacheKey.isEmpty()) {
             cacheKey = generateDefaultCacheKey(mediaUri);
+        }
+        if (cacheKey == null || cacheKey.isEmpty()) {
+            return;
         }
 
         Set<CacheSpan> spans = cache.getCachedSpans(cacheKey);
