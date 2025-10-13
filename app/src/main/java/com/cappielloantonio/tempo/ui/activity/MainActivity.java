@@ -543,6 +543,19 @@ public class MainActivity extends BaseActivity {
         String album = intent.getStringExtra(Constants.EXTRA_DOWNLOAD_ALBUM);
         int duration = intent.getIntExtra(Constants.EXTRA_DOWNLOAD_DURATION, 0);
 
+        if (TextUtils.isEmpty(title)) {
+            title = uri.getLastPathSegment();
+            if (TextUtils.isEmpty(title)) {
+                title = uriString;
+            }
+        }
+        if (artist == null) {
+            artist = "";
+        }
+        if (album == null) {
+            album = "";
+        }
+
         Bundle extras = new Bundle();
         extras.putString("id", mediaId);
         extras.putString("title", title);

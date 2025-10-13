@@ -85,6 +85,24 @@ public class ExternalAudioWriter {
         return uri.toString();
     }
 
+    private static String fileNameFromUri(Uri uri) {
+        if (uri == null) {
+            return "download";
+        }
+        String path = uri.getLastPathSegment();
+        if (path == null || path.isEmpty()) {
+            path = uri.toString();
+        }
+        int slash = path.lastIndexOf('/');
+        if (slash >= 0 && slash < path.length() - 1) {
+            path = path.substring(slash + 1);
+        }
+        if (path.isEmpty()) {
+            return "download";
+        }
+        return sanitizeFileName(path);
+    }
+
     public static void downloadToUserDirectory(Context context, Child child) {
         if (context == null || child == null) {
             return;
@@ -136,17 +154,6 @@ public class ExternalAudioWriter {
             return;
         }
 
-        String fallbackName = child.getTitle() != null ? child.getTitle() : mediaItem.mediaId;
-        String artist = child.getArtist() != null ? child.getArtist() : "";
-        String title = child.getTitle() != null ? child.getTitle() : fallbackName;
-        String album = child.getAlbum() != null ? child.getAlbum() : "";
-        String baseName = artist.isEmpty() ? title : artist + " - " + title;
-        if (!album.isEmpty()) baseName += " (" + album + ")";
-        if (baseName.isEmpty()) {
-            baseName = fallbackName != null ? fallbackName : "download";
-        }
-        String metadataKey = normalizeForComparison(baseName);
-
         Uri mediaUri = null;
         if (mediaItem.localConfiguration != null) {
             mediaUri = mediaItem.localConfiguration.uri;
@@ -158,6 +165,37 @@ public class ExternalAudioWriter {
             notifyFailure(context, "Invalid media URI.");
             return;
         }
+
+        String fallbackName = child.getTitle();
+        if (fallbackName == null || fallbackName.isEmpty()) {
+            fallbackName = mediaItem.mediaId != null ? mediaItem.mediaId : fileNameFromUri(mediaUri);
+        }
+
+        String artist = child.getArtist() != null ? child.getArtist() : "";
+        String title = child.getTitle() != null ? child.getTitle() : fallbackName;
+        String album = child.getAlbum() != null ? child.getAlbum() : "";
+        if (title == null || title.isEmpty()) {
+            title = fallbackName != null ? fallbackName : fileNameFromUri(mediaUri);
+        }
+        if (album == null) {
+            album = "";
+        }
+        if (child.getTitle() == null || child.getTitle().isEmpty()) {
+            child.setTitle(title);
+        }
+        if (child.getArtist() == null) {
+            child.setArtist(artist);
+        }
+        if (child.getAlbum() == null) {
+            child.setAlbum(album);
+        }
+
+        String baseName = artist.isEmpty() ? title : artist + " - " + title;
+        if (!album.isEmpty()) baseName += " (" + album + ")";
+        if (baseName.isEmpty()) {
+            baseName = fallbackName != null ? fallbackName : "download";
+        }
+        String metadataKey = normalizeForComparison(baseName);
 
         Cache cache = DownloadUtil.getDownloadCache(context);
         if (cache == null) {
@@ -324,24 +362,41 @@ public class ExternalAudioWriter {
             return;
         }
 
+        Uri mediaUri = mediaItem != null && mediaItem.requestMetadata != null
+                ? mediaItem.requestMetadata.mediaUri
+                : null;
+        if (mediaUri == null) {
+            notifyFailure(context, "Invalid media URI.");
+            String keyBase = fallbackName != null ? fallbackName : child.getTitle();
+            if (keyBase == null || keyBase.isEmpty()) {
+                keyBase = "download";
+            }
+            ExternalDownloadMetadataStore.remove(normalizeForComparison(keyBase));
+            return;
+        }
+
         String artist = child.getArtist() != null ? child.getArtist() : "";
         String title = child.getTitle() != null ? child.getTitle() : fallbackName;
         String album = child.getAlbum() != null ? child.getAlbum() : "";
+        if (title == null || title.isEmpty()) {
+            title = fallbackName != null ? fallbackName : fileNameFromUri(mediaUri);
+        }
+        if (child.getTitle() == null || child.getTitle().isEmpty()) {
+            child.setTitle(title);
+        }
+        if (child.getArtist() == null) {
+            child.setArtist(artist);
+        }
+        if (child.getAlbum() == null) {
+            child.setAlbum(album);
+        }
+
         String baseName = artist.isEmpty() ? title : artist + " - " + title;
         if (!album.isEmpty()) baseName += " (" + album + ")";
         if (baseName.isEmpty()) {
             baseName = fallbackName != null ? fallbackName : "download";
         }
         String metadataKey = normalizeForComparison(baseName);
-
-        Uri mediaUri = mediaItem != null && mediaItem.requestMetadata != null
-                ? mediaItem.requestMetadata.mediaUri
-                : null;
-        if (mediaUri == null) {
-            notifyFailure(context, "Invalid media URI.");
-            ExternalDownloadMetadataStore.remove(metadataKey);
-            return;
-        }
 
         String scheme = mediaUri.getScheme() != null ? mediaUri.getScheme().toLowerCase(Locale.ROOT) : "";
 
@@ -575,13 +630,33 @@ public class ExternalAudioWriter {
 
     private static PendingIntent buildPlayIntent(Context context, Child child, Uri fileUri) {
         if (fileUri == null) return null;
+        String mediaId = child.getId();
+        if (mediaId == null || mediaId.isEmpty()) {
+            mediaId = fileUri.toString();
+        }
+
+        String title = child.getTitle();
+        if (title == null || title.isEmpty()) {
+            title = fileNameFromUri(fileUri);
+        }
+
+        String artist = child.getArtist();
+        if (artist == null) {
+            artist = "";
+        }
+
+        String album = child.getAlbum();
+        if (album == null) {
+            album = "";
+        }
+
         Intent intent = new Intent(context, MainActivity.class)
                 .setAction(Constants.ACTION_PLAY_EXTERNAL_DOWNLOAD)
                 .putExtra(Constants.EXTRA_DOWNLOAD_URI, fileUri.toString())
-                .putExtra(Constants.EXTRA_DOWNLOAD_MEDIA_ID, child.getId())
-                .putExtra(Constants.EXTRA_DOWNLOAD_TITLE, child.getTitle())
-                .putExtra(Constants.EXTRA_DOWNLOAD_ARTIST, child.getArtist())
-                .putExtra(Constants.EXTRA_DOWNLOAD_ALBUM, child.getAlbum())
+                .putExtra(Constants.EXTRA_DOWNLOAD_MEDIA_ID, mediaId)
+                .putExtra(Constants.EXTRA_DOWNLOAD_TITLE, title)
+                .putExtra(Constants.EXTRA_DOWNLOAD_ARTIST, artist)
+                .putExtra(Constants.EXTRA_DOWNLOAD_ALBUM, album)
                 .putExtra(Constants.EXTRA_DOWNLOAD_DURATION, child.getDuration() != null ? child.getDuration() : 0)
                 .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
