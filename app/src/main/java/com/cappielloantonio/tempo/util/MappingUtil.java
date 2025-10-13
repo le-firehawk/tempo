@@ -126,10 +126,12 @@ public class MappingUtil {
     }
 
     public static MediaItem mapDownload(Child media) {
-
         Bundle bundle = new Bundle();
         bundle.putInt("samplingRate", media.getSamplingRate() != null ? media.getSamplingRate() : 0);
         bundle.putInt("bitDepth", media.getBitDepth() != null ? media.getBitDepth() : 0);
+
+        Uri playbackUri = resolveDownloadPlaybackUri(media);
+        bundle.putString("uri", playbackUri.toString());
 
         return new MediaItem.Builder()
                 .setMediaId(media.getId())
@@ -149,12 +151,32 @@ public class MappingUtil {
                 .setRequestMetadata(
                         new MediaItem.RequestMetadata.Builder()
                                 .setExtras(bundle)
-                                .setMediaUri(Preferences.preferTranscodedDownload() ? MusicUtil.getTranscodedDownloadUri(media.getId()) : MusicUtil.getDownloadUri(media.getId()))
+                                .setMediaUri(playbackUri)
                                 .build()
                 )
                 .setMimeType(MimeTypes.BASE_TYPE_AUDIO)
-                .setUri(Preferences.preferTranscodedDownload() ? MusicUtil.getTranscodedDownloadUri(media.getId()) : MusicUtil.getDownloadUri(media.getId()))
+                .setUri(playbackUri)
                 .build();
+    }
+
+    private static Uri resolveDownloadPlaybackUri(Child media) {
+        Uri preferredNetworkUri = Preferences.preferTranscodedDownload()
+                ? MusicUtil.getTranscodedDownloadUri(media.getId())
+                : MusicUtil.getDownloadUri(media.getId());
+
+        if (Preferences.getDownloadDirectoryUri() != null) {
+            Uri localUri = ExternalAudioReader.getUri(media);
+            if (localUri != null) {
+                return localUri;
+            }
+        }
+
+        Download download = new DownloadRepository().getDownload(media.getId());
+        if (download != null && download.getDownloadUri() != null && !download.getDownloadUri().isEmpty()) {
+            return Uri.parse(download.getDownloadUri());
+        }
+
+        return preferredNetworkUri;
     }
 
     public static MediaItem mapInternetRadioStation(InternetRadioStation internetRadioStation) {
