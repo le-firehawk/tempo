@@ -16,16 +16,23 @@ public class NetworkUtil {
 
         ConnectivityManager connectivityManager = (ConnectivityManager) App.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        if (connectivityManager != null) {
-            Network network = connectivityManager.getActiveNetwork();
+        if (connectivityManager == null) {
+            return true;
+        }
 
-            if (network != null) {
-                NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
+        Network network = connectivityManager.getActiveNetwork();
 
-                if (capabilities != null) {
-                    return !capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) || !capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED);
-                }
+        if (network != null) {
+            NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
+
+            if (capabilities != null) {
+                return !capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
             }
+        }
+
+        NetworkInfo legacyNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        if (legacyNetworkInfo != null) {
+            return !legacyNetworkInfo.isConnectedOrConnecting();
         }
 
         return true;
